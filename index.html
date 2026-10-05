@@ -8,8 +8,8 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<meta name="theme-color" content="#FAF7F0" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#1C1B19" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" id="tc-acik" content="#FAF7F0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" id="tc-koyu" content="#1C1B19" media="(prefers-color-scheme: dark)">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Lusso Wedding">
@@ -61,7 +61,7 @@ button{cursor:pointer}
 
 /* Kabuk ve sol panel */
 .shell{display:grid;grid-template-columns:200px minmax(0,1fr);max-width:1480px;margin-inline:auto}
-.side{position:sticky;top:0;align-self:start;min-height:100vh;display:flex;flex-direction:column;gap:22px;padding:22px 14px;background:var(--surface);border-right:1px solid var(--line-strong)}
+.side{position:sticky;top:0;align-self:start;min-height:100vh;display:flex;flex-direction:column;gap:22px;padding:22px 14px;background:var(--side-bg,var(--surface));border-right:1px solid var(--side-line,var(--line-strong));color:var(--side-ink,inherit)}
 .brand{display:flex;flex-direction:column;gap:2px;min-width:0;padding:0 4px}
 .wm{font-family:var(--f-display);font-weight:600;font-size:17px;letter-spacing:.16em;color:var(--gold)}
 .sub{font-family:var(--f-serif);font-style:italic;font-size:15px;color:var(--muted)}
@@ -71,6 +71,13 @@ button{cursor:pointer}
 .mi[aria-current="page"]{background:var(--gold-soft);border-color:var(--gold-soft);color:var(--gold)}
 .mi .mic{width:16px;height:16px;flex:none}
 .yon{margin:0;padding:0 4px;font-size:11.5px;color:var(--muted)}
+/* Salon temasında sol panel salonun ana rengine boyanır; --side-* değerleri yalnızca o zaman tanımlıdır. */
+.side .wm,.side .lnk{color:var(--side-acc,var(--gold))}
+.side .sub,.side .yon,.side .ben span{color:var(--side-muted,var(--muted))}
+.side .mi:hover{border-color:var(--side-line,var(--line-strong))}
+.side .mi[aria-current="page"]{background:var(--side-act,var(--gold-soft));border-color:var(--side-act,var(--gold-soft));color:var(--side-acc,var(--gold))}
+.side .ben{border-top-color:var(--side-line,var(--line))}
+.side :focus-visible{outline-color:var(--side-acc,var(--gold-bright))}
 .main{min-width:0;display:flex;flex-direction:column;gap:18px;padding-inline:20px;padding-block:20px 48px}
 .view{display:flex;flex-direction:column;gap:18px;min-width:0}
 
@@ -222,6 +229,8 @@ table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
 .ablok h2{margin:0;font-family:var(--f-display);font-weight:500;font-size:14px;letter-spacing:.1em}
 .ablok .fine{margin-top:-6px}
 .arow{display:grid;grid-template-columns:44px minmax(0,1fr) 130px;gap:10px;align-items:center}
+.arow.r2{grid-template-columns:44px 44px minmax(0,1fr) 130px}
+.arow.r2 .iki{grid-column:span 2}
 .arow.h{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 .arow.s2{grid-template-columns:90px minmax(0,1fr) minmax(0,1fr)}
 .arow.l{grid-template-columns:minmax(0,1fr) 40px;max-width:460px}
@@ -522,7 +531,7 @@ textarea.ain.oto{field-sizing:content;min-height:84px;max-height:70vh;line-heigh
 
 @media (max-width:900px){
   .shell{grid-template-columns:minmax(0,1fr)}
-  .side{position:static;min-height:0;gap:10px;padding:14px 16px 10px;border-right:0;border-bottom:1px solid var(--line-strong)}
+  .side{position:static;min-height:0;gap:10px;padding:14px 16px 10px;border-right:0;border-bottom:1px solid var(--side-line,var(--line-strong))}
   .brand{flex-direction:row;flex-wrap:wrap;align-items:baseline;gap:2px 12px;padding:0}
   .menu{flex-direction:row;overflow-x:auto;padding-bottom:4px}
   .mi{width:auto;flex:none}
@@ -549,6 +558,7 @@ textarea.ain.oto{field-sizing:content;min-height:84px;max-height:70vh;line-heigh
   .akrow{grid-template-columns:64px minmax(0,1fr) 40px}
   .akrow input{font-size:16px}
   .arow{grid-template-columns:44px minmax(0,1fr) 84px;gap:8px}
+  .arow.r2{grid-template-columns:44px 44px minmax(0,1fr) 72px}
   .arow.s2{grid-template-columns:64px minmax(0,1fr) minmax(0,1fr)}
   .hb{grid-template-columns:minmax(0,104px) minmax(0,1fr) auto}
   .xax{font-size:9.5px}
@@ -557,6 +567,8 @@ textarea.ain.oto{field-sizing:content;min-height:84px;max-height:70vh;line-heigh
 }
 @media (prefers-reduced-motion:no-preference){
   .slot,.tab,.btn,.nbtn,.yd,.mi,.col{transition:background-color .12s,border-color .12s,color .12s}
+  /* Salon değişince tema yumuşak geçsin */
+  body,.side{transition:background-color .25s,border-color .25s}
 }
 </style>
 <style id="salon-renk"></style>
@@ -675,14 +687,16 @@ var SB_KEY='sb_publishable_g2qJ_fBNa269as_n1jHCzQ_E549k7Pt';
 
 /* Salon kimlikleri sabittir (kayıt anahtarlarında geçer); adı, rengi ve kapasitesi ayarlardan gelir. */
 var KOD={mercan:'MER',safir:'SAF',inci:'INC',yakut:'YAK',cadir:'KNK',kulup:'KUL'};
+/* Önceki sürümlerin varsayılan salon renkleri: kayıtlı ayarda bunlardan biri duruyorsa güncel varsayılan ton kullanılır. */
+var ESKI_RENK={mercan:['#E0796B'],safir:['#1F3A6E'],inci:['#9C917C'],yakut:['#1E6B4F','#006400','#6EAA5E','#317873'],cadir:['#A85A1A','#E0115F'],kulup:['#5B2A6B','#9400D3']};
 var VARSAYILAN={
   salonlar:[
-    {id:'mercan',ad:'Mercan',renk:'#E0796B',kapasite:null},
-    {id:'safir',ad:'Safir',renk:'#1F3A6E',kapasite:null},
-    {id:'inci',ad:'İnci',renk:'#9C917C',kapasite:null},
-    {id:'yakut',ad:'Yakut',renk:'#1E6B4F',kapasite:null},
-    {id:'cadir',ad:'Kına Konağı',renk:'#A85A1A',kapasite:null},
-    {id:'kulup',ad:'Kulüp',renk:'#5B2A6B',kapasite:null}
+    {id:'mercan',ad:'Mercan',renk:'#FEDFDC',renk2:'#FFFFFF',kapasite:null},   /* pembe + beyaz */
+    {id:'safir',ad:'Safir',renk:'#090949',renk2:'#D4AF37',kapasite:null},     /* lacivert + altın */
+    {id:'inci',ad:'İnci',renk:'#F0EAD6',renk2:'#808080',kapasite:null},       /* inci + gri */
+    {id:'yakut',ad:'Yakut',renk:'#2E8B57',renk2:'#C0C0C0',kapasite:null},     /* yeşil + gümüş */
+    {id:'cadir',ad:'Kına Konağı',renk:'#9B111E',renk2:'#D40000',kapasite:null}, /* koyu kırmızı + kırmızı */
+    {id:'kulup',ad:'Kulüp',renk:'#8350AF',renk2:'#D4AF37',kapasite:null}      /* mor + altın */
   ],
   seanslar:{gunduz:{ad:'Gündüz',saat:''},aksam:{ad:'Akşam',saat:''}},
   yogunGunler:[4,5,6],
@@ -808,7 +822,9 @@ function normalize(raw){
       var r=null;raw.salonlar.forEach(function(x){if(x&&x.id===s.id)r=x;});
       if(!r)return;
       if(typeof r.ad==='string'&&r.ad.trim())s.ad=r.ad.trim().slice(0,30);
-      if(typeof r.renk==='string'&&/^#[0-9a-fA-F]{6}$/.test(r.renk))s.renk=r.renk.toUpperCase();
+      var eski=typeof r.renk==='string'&&ESKI_RENK[s.id].indexOf(r.renk.toUpperCase())>=0;
+      if(!eski&&typeof r.renk==='string'&&/^#[0-9a-fA-F]{6}$/.test(r.renk))s.renk=r.renk.toUpperCase();
+      if(typeof r.renk2==='string'&&/^#[0-9a-fA-F]{6}$/.test(r.renk2))s.renk2=r.renk2.toUpperCase();
       s.kapasite=(typeof r.kapasite==='number'&&r.kapasite>0)?Math.round(r.kapasite):null;
     });
   }
@@ -850,15 +866,113 @@ function rgb2hex(c){return '#'+c.map(function(v){var x=v.toString(16);return x.l
 function lum(c){var a=c.map(function(v){v/=255;return v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4);});return 0.2126*a[0]+0.7152*a[1]+0.0722*a[2];}
 function ustRenk(c){return lum(c)>0.2?'#1E1A14':'#FFFFFF';}
 function koyuTon(c){var t=0,x=c;while(lum(x)<0.3&&t<0.84){t+=0.06;x=c.map(function(v){return Math.round(v+(255-v)*t);});}return x;}
+/* Salon teması: her salonun iki tonu vardır (ana renk + eşlik eden renk). Tek bir salon seçiliyken program o iki tona döner:
+   sol panel ana renge boyanır; başlıklar, dolu seanslar ve düğmeler ana renkten, çerçeveler, hafta sonu ve vurgu zeminleri
+   ikinci renkten türetilir. "Tüm salonlar"da varsayılan altın tema kalır. Renkler Ayarlar'daki salon renklerinden hesaplanır. */
+function karis(a,b,t){return a.map(function(v,i){return Math.round(v+(b[i]-v)*t);});}
+function kontrast(a,b){var x=lum(a),y=lum(b);return (Math.max(x,y)+0.05)/(Math.min(x,y)+0.05);}
+function hslOf(c){
+  var r=c[0]/255,g=c[1]/255,b=c[2]/255,mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn,h=0,l=(mx+mn)/2;
+  if(d){h=mx===r?((g-b)/d)%6:(mx===g?(b-r)/d+2:(r-g)/d+4);h*=60;if(h<0)h+=360;}
+  return {h:h,s:d?d/(1-Math.abs(2*l-1)):0,l:l,c:d};
+}
+/* Rengin ne kadar "renkli" olduğu (0: gri/beyaz, 1: canlı); pastel tonlar da renkli sayılır. */
+function canli(o){return Math.min(1,Math.max(o.c/0.3,o.s*Math.min(1,o.c/0.08)));}
+function hsl(h,s,l){
+  var c=(1-Math.abs(2*l-1))*s,x=c*(1-Math.abs((h/60)%2-1)),m=l-c/2,r=0,g=0,b=0;
+  if(h<60){r=c;g=x;}else if(h<120){r=x;g=c;}else if(h<180){g=c;b=x;}else if(h<240){g=x;b=c;}else if(h<300){r=x;b=c;}else{r=c;b=x;}
+  return [r,g,b].map(function(v){return Math.max(0,Math.min(255,Math.round((v+m)*255)));});
+}
+/* Yazı okunur kalsın diye renk, verilen zeminle yeterli karşıtlığa ulaşana kadar koyultulur ya da açılır. */
+function karsit(c,zemin,hedef,uc){var t=0,x=c;while(kontrast(x,zemin)<hedef&&t<0.96){t+=0.04;x=karis(c,uc,t);}return x;}
+function aciFark(a,b){var d=Math.abs(a-b)%360;return d>180?360-d:d;}
+/* Çok açık salon renkleri (pembe, inci) beyaz zeminde kaybolmasın diye işaret ve seanslarda bir ton koyusu kullanılır. */
+function acikTon(c){
+  var B=[255,255,255];
+  if(kontrast(c,B)>=1.8)return c;
+  var o=hslOf(c),l=o.l,x=c,s=Math.min(o.s,0.7);
+  while(kontrast(x,B)<1.8&&l>0.3){l-=0.02;x=hsl(o.h,s,l);}
+  return x;
+}
+function temaHesap(hex,hex2){
+  var B=[255,255,255],Z=[0,0,0];
+  var P=hex2rgb(hex),S=hex2rgb(hex2||'#FFFFFF'),p=hslOf(P),s=hslOf(S),kp=canli(p),ks=canli(s);
+  var pKoyu=kontrast(P,B)>=3;            /* ana renk, üstünde beyaz yazı taşıyacak kadar koyu mu */
+  var sBeyaz=lum(S)>0.8&&ks<0.25;        /* ikinci renk beyazsa yumuşak tonlar ana renkten alınır */
+  var yh=sBeyaz?p.h:s.h,yk=sBeyaz?kp:ks;
+  function yaz(o,ek){var t='';Object.keys(o).forEach(function(n){t+='--'+n+':'+(o[n]?rgb2hex(o[n]):'initial')+';';});return '{'+t+ek+'}';}
+
+  /* açık tema */
+  var bg=hsl(p.h,0.45*kp,0.962);
+  var soft=(sBeyaz&&!pKoyu)?hsl(p.h,Math.min(p.s,0.8),0.9):hsl(yh,0.5*yk,0.9);
+  var we=(sBeyaz&&!pKoyu)?P:hsl(yh,0.6*yk,0.925);
+  var pOrta=!pKoyu&&kontrast(P,B)>=1.8; /* beyaz yazı taşımaz ama kendisi koyultulup yazı rengi olabilir */
+  var gold=karsit((pKoyu||pOrta)?P:(sBeyaz?hsl(p.h,0.5*kp,0.45):S),soft,4.5,Z);
+  var parlak=sBeyaz?(pKoyu?karsit(P,B,2.8,Z):karsit(hsl(p.h,Math.min(p.s,0.7),0.72),B,2.2,Z)):karsit(S,B,2.6,Z);
+  var A={'bg':bg,'muted':karsit(hsl(p.h,0.08*kp,0.42),bg,4.5,Z),'line':hsl(p.h,0.3*kp,0.845),'line-strong':hsl(p.h,0.3*kp,0.715),
+    'gold':gold,'gold-bright':parlak,'gold-soft':soft,'weekend':we};
+
+  /* koyu tema */
+  var softK=sBeyaz?hsl(p.h,0.32*kp,0.19):hsl(s.h,0.32*ks,0.2);
+  var yuz=hsl(p.h,0.12*kp,0.142),kg=karsit(koyuTon(P),softK,4.5,B);
+  var K={'bg':hsl(p.h,0.12*kp,0.104),'surface':yuz,'muted':hsl(p.h,0.1*kp,0.62),'line':hsl(p.h,0.12*kp,0.21),'line-strong':hsl(p.h,0.22*kp,0.3),
+    'gold':kg,'gold-bright':sBeyaz?kg:karsit(S,yuz,3,B),'gold-soft':softK,'weekend':sBeyaz?hsl(p.h,0.26*kp,0.175):hsl(s.h,0.26*ks,0.18)};
+
+  /* sol panel: ana rengin kendisi; yazılar o zeminde okunacak şekilde ikinci renkten (ya da beyazdan) seçilir */
+  function yan(z){
+    var v=karsit(sBeyaz?B:S,z,4.5,B);
+    return {'side-bg':z,'side-ink':karis(B,z,0.06),'side-muted':karsit(karis(B,z,0.3),z,4.5,B),'side-acc':v,'side-act':karis(z,v,0.18),'side-line':karis(z,B,0.22)};
+  }
+  var YA,YK,zk=yuz;
+  if(pKoyu){
+    YA=yan(P);
+    zk=lum(P)>0.05?karis(P,Z,0.3):P;    /* koyu temada canlı renkler bir ton kısılır */
+    YK=yan(zk);
+  }else{
+    YA={'side-bg':P,'side-ink':null,'side-muted':karsit(A.muted,P,4.5,Z),'side-acc':karsit(gold,P,4.5,Z),'side-act':B,'side-line':null};
+    YK={'side-bg':null,'side-ink':null,'side-muted':null,'side-acc':null,'side-act':null,'side-line':null};
+  }
+
+  /* Salon tonları uyarı kırmızısına ya da onay yeşiline çok yakınsa, karışmasınlar diye bu ikisi başka bir tona kaydırılır. */
+  var tonlar=[],ea='',ek='';
+  if(kp>=0.4)tonlar.push(p.h);
+  if(!sBeyaz&&ks>=0.4)tonlar.push(s.h);
+  function yakin(t){return tonlar.some(function(x){return aciFark(x,t)<30;});}
+  if(yakin(7)){
+    if(!yakin(331)){ea+='--danger:#9B1556;--danger-soft:#F9E3EC;';ek+='--danger:#FF9CC2;--danger-soft:#45202F;';}
+    else{ea+='--danger:#9A4B00;--danger-soft:#FFEFCF;';ek+='--danger:#FFC46B;--danger-soft:#3D2C10;';}
+  }
+  function uzak(t){var m=360;tonlar.forEach(function(x){m=Math.min(m,aciFark(x,t));});return m;}
+  if(tonlar.some(function(x){return aciFark(x,146)<45;})){
+    if(uzak(86)>=uzak(175)){ea+='--ok:#4D7A14;--ok-soft:#EBF3DC;';ek+='--ok:#B9D873;--ok-soft:#2C3719;';}
+    else{ea+='--ok:#0F766E;--ok-soft:#DDF3F0;';ek+='--ok:#6FD6CB;--ok-soft:#17383A;';}
+  }
+  return {acik:yaz(A,yaz(YA,'').slice(1,-1)+ea),koyu:yaz(K,yaz(YK,'').slice(1,-1)+ek),zeminA:rgb2hex(P),zeminK:rgb2hex(zk)};
+}
+var temaZemin={};
 function renkYaz(){
   var a='',b='',d='';
+  temaZemin={};
   cfg.salonlar.forEach(function(s){
-    var c=hex2rgb(s.renk),k=koyuTon(c),kr='{--sc:'+rgb2hex(k)+';--son:'+ustRenk(k)+'}';
-    a+='.s-'+s.id+'{--sc:'+s.renk+';--son:'+ustRenk(c)+'}';
+    var c=hex2rgb(s.renk),ac=acikTon(c),k=koyuTon(c),kr='{--sc:'+rgb2hex(k)+';--son:'+ustRenk(k)+'}';
+    a+='.s-'+s.id+'{--sc:'+rgb2hex(ac)+';--son:'+ustRenk(ac)+'}';
     b+=':root:not([data-theme="light"]) .s-'+s.id+kr;
     d+=':root[data-theme="dark"] .s-'+s.id+kr;
+    var t=temaHesap(s.renk,s.renk2),q='[data-salon="'+s.id+'"]';
+    temaZemin[s.id]=t;
+    a+=':root'+q+t.acik;
+    b+=':root'+q+':not([data-theme="light"])'+t.koyu;
+    d+=':root'+q+'[data-theme="dark"]'+t.koyu;
   });
   $('salon-renk').textContent=a+'@media (prefers-color-scheme:dark){'+b+'}'+d;
+}
+/* Seçili salonun temasını açar ya da kapatır; giriş ekranı ve "Tüm salonlar" her zaman varsayılan temadadır. */
+function temaUygula(){
+  var el=document.documentElement,id=(st.oturum==='ok'&&st.salon!=='tum'&&temaZemin[st.salon])?st.salon:'';
+  if(el.getAttribute('data-salon')!==(id||null)){if(id)el.setAttribute('data-salon',id);else el.removeAttribute('data-salon');}
+  var ma=$('tc-acik'),mk=$('tc-koyu'),za=id?temaZemin[id].zeminA:'#FAF7F0',zk=id?temaZemin[id].zeminK:'#1C1B19';
+  if(ma&&ma.getAttribute('content')!==za)ma.setAttribute('content',za);
+  if(mk&&mk.getAttribute('content')!==zk)mk.setAttribute('content',zk);
 }
 
 var now=new Date();
@@ -1126,10 +1240,11 @@ function renderStats(){
 function renderAyarlar(){
   var d=draft,h='';
   if(!md||mdMetin!==d.sozlesmeMetni){md=maddeAyir(d.sozlesmeMetni);mdMetin=d.sozlesmeMetni;}
-  h+='<section class="ablok"><h2>Salonlar</h2><p class="fine">Takvimde görünen ad ve renk. Kapasite girilirse, kişi sayısı aşıldığında sözleşme ekranı uyarır.</p>'+
-     '<div class="arow h"><span>Renk</span><span>Salon adı</span><span>Kapasite (kişi)</span></div>';
+  h+='<section class="ablok"><h2>Salonlar</h2><p class="fine">Takvimde görünen ad ve renkler. İlk renk salonun ana tonu, ikincisi ona eşlik eden tondur; bir salon seçildiğinde programın renk teması bu iki tona döner. Kapasite girilirse, kişi sayısı aşıldığında sözleşme ekranı uyarır.</p>'+
+     '<div class="arow r2 h"><span class="iki">Renkler</span><span>Salon adı</span><span>Kapasite (kişi)</span></div>';
   d.salonlar.forEach(function(s,i){
-    h+='<div class="arow"><input type="color" class="renk" id="a-renk-'+s.id+'" data-p="salonlar.'+i+'.renk" value="'+esc(s.renk)+'" aria-label="'+esc(s.ad)+' rengi">'+
+    h+='<div class="arow r2"><input type="color" class="renk" id="a-renk-'+s.id+'" data-p="salonlar.'+i+'.renk" value="'+esc(s.renk)+'" aria-label="'+esc(s.ad)+' ana rengi" title="Ana renk">'+
+       '<input type="color" class="renk" id="a-renk2-'+s.id+'" data-p="salonlar.'+i+'.renk2" value="'+esc(s.renk2||'#FFFFFF')+'" aria-label="'+esc(s.ad)+' ikinci rengi" title="İkinci renk">'+
        '<input type="text" class="ain" id="a-ad-'+s.id+'" data-p="salonlar.'+i+'.ad" maxlength="30" value="'+esc(s.ad)+'" aria-label="Salon adı">'+
        '<input type="text" class="ain num" id="a-kap-'+s.id+'" data-p="salonlar.'+i+'.kapasite" data-num inputmode="numeric" maxlength="5" placeholder="—" value="'+(s.kapasite!=null?s.kapasite:'')+'" aria-label="'+esc(s.ad)+' kapasitesi"></div>';
   });
@@ -1379,6 +1494,7 @@ function sifreKaydet(){
 function render(){
   var ok=st.oturum==='ok';
   $('kapi').hidden=ok;$('shell').hidden=!ok;
+  temaUygula();
   if(!ok)return;
   if(st.view==='ajanda'&&!ajErisim())st.view='takvim';
   if(BOLUMLER.some(function(b){return b.id===st.view&&b.yonetici;})&&!st.admin)st.view='takvim';
