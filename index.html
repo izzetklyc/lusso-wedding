@@ -491,6 +491,20 @@ textarea.ain.oto{field-sizing:content;min-height:84px;max-height:70vh;line-heigh
 .ohizli button:hover{border-color:var(--gold-bright);color:var(--gold)}
 .opsgec{margin:0;font-size:13px;color:var(--muted)}
 
+/* Telefon: başında sabit +90, yalnızca rakam, "535 668 79 80" biçimi */
+.telw{display:flex;align-items:stretch;min-width:0}
+.telw > span{display:flex;align-items:center;flex:none;padding:0 10px;border:1px solid var(--line-strong);border-right:0;border-radius:6px 0 0 6px;background:var(--gold-soft);color:var(--muted);font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;user-select:none}
+.telw > input{flex:1 1 auto;border-radius:0 6px 6px 0!important;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+/* Seçili seçenek: süre düğmeleri, işaretli ek hizmet, bulunulan ayda "Bugün" */
+.ohizli button.sec{background:var(--gold);border-color:var(--gold);color:var(--surface)}
+.ohizli button.sec:hover{color:var(--surface);filter:brightness(1.08)}
+.ohizli button:disabled{opacity:.35;cursor:default}
+.ohizli button:disabled:hover{border-color:var(--line-strong);color:inherit}
+.ekrow{padding:4px 8px;margin:0 -8px;border:1px solid transparent;border-radius:6px}
+.ekrow:has(.ekchk input:checked){border-color:var(--gold-bright);background:var(--gold-soft)}
+.ekrow:has(.ekchk input:checked) .ekchk{font-weight:700;color:var(--gold)}
+.nbtn.sec{border-color:var(--gold-bright);background:var(--gold-soft);color:var(--gold);font-weight:600}
+
 @media (max-width:900px){
   .krow{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
 }
@@ -904,6 +918,7 @@ function renderNav(){
   }
   ay.value=m.m;yl.value=m.y;
   ay.hidden=ym;
+  $('bugun').classList.toggle('sec',ym?m.y===new Date().getFullYear():st.ym===todayStr().slice(0,7));
   /* Takvim Ekim 2026'dan başlar; yönetici dışındakiler içinde bulunulan aydan geriye de gidemez */
   for(i=0;i<ay.options.length;i++)ay.options[i].disabled=m.y===ilkYil&&(i+1)<+enE.slice(5);
   $('prev').disabled=ym?m.y<=ilkYil:st.ym<=enE;
@@ -1609,7 +1624,7 @@ function renderBen(){
 
 /* ---------- pencere ---------- */
 var dlg=$('dlg'),body=$('dlg-body');
-function show(html){body.innerHTML=html;if(!dlg.open)dlg.showModal();}
+function show(html){body.innerHTML=html;telSar(body);if(!dlg.open)dlg.showModal();}
 function hide(){if(dlg.open)dlg.close();cur=null;}
 function dhead(ust,tarih){
   return '<div class="dh"><div><p class="eyebrow">'+ust+'</p><h2 id="dlg-title">'+fmtUzun(tarih)+'</h2></div>'+
@@ -1652,14 +1667,6 @@ function opts(list,val,bos){
   return h;
 }
 
-/* Telefon: 11 haneli, 0 ile başlar; "0535 668 79 80" biçiminde saklanır. */
-function telDuzelt(v){
-  var d=String(v==null?'':v).replace(/\D/g,'');
-  if(d.length===12&&d.slice(0,2)==='90')d='0'+d.slice(2);
-  if(d.length===10&&d.charAt(0)!=='0')d='0'+d;
-  if(d.length!==11||d.charAt(0)!=='0')return null;
-  return d.slice(0,4)+' '+d.slice(4,7)+' '+d.slice(7,9)+' '+d.slice(9);
-}
 function dlist(id,list){
   var h='<datalist id="'+id+'">';list.forEach(function(o){h+='<option value="'+esc(o)+'"></option>';});return h+'</datalist>';
 }
@@ -1799,10 +1806,10 @@ function save(){
   var musteri=val('f-musteri'),kisi=parseN(val('f-kisi')),kisiBasi=parseN(val('f-kisibasi')),bedel=parseN(val('f-bedel')),kapora=parseN(val('f-kapora'));
   if(!musteri){fail('Müşteri adı soyadı boş bırakılamaz.');$('f-musteri').focus();return;}
   var tel=telDuzelt(val('f-telefon'));
-  if(!tel){fail('Müşteri telefonu 11 haneli olmalı. Örnek: 0535 123 45 67');$('f-telefon').focus();return;}
+  if(!tel){fail('Müşteri telefonu 10 haneli olmalı. Örnek: 535 123 45 67');$('f-telefon').focus();return;}
   var gTel='',dTel='';
-  if(val('f-gelin-tel')){gTel=telDuzelt(val('f-gelin-tel'));if(!gTel){fail('Gelin telefonu 11 haneli olmalı. Örnek: 0535 123 45 67');$('f-gelin-tel').focus();return;}}
-  if(val('f-damat-tel')){dTel=telDuzelt(val('f-damat-tel'));if(!dTel){fail('Damat telefonu 11 haneli olmalı. Örnek: 0535 123 45 67');$('f-damat-tel').focus();return;}}
+  if(val('f-gelin-tel')){gTel=telDuzelt(val('f-gelin-tel'));if(!gTel){fail('Gelin telefonu 10 haneli olmalı. Örnek: 535 123 45 67');$('f-gelin-tel').focus();return;}}
+  if(val('f-damat-tel')){dTel=telDuzelt(val('f-damat-tel'));if(!dTel){fail('Damat telefonu 10 haneli olmalı. Örnek: 535 123 45 67');$('f-damat-tel').focus();return;}}
   if(kisi!==null&&kisi<1){fail('Kişi sayısı en az 1 olmalı.');$('f-kisi').focus();return;}
   if(bedel!==null&&kapora!==null&&kapora>bedel){fail('Kapora, toplam bedelden büyük olamaz.');$('f-kapora').focus();return;}
   var detay={gelinAd:val('f-gelin'),gelinTel:gTel,damatAd:val('f-damat'),damatTel:dTel,
@@ -1906,7 +1913,7 @@ function yazdirHtml(r){
   var ekl=Array.isArray(dt.ekHizmetler)?dt.ekHizmetler.filter(function(x){return x&&x.ad;}):[];
   var mdt=r.menu||dt.baslangic||dt.araSicak||dt.anaYemek||dt.tatli||dt.ikram?menuDetay(r.menu||'',dt):{};
   function satir(k,v){return v?'<tr><th>'+k+'</th><td>'+v+'</td></tr>':'';}
-  function kisi(ad,tel){return [esc(ad||''),esc(tel||'')].filter(Boolean).join(' · ');}
+  function kisi(ad,tel){return [esc(ad||''),esc(tel?telGoster(tel):'')].filter(Boolean).join(' · ');}
   /* Sağ üst: tamamı büyük harfle yazılan satır (LUSSO WEDDING) kalın basılır */
   var baslik=String(cfg.baslik||'').split(/\n+/).map(function(l){return l.trim();}).filter(Boolean).map(function(l){
     return /[A-ZÇĞİÖŞÜ]/.test(l)&&l===l.toLocaleUpperCase('tr')?'<b>'+esc(l)+'</b>':esc(l);}).join('<br>');
@@ -1920,7 +1927,7 @@ function yazdirHtml(r){
       satir('Salon',esc(sal.ad))+
       satir('Organizasyon türü',esc(r.tur))+
       satir('Müşteri',esc(r.musteri))+
-      satir('Müşteri telefonu',esc(r.telefon))+
+      satir('Müşteri telefonu',esc(telGoster(r.telefon)))+
       satir('Gelin',kisi(dt.gelinAd,dt.gelinTel))+
       satir('Damat',kisi(dt.damatAd,dt.damatTel))+
       satir('Davetli sayısı',r.kisi!=null?fmtN(r.kisi)+' kişi':'')+
@@ -2121,7 +2128,7 @@ dlg.addEventListener('close',function(){cur=null;});
 dlg.addEventListener('submit',function(ev){ev.preventDefault();if(ev.target.id==='sfrm')sifreKaydet();else if(ev.target.id==='ofrm')opsKaydet();else save();});
 dlg.addEventListener('change',function(ev){
   var t=ev.target;if(!cur||!t)return;
-  if(t.hasAttribute('data-tel')&&t.value.trim()){var d=telDuzelt(t.value);if(d)t.value=d;}
+  if(t.hasAttribute('data-tel'))t.value=telYerel(t.value);
   if(t.hasAttribute('data-ek')){cur.ek.sabit[t.getAttribute('data-ek')].varmi=t.checked;cur.degisti=true;var okC=$('f-ok');if(okC)okC.hidden=true;}
   if(t.id==='f-menu'){cur.degisti=true;menuDoldur(t.value);}
   if(t.id==='f-tur'||t.id==='f-sozlesme-tarihi')cur.degisti=true;
@@ -2676,7 +2683,7 @@ function opsSatir(o,sinif){
   var sal=salonOf(o.salon),s=seansOf(o.seans);
   return '<li class="s-'+o.salon+(sinif?' '+sinif:'')+'"><button type="button" data-ops="'+esc(o.id)+'">'+
     '<b>'+esc(o.musteri)+'</b><span class="ob">'+opsKalanMetin(o)+'<br>'+fmtKisa(o.opsiyonBitis)+'</span>'+
-    '<span class="ok2">'+esc(sal.ad)+' · '+fmtKisa(o.tarih)+' '+GUN_KISA[dow(o.tarih)]+' · '+esc(s.ad)+(o.telefon?' · '+esc(o.telefon):'')+'</span></button></li>';
+    '<span class="ok2">'+esc(sal.ad)+' · '+fmtKisa(o.tarih)+' '+GUN_KISA[dow(o.tarih)]+' · '+esc(s.ad)+(o.telefon?' · '+esc(telGoster(o.telefon)):'')+'</span></button></li>';
 }
 function opsPanel(){
   cur=null;
@@ -2731,6 +2738,7 @@ function openOpsiyon(salon,tarih,seans){
       (r&&!ro?'<button type="button" class="btn primary" id="o-donustur">Satışa dönüştür</button>':'')+
     '</div></form>';
   show(h);
+  ogunIsaretle();
   if(r)fillMeta(r,id);
   if(!ro&&!r){var f=$('o-musteri');if(f)f.focus();}
 }
@@ -2741,7 +2749,7 @@ function opsKaydet(){
   $('f-err').hidden=true;
   var musteri=val('o-musteri'),tel=telDuzelt(val('o-telefon')),bitis=val('o-bitis'),kisi=parseN(val('o-kisi'));
   if(!musteri){fail('Müşteri adı soyadı boş bırakılamaz.');$('o-musteri').focus();return;}
-  if(!tel){fail('Müşteri telefonu 11 haneli olmalı. Örnek: 0535 123 45 67');$('o-telefon').focus();return;}
+  if(!tel){fail('Müşteri telefonu 10 haneli olmalı. Örnek: 535 123 45 67');$('o-telefon').focus();return;}
   if(!/^\d{4}-\d{2}-\d{2}$/.test(bitis)){fail('Opsiyon bitiş tarihini seçin.');$('o-bitis').focus();return;}
   if(bitis<todayStr()){fail('Opsiyon bitiş tarihi bugünden önce olamaz.');$('o-bitis').focus();return;}
   if(bitis>c.tarih){fail('Opsiyon, organizasyon gününden ('+fmtKisa(c.tarih)+') sonra bitemez.');$('o-bitis').focus();return;}
@@ -2807,6 +2815,52 @@ dlg.addEventListener('click',function(ev){
 });
 dlg.addEventListener('input',function(ev){if(cur&&cur.tip==='ops'&&ev.target&&/^o-/.test(ev.target.id||'')){cur.degisti=true;var ok=$('f-ok');if(ok)ok.hidden=true;}});
 dlg.addEventListener('change',function(ev){if(cur&&cur.tip==='ops'&&ev.target&&ev.target.id==='o-bitis')cur.degisti=true;});
+
+/* ---------- telefon alanları ----------
+   Kutunun başında sabit +90 durur; kutuya yalnızca rakam girer ve "535 668 79 80" biçimine kendiliğinden dizilir.
+   Kayıtta "+90 535 668 79 80" olarak saklanır; eski kayıtlardaki "0535 668 79 80" de aynı biçimde gösterilir. */
+function telRakam(v){
+  var d=String(v==null?'':v).replace(/\D/g,'');
+  d=d.replace(/^0+/,'');
+  if(d.length>10&&d.slice(0,2)==='90')d=d.slice(2);
+  d=d.replace(/^0+/,'');
+  return d.slice(0,10);
+}
+function telBicim(d){return [d.slice(0,3),d.slice(3,6),d.slice(6,8),d.slice(8,10)].filter(Boolean).join(' ');}
+function telYerel(v){return telBicim(telRakam(v));}
+function telDuzelt(v){var d=telRakam(v);return d.length===10?'+90 '+telBicim(d):null;}
+function telGoster(v){return telDuzelt(v)||String(v==null?'':v);}
+function telSar(kok){
+  [].forEach.call(kok.querySelectorAll('input[data-tel]'),function(i){
+    if(i.parentNode.classList.contains('telw'))return;
+    var w=document.createElement('div'),s=document.createElement('span');
+    w.className='telw';s.textContent='+90';s.setAttribute('aria-hidden','true');
+    i.parentNode.insertBefore(w,i);w.appendChild(s);w.appendChild(i);
+    i.value=telYerel(i.value);i.placeholder='5xx xxx xx xx';i.maxLength=24;
+  });
+}
+dlg.addEventListener('input',function(ev){
+  var t=ev.target;if(!t||!t.hasAttribute||!t.hasAttribute('data-tel'))return;
+  var once=t.value,yeni=telYerel(once);
+  if(yeni===once)return;
+  var pos=t.selectionStart,n=pos==null?10:telRakam(once.slice(0,pos)).length,i=0,k=0;
+  t.value=yeni;
+  /* imleç, önündeki rakam sayısı korunacak şekilde yerine konur */
+  while(i<yeni.length&&k<n){if(/\d/.test(yeni.charAt(i)))k++;i++;}
+  try{t.setSelectionRange(i,i);}catch(e){}
+});
+
+/* ---------- seçili süre düğmesi ---------- */
+function ogunIsaretle(){
+  var b=$('o-bitis');if(!b||!cur||cur.tip!=='ops')return;
+  [].forEach.call(dlg.querySelectorAll('[data-ogun]'),function(d){
+    var t=ileriGun(+d.getAttribute('data-ogun')),uygun=t<=cur.tarih,sec=uygun&&b.value===t;
+    d.disabled=!uygun;d.classList.toggle('sec',sec);d.setAttribute('aria-pressed',sec?'true':'false');
+  });
+}
+dlg.addEventListener('click',function(ev){var b=ev.target.closest('[data-ogun]');if(b)ogunIsaretle();});
+dlg.addEventListener('input',function(ev){if(ev.target&&ev.target.id==='o-bitis')ogunIsaretle();});
+dlg.addEventListener('change',function(ev){if(ev.target&&ev.target.id==='o-bitis')ogunIsaretle();});
 
 /* ---------- başlangıç ---------- */
 renkYaz();
