@@ -455,6 +455,42 @@ textarea.ain.oto{field-sizing:content;min-height:84px;max-height:70vh;line-heigh
 .nbtn:disabled{opacity:.35;cursor:default}
 .nbtn:disabled:hover{border-color:var(--line-strong)}
 
+/* Opsiyon: takvimde kesikli çerçeveli, salon renginin açık tonu; bitişine 1 gün kalan kırmızı çerçeveli */
+.slot.ops{background:color-mix(in srgb,var(--sc) 16%,transparent);border:1px dashed var(--sc);color:var(--ink);font-weight:600}
+.slot.ops:hover:not(:disabled){background:color-mix(in srgb,var(--sc) 26%,transparent)}
+.slot.ops.yakin{border:1px dashed var(--danger);box-shadow:inset 3px 0 0 var(--danger)}
+.slot .opt{flex:none;font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.8}
+.lg.ops{background:color-mix(in srgb,var(--sc,var(--gold-bright)) 16%,transparent);border:1px dashed var(--sc,var(--gold-bright))}
+.mk.opv{border:1px dashed var(--sc,var(--ink))}
+.seanslar li.ops{border-style:dashed;border-color:var(--sc)}
+.seanslar .ikili{display:flex;flex-wrap:wrap;gap:8px}
+/* Zil */
+.zil{position:relative;margin-left:auto;gap:7px}
+.zil svg{width:16px;height:16px}
+.zil .zs{min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--line-strong);color:var(--ink);font-size:11px;font-weight:700;line-height:18px;text-align:center;font-variant-numeric:tabular-nums}
+.zil.var .zs{background:var(--gold-bright);color:#fff}
+.zil.uyari{border-color:var(--danger);color:var(--danger);background:var(--danger-soft)}
+.zil.uyari .zs{background:var(--danger);color:#fff}
+@media (prefers-reduced-motion:no-preference){.zil.uyari svg{animation:zilsalla 1.6s ease-in-out infinite;transform-origin:50% 10%}}
+@keyframes zilsalla{0%,60%,100%{transform:rotate(0)}10%,30%{transform:rotate(-14deg)}20%,40%{transform:rotate(14deg)}50%{transform:rotate(-6deg)}}
+.zil + .nav{margin-left:0}
+.opl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.opl button{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;width:100%;padding:10px 12px;border:1px solid var(--line);border-left:4px solid var(--sc,var(--line-strong));border-radius:6px;background:transparent;text-align:left}
+.opl button:hover{border-color:var(--gold-bright);border-left-color:var(--sc,var(--gold-bright))}
+.opl b{font-family:var(--f-serif);font-weight:500;font-size:17px;overflow-wrap:anywhere}
+.opl .ok2{font-size:12px;color:var(--muted);grid-column:1}
+.opl .ob{grid-row:1 / span 2;grid-column:2;align-self:center;text-align:right;font-size:12px;font-weight:600;white-space:nowrap}
+.opl li.yakin button{border-color:var(--danger);background:var(--danger-soft)}
+.opl li.yakin .ob{color:var(--danger)}
+.opl li.doldu button{opacity:.75;border-style:dashed}
+.opbas{margin:6px 0 0;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.opbilgi{margin:0;padding:10px 12px;border-left:3px solid var(--gold-bright);background:var(--gold-soft);font-size:13px}
+.opbilgi.yakin,.opbilgi.doldu{border-left-color:var(--danger);background:var(--danger-soft)}
+.ohizli{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.ohizli button{height:28px;padding:0 10px;border:1px solid var(--line-strong);border-radius:14px;background:transparent;font-size:12px;font-weight:600}
+.ohizli button:hover{border-color:var(--gold-bright);color:var(--gold)}
+.opsgec{margin:0;font-size:13px;color:var(--muted)}
+
 @media (max-width:900px){
   .krow{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
 }
@@ -533,6 +569,9 @@ textarea.ain.oto{field-sizing:content;min-height:84px;max-height:70vh;line-heigh
   <symbol id="i-ajanda" viewBox="0 0 16 16">
     <path d="M4.5 2.5h8v11h-8zM7 5.5h3M7 8h3M7 10.5h2M3 5h2.5M3 8h2.5M3 11h2.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
   </symbol>
+  <symbol id="i-zil" viewBox="0 0 16 16">
+    <path d="M8 2.2a3.6 3.6 0 0 0-3.6 3.6c0 3.1-1.4 4.2-1.4 4.2h10s-1.4-1.1-1.4-4.2A3.6 3.6 0 0 0 8 2.2zM6.6 12.4a1.5 1.5 0 0 0 2.8 0" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
   <symbol id="i-set" viewBox="0 0 16 16">
     <path d="M2 4.5h12M2 11.5h12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
     <circle cx="5.5" cy="4.5" r="2" fill="currentColor"/>
@@ -556,6 +595,7 @@ textarea.ain.oto{field-sizing:content;min-height:84px;max-height:70vh;line-heigh
   <main class="main">
     <div class="bar">
       <p class="vt" id="vt">Takvim</p>
+      <button type="button" class="nbtn zil" id="zil" hidden aria-label="Opsiyonlar"><svg class="ic" aria-hidden="true"><use href="#i-zil"/></svg><span>Opsiyonlar</span><span class="zs" id="zil-say">0</span></button>
       <div class="nav" id="nav">
         <button type="button" class="nbtn arrow" id="prev" aria-label="Önceki">&#8249;</button>
         <select id="sel-ay" aria-label="Ay"></select>
@@ -856,17 +896,17 @@ function renderNav(){
     for(i=0;i<12;i++)h+='<option value="'+(i+1)+'">'+AYLAR[i]+'</option>';
     ay.innerHTML=h;
   }
-  var enE=enErkenAy(),buYil=new Date().getFullYear();
-  var y0=enE?buYil:Math.min(now.getFullYear()-1,m.y),y1=Math.max(now.getFullYear()+4,m.y);
+  var enE=enErkenAy(),ilkYil=+enE.slice(0,4);
+  var y0=ilkYil,y1=Math.max(now.getFullYear()+4,m.y);
   if(!yl.options.length||+yl.options[0].value!==y0||+yl.options[yl.options.length-1].value!==y1){
     h='';for(i=y0;i<=y1;i++)h+='<option value="'+i+'">'+i+'</option>';
     yl.innerHTML=h;
   }
   ay.value=m.m;yl.value=m.y;
   ay.hidden=ym;
-  /* Yönetici dışındakiler içinde bulunulan aydan geriye gidemez */
-  for(i=0;i<ay.options.length;i++)ay.options[i].disabled=!!enE&&m.y===buYil&&(i+1)<+enE.slice(5);
-  $('prev').disabled=!!enE&&(ym?m.y<=buYil:st.ym<=enE);
+  /* Takvim Ekim 2026'dan başlar; yönetici dışındakiler içinde bulunulan aydan geriye de gidemez */
+  for(i=0;i<ay.options.length;i++)ay.options[i].disabled=m.y===ilkYil&&(i+1)<+enE.slice(5);
+  $('prev').disabled=ym?m.y<=ilkYil:st.ym<=enE;
   $('prev').setAttribute('aria-label',ym?'Önceki yıl':'Önceki ay');
   $('next').setAttribute('aria-label',ym?'Sonraki yıl':'Sonraki ay');
 }
@@ -883,15 +923,17 @@ function slotBtn(salon,tarih,seans,mini){
   var r=st.recs.get(slotId(salon,tarih,seans)),s=seansOf(seans),gec=gecmis(tarih);
   if(gec&&!st.admin)return '';
   var dis=!monthReady(tarih.slice(0,7))||(!r&&(!st.canWrite||gec));
-  var lbl=fmtUzun(tarih)+', '+salonOf(salon).ad+', '+s.ad+', '+(r?'dolu: '+r.musteri:'boş');
-  return '<button type="button" class="slot '+(r?'full':'empty')+(mini?' mini s-'+salon:'')+'" data-salon="'+salon+'" data-date="'+tarih+'" data-seans="'+seans+'"'+(dis?' disabled':'')+
-    ' aria-label="'+esc(lbl)+'" title="'+esc(s.ad+' · '+(r?r.musteri:'Boş'))+'">'+icon(s.ic)+'<span class="st">'+(r?esc(r.musteri):'Boş')+'</span></button>';
+  var op=opsMu(r);
+  var lbl=fmtUzun(tarih)+', '+salonOf(salon).ad+', '+s.ad+', '+(r?(op?'opsiyon: ':'dolu: ')+r.musteri:'boş');
+  return '<button type="button" class="slot '+(r?(op?'ops'+(opsYakin(r)?' yakin':''):'full'):'empty')+(mini?' mini s-'+salon:'')+'" data-salon="'+salon+'" data-date="'+tarih+'" data-seans="'+seans+'"'+(dis?' disabled':'')+
+    ' aria-label="'+esc(lbl)+'" title="'+esc(s.ad+' · '+(r?(op?'Opsiyon ('+fmtKisa(r.opsiyonBitis)+' sonuna kadar): ':'')+r.musteri:'Boş'))+'">'+icon(s.ic)+(op?'<span class="opt">Ops</span>':'')+'<span class="st">'+(r?esc(r.musteri):'Boş')+'</span></button>';
 }
 
 function counts(){
   var c={},t=0;salonlar().forEach(function(s){c[s.id]=0;});
-  st.recs.forEach(function(r){if(c[r.salon]!==undefined&&inPeriod(r)){c[r.salon]++;t++;}});
-  c.tum=t;return c;
+  var o=0;
+  st.recs.forEach(function(r){if(c[r.salon]!==undefined&&inPeriod(r)){if(opsMu(r)){if(st.salon==='tum'||r.salon===st.salon)o++;}else{c[r.salon]++;t++;}}});
+  c.tum=t;c.ops=o;return c;
 }
 
 function renderTabs(){
@@ -914,7 +956,7 @@ function renderHead(){
   if(st.conn==='wait'||(st.conn==='ok'&&!periodReady()))d.textContent='Kayıtlar yükleniyor…';
   else if(periodReady()){
     var top=tum?yilGun(m.y)*2*salonlar().length:m.days*2,dolu=tum?c.tum:c[st.salon];
-    d.textContent=dolu+' dolu · '+(top-dolu)+' boş seans';
+    d.textContent=dolu+' dolu · '+(c.ops?c.ops+' opsiyon · ':'')+(top-dolu-c.ops)+' boş seans';
   }else d.textContent='';
   var ym=yogunMetin(),yogun=ym?'<span><i class="lg we"></i>'+esc(ym)+': yoğun günler</span>':'';
   if(tum){
@@ -924,7 +966,7 @@ function renderHead(){
   }else{
     $('legend').className='legend s-'+st.salon;
     $('legend').innerHTML='<span>'+icon('i-sun')+esc(g.ad)+' seansı</span><span>'+icon('i-moon')+esc(a.ad)+' seansı</span>'+
-      '<span><i class="lg"></i>Boş: tıklayıp sözleşme yazın</span><span><i class="lg full"></i>Dolu: yalnızca düzenlenir</span>'+
+      '<span><i class="lg"></i>Boş: tıklayıp sözleşme yazın</span><span><i class="lg full"></i>Dolu: yalnızca düzenlenir</span><span><i class="lg ops"></i>Opsiyon: süreli tutuluyor</span>'+
       '<span>'+xIcon+'Sol alt köşe: '+esc(g.ad.toLocaleLowerCase('tr'))+' dolu · sağ alt köşe: '+esc(a.ad.toLocaleLowerCase('tr'))+' dolu</span>'+yogun;
   }
 }
@@ -933,17 +975,18 @@ function calYear(){
   var y=yil(),today=todayStr(),buAy=today.slice(0,7),S=salonlar(),h='<div class="yil">',mo,i,d;
   for(mo=1;mo<=12;mo++){
     var ym=y+'-'+pad(mo),days=new Date(y,mo,0).getDate(),first=(new Date(y,mo-1,1).getDay()+6)%7,ok=monthReady(ym),cnt=0,cells='';
+    if(ym<enErkenAy())continue;
     for(i=0;i<first;i++)cells+='<span class="yd blank"></span>';
     for(d=1;d<=days;d++){
-      var t=ymd(y,mo,d),w=(first+d-1)%7,marks='',n=0,gec=t<today,kapali=gec&&!st.admin;
+      var t=ymd(y,mo,d),w=(first+d-1)%7,marks='',n=0,opn=0,gec=t<today,kapali=gec&&!st.admin;
       for(i=0;!kapali&&i<S.length;i++){
-        var s=S[i],g=st.recs.has(slotId(s.id,t,'gunduz')),a=st.recs.has(slotId(s.id,t,'aksam'));
-        if(g)n++;if(a)n++;
-        marks+='<i class="mk'+(g&&a?' both':g?' g':a?' a':'')+' s-'+s.id+'"></i>';
+        var s=S[i],rg=st.recs.get(slotId(s.id,t,'gunduz')),ra=st.recs.get(slotId(s.id,t,'aksam')),g=!!rg&&!opsMu(rg),a=!!ra&&!opsMu(ra),ov=opsMu(rg)||opsMu(ra);
+        if(g)n++;if(a)n++;if(ov)opn++;
+        marks+='<i class="mk'+(g&&a?' both':g?' g':a?' a':'')+(ov?' opv':'')+' s-'+s.id+'"></i>';
       }
       cnt+=n;
-      cells+='<button type="button" class="yd'+(isYogun(w)?' we':'')+(n?' has':'')+(t===today?' today':'')+(gec?' gecmis':'')+'" data-date="'+t+'"'+(ok&&!kapali?'':' disabled')+
-        ' aria-label="'+esc(fmtUzun(t)+', '+(n?n+' dolu seans':'boş'))+'"><span class="yn">'+d+'</span><span class="yb"><span class="mks">'+marks+'</span><span class="yc">'+(n||'')+'</span></span></button>';
+      cells+='<button type="button" class="yd'+(isYogun(w)?' we':'')+(n||opn?' has':'')+(t===today?' today':'')+(gec?' gecmis':'')+'" data-date="'+t+'"'+(ok&&!kapali?'':' disabled')+
+        ' aria-label="'+esc(fmtUzun(t)+', '+(n?n+' dolu seans':'boş')+(opn?', opsiyon var':''))+'"><span class="yn">'+d+'</span><span class="yb"><span class="mks">'+marks+'</span><span class="yc">'+(n||'')+'</span></span></button>';
     }
     var wk='';for(i=0;i<7;i++)wk+='<span'+(isYogun(i)?' class="we"':'')+'>'+GUN_2[i]+'</span>';
     h+='<section class="ay'+(ym===buAy?' now':'')+'"><div class="ayh"><h3>'+AYLAR[mo-1]+'</h3><span class="cnt'+(cnt?' var':'')+'">'+(ok?(cnt?cnt+' dolu seans':'boş'):'…')+'</span></div>'+
@@ -963,7 +1006,7 @@ function calMonth(){
     h+='<div class="day'+(isYogun(w)?' we':'')+(t===today?' today':'')+(t<today?' gecmis':'')+(kapali?' kapali':'')+'" data-date="'+t+'">'+
        '<button type="button" class="dnum"'+(kapali?' disabled':'')+' aria-label="'+esc(fmtUzun(t))+(kapali?', geçmiş gün':', günün seanslarını aç')+'">'+d+'</button>'+
        slotBtn(st.salon,t,'gunduz',false)+slotBtn(st.salon,t,'aksam',false)+
-       (kapali?'':'<span class="xs" aria-hidden="true"><span>'+(st.recs.has(slotId(st.salon,t,'gunduz'))?xIcon:'')+'</span><span>'+(st.recs.has(slotId(st.salon,t,'aksam'))?xIcon:'')+'</span></span>')+'</div>';
+       (kapali?'':'<span class="xs" aria-hidden="true"><span>'+(sozVar(slotId(st.salon,t,'gunduz'))?xIcon:'')+'</span><span>'+(sozVar(slotId(st.salon,t,'aksam'))?xIcon:'')+'</span></span>')+'</div>';
   }
   var tail=(7-(m.first+m.days)%7)%7;
   for(i=0;i<tail;i++)h+='<div class="day blank"></div>';
@@ -976,7 +1019,7 @@ function renderList(){
   var el=$('liste'),rows=[],tum=st.salon==='tum';
   $('liste-baslik').textContent=tum?yil()+' sözleşmeleri':'Bu ayın sözleşmeleri';
   var bugunL=todayStr();
-  st.recs.forEach(function(r){if(inPeriod(r)&&(tum||r.salon===st.salon)&&(st.admin||r.tarih>=bugunL))rows.push(r);});
+  st.recs.forEach(function(r){if(!opsMu(r)&&inPeriod(r)&&(tum||r.salon===st.salon)&&(st.admin||r.tarih>=bugunL))rows.push(r);});
   if(!periodReady()){el.innerHTML='<p class="bos">'+(st.conn==='none'||st.conn==='err'?'Kayıtlara ulaşılamadığı için liste gösterilemiyor.':'Kayıtlar yükleniyor…')+'</p>';return;}
   if(!rows.length){el.innerHTML='<p class="bos">'+(tum?'Bu yıl için kayıtlı sözleşme yok. Takvimde bir güne tıklayıp boş bir seansa ilk sözleşmeyi yazın.':'Bu ay için kayıtlı sözleşme yok. Takvimde boş bir seansa tıklayarak ilk sözleşmeyi yazın.')+'</p>';return;}
   var ord={};salonlar().forEach(function(s,i){ord[s.id]=i;});
@@ -1019,7 +1062,7 @@ function renderStats(){
   S.forEach(function(s){per[s.id]={n:0,yn:0,bedel:0,kalan:0};});
   for(i=0;i<12;i++)ay.push({n:0,bedel:0});
   st.recs.forEach(function(r){
-    if(r.tarih.slice(0,4)!==String(y)||!per[r.salon])return;
+    if(opsMu(r)||r.tarih.slice(0,4)!==String(y)||!per[r.salon])return;
     var yo=isYogun(dow(r.tarih)),b=r.bedel||0,k=r.kapora||0,kl=r.bedel!=null?b-k:0,p=per[r.salon],a=ay[+r.tarih.slice(5,7)-1];
     T.n++;T.bedel+=b;T.kapora+=k;T.kalan+=kl;p.n++;p.bedel+=b;p.kalan+=kl;a.n++;a.bedel+=b;
     if(yo){T.yn++;p.yn++;}
@@ -1325,7 +1368,7 @@ function render(){
   if(st.view==='ajanda'&&!ajErisim())st.view='takvim';
   if(BOLUMLER.some(function(b){return b.id===st.view&&b.yonetici;})&&!st.admin)st.view='takvim';
   var enR=enErkenAy();if(enR&&st.ym<enR){st.ym=enR;subscribe();}
-  renderMenu();renderNav();renderBanner();
+  renderMenu();renderNav();renderBanner();renderZil();
   BOLUMLER.forEach(function(b){if(b.id===st.view)$('vt').textContent=b.ad;$('v-'+b.id).hidden=b.id!==st.view;});
   if(st.view==='takvim'){renderTabs();renderHead();renderCal();renderList();}
   else if(st.view==='istatistik')renderStats();
@@ -1347,6 +1390,7 @@ function setView(v){
 function satirdanKayit(x){
   return {salon:x.salon,tarih:x.tarih,seans:x.seans,musteri:x.musteri,telefon:x.telefon||'',tur:x.tur||'',
     sozlesmeTarihi:x.sozlesme_tarihi||'',kisi:x.kisi,menu:x.menu||'',kisiBasi:x.kisi_basi,bedel:x.bedel,kapora:x.kapora,not:x.notlar||'',detay:(x.detay&&typeof x.detay==='object')?x.detay:{},
+    durum:x.durum==='opsiyon'?'opsiyon':'sozlesme',opsiyonBitis:x.opsiyon_bitis||'',
     olusturan:x.olusturan,olusturma:x.olusturma,guncelleyen:x.guncelleyen,guncelleme:x.guncelleme};
 }
 
@@ -1366,12 +1410,17 @@ function tumSatirlar(y){
 var yukSira=0,sonImza='';
 function yilYukle(){
   if(!sb||st.oturum!=='ok')return;
+  opsYukle();
   var y=yil(),sira=++yukSira;
   tumSatirlar(y).then(function(rows){
     if(sira!==yukSira||y!==yil()||st.oturum!=='ok')return;
-    var m=new Map(),imza=y+':';
+    var bugunY=todayStr(),m=new Map(),imza=y+':'+bugunY+':';
     rows.forEach(function(x){
-      if(x&&x.musteri&&KOD[x.salon]&&SEANS_SABIT[x.seans]&&typeof x.tarih==='string'){m.set(x.id,satirdanKayit(x));imza+=x.id+'@'+x.guncelleme+';';}
+      if(x&&x.musteri&&KOD[x.salon]&&SEANS_SABIT[x.seans]&&typeof x.tarih==='string'){
+        imza+=x.id+'@'+x.guncelleme+';';
+        if(x.durum==='opsiyon'&&!(x.opsiyon_bitis>=bugunY))return;
+        m.set(x.id,satirdanKayit(x));
+      }
     });
     if(imza===sonImza&&st.yukluYil===y&&st.conn==='ok')return;
     sonImza=imza;st.recs=m;st.yukluYil=y;st.conn='ok';render();
@@ -1447,7 +1496,7 @@ function hataMetni(e){
   if(/rate limit/i.test(m)||/rate_limit/.test(c))return 'Çok fazla deneme yapıldı. Birkaç dakika sonra tekrar deneyin.';
   if(c==='same_password')return 'Yeni şifre eskisiyle aynı olamaz.';
   if(c==='42501'||/row-level security|permission denied/i.test(m))return 'Bu işlem için yetkiniz yok.';
-  if(/yönetici|Şifre en az|Geçmiş tarihe/.test(m))return m;
+  if(/yönetici|Şifre en az|Geçmiş tarihe|Opsiyon bitiş/.test(m))return m;
   if(/fetch|network/i.test(m))return 'Sunucuya ulaşılamadı. İnternet bağlantınızı kontrol edin.';
   return 'İşlem yapılamadı.'+(m?' ('+m+')':'');
 }
@@ -1460,7 +1509,7 @@ function oturumDegisti(session){
     canliDurdur();hide();
     st.me=null;st.admin=false;st.canWrite=false;st.kullanicilar=[];st.recs=new Map();st.yukluYil=null;sonImza='';st.view='takvim';dirty=false;
     /* Çıkışta ekrandaki kayıtlar da temizlenir; sonraki kullanıcı öncekinin gördüğünü görmez. */
-    ['kul','ayar','ist','cal','liste','salons','aj'].forEach(function(i){$(i).innerHTML='';});kulImza='';draft=clone(cfg);$('toast').hidden=true;clearTimeout(ajT);aj=ajYeni();iptal={yil:null,rows:[],yukleniyor:false,hata:''};
+    ['kul','ayar','ist','cal','liste','salons','aj'].forEach(function(i){$(i).innerHTML='';});kulImza='';draft=clone(cfg);$('toast').hidden=true;clearTimeout(ajT);aj=ajYeni();iptal={yil:null,rows:[],yukleniyor:false,hata:''};ops=[];renderZil();
     sb.rpc('kurulum_durumu').then(function(r){
       if(benId)return;
       st.oturum=r.error?(/fetch|network/i.test(r.error.message||'')?'hata':'giris'):(r.data===false?'ilk':'giris');
@@ -1575,10 +1624,13 @@ function openDay(tarih){
   var h='<div class="dbody s-'+salon+'">'+dhead(esc(salonOf(salon).ad)+' salonu',tarih)+'<ul class="seanslar">';
   ['gunduz','aksam'].forEach(function(k){
     var r=st.recs.get(slotId(salon,tarih,k)),s=seansOf(k),gec=gecmis(tarih),dis=!ok||(!r&&(!st.canWrite||gec));
-    h+='<li class="'+(r?'full':'empty')+'"><span class="sn">'+icon(s.ic)+esc(s.ad)+'</span><span class="sd">'+
-       (r?'<b>'+esc(r.musteri)+'</b><span>'+esc([r.tur,r.kisi!=null?fmtN(r.kisi)+' kişi':'',r.menu].filter(Boolean).join(' · ')||'Dolu')+'</span>'
+    var op=opsMu(r);
+    h+='<li class="'+(r?(op?'ops':'full'):'empty')+'"><span class="sn">'+icon(s.ic)+esc(s.ad)+'</span><span class="sd">'+
+       (op?'<b>'+esc(r.musteri)+'</b><span>Opsiyon · '+fmtKisa(r.opsiyonBitis)+' sonuna kadar · '+opsKalanMetin(r).toLocaleLowerCase('tr')+'</span>'
+       :r?'<b>'+esc(r.musteri)+'</b><span>'+esc([r.tur,r.kisi!=null?fmtN(r.kisi)+' kişi':'',r.menu].filter(Boolean).join(' · ')||'Dolu')+'</span>'
          :'<b>Boş</b><span>'+(gec?'Geçmiş tarihe sözleşme yazılamaz':'Bu seansa sözleşme yazılabilir')+'</span>')+
-       '</span><button type="button" class="btn'+(r?'':' primary')+'" data-open="'+k+'" data-date="'+tarih+'"'+(dis?' disabled':'')+'>'+(r?'Düzenle':'Sözleşme yaz')+'</button></li>';
+       '</span><span class="ikili">'+(!r&&!dis?'<button type="button" class="btn" data-opsyeni="'+k+'" data-date="'+tarih+'">Opsiyon koy</button>':'')+
+       '<button type="button" class="btn'+(r?'':' primary')+'" data-open="'+k+'" data-date="'+tarih+'"'+(dis&&!op?' disabled':'')+'>'+(op?'Opsiyonu aç':r?'Düzenle':'Sözleşme yaz')+'</button></span></li>';
   });
   show(h+'</ul></div>');
 }
@@ -1634,27 +1686,32 @@ function akisCiz(){
   el.innerHTML=h;
 }
 
-function openForm(salon,tarih,seans,msg){
-  var id=slotId(salon,tarih,seans),r=st.recs.get(id)||null,s=seansOf(seans),sal=salonOf(salon);
-  if(gecmis(tarih)&&(!st.admin||!r)){if(!r)toast('Geçmiş tarihe sözleşme yazılamaz.');return;}
+function openForm(salon,tarih,seans,msg,sec){
+  var id=slotId(salon,tarih,seans),r=st.recs.get(id)||(sec&&sec.donustur?opsBul(id):null)||null,s=seansOf(seans),sal=salonOf(salon);
+  /* Seansta opsiyon varsa opsiyon penceresi açılır; "satışa dönüştür" denince bu form opsiyonun bilgileriyle açılır. */
+  var don=opsMu(r);
+  if(don&&!(sec&&sec.donustur)){openOpsiyon(salon,tarih,seans);return;}
+  if(don&&!st.canWrite)return;
+  if(gecmis(tarih)&&(!st.admin||!r||don)){if(!r||don)toast('Geçmiş tarihe sözleşme yazılamaz.');return;}
   var ro=!st.canWrite,dis=ro?' disabled':'';
   var autoB=!!(r&&r.kisi&&r.kisiBasi&&r.bedel===r.kisi*r.kisiBasi);
   var v=r||{},dt=(r&&r.detay)||{},mdt=menuDetay(v.menu||'',dt);
-  cur={salon:salon,tarih:tarih,seans:seans,id:id,mode:r?'edit':'new',rec:r,bedelManual:!!(r&&r.bedel!=null&&!autoB),busy:false,degisti:false,
+  cur={salon:salon,tarih:tarih,seans:seans,id:id,mode:r?'edit':'new',rec:don?null:r,don:don,bedelManual:!!(r&&r.bedel!=null&&!autoB),busy:false,degisti:false,
        akis:Array.isArray(dt.akis)?dt.akis.map(function(a){return {saat:String(a.saat||''),ad:String(a.ad||'')};}):[],
        anaOto:!dt.anaYemek||dt.anaYemek===v.menu,menuAd:v.menu||''};
   cur.ek=ekOku(dt);
   function inp(idv,lbl,val,extra){return '<div class="fld'+((extra&&extra.wide)?' wide':'')+'"><label for="'+idv+'">'+lbl+'</label><input id="'+idv+'" type="'+((extra&&extra.type)||'text')+'" autocomplete="off" maxlength="'+((extra&&extra.max)||120)+'"'+((extra&&extra.attr)||'')+' value="'+esc(val)+'"'+dis+'>'+((extra&&extra.hint)||'')+'</div>';}
   var tel=' inputmode="tel" placeholder="05xx xxx xx xx" data-tel';
   var h='<form id="frm" class="dbody s-'+salon+'" novalidate>'+
-    dhead(r?(ro?'Sözleşme':'Sözleşmeyi düzenle'):'Yeni sözleşme',tarih)+
+    dhead(don?'Opsiyonu satışa dönüştür':r?(ro?'Sözleşme':'Sözleşmeyi düzenle'):'Yeni sözleşme',tarih)+
     '<div class="ctx"><span class="chip salon">'+esc(sal.ad)+'</span><span class="chip">'+icon(s.ic)+esc(s.ad)+' seansı'+(s.saat?' · '+esc(s.saat):'')+'</span><span class="chip">Kayıt no '+kayitNo(salon,tarih,seans)+'</span></div>'+
-    (r&&!ro?'<p class="kilit">'+esc(msg||'Bu seans dolu. Yeni sözleşme alınmaz; yalnızca bu sözleşme düzenlenir.')+'</p>':'')+
+    (r&&!ro?'<p class="kilit">'+esc(msg||(don?'Opsiyon satışa dönüştürülüyor. Bilgileri tamamlayıp kaydedin; kaydedince seans sözleşmeli olur, opsiyon kalkar.':'Bu seans dolu. Yeni sözleşme alınmaz; yalnızca bu sözleşme düzenlenir.'))+'</p>':'')+
+    (!r&&!ro?'<p class="opsgec">Müşteri henüz karar vermediyse: <button type="button" class="lnk" id="f-ops-gec">bu seansa opsiyon koy</button></p>':'')+
 
     '<h3 class="fsec">Müşteri</h3><div class="fgrid">'+
       inp('f-musteri','Müşteri adı soyadı',v.musteri,{wide:true})+
       inp('f-telefon','Müşteri telefonu',v.telefon,{type:'tel',max:20,attr:tel})+
-      '<div class="fld"><label for="f-tur">Organizasyon türü</label><select id="f-tur"'+dis+'>'+opts(cfg.turler,v.tur||(r?'':cfg.turler[0]),'Seçilmedi')+'</select></div>'+
+      '<div class="fld"><label for="f-tur">Organizasyon türü</label><select id="f-tur"'+dis+'>'+opts(cfg.turler,v.tur||(r&&!don?'':cfg.turler[0]),'Seçilmedi')+'</select></div>'+
     '</div>'+
 
     '<h3 class="fsec">Gelin ve damat</h3><div class="fgrid">'+
@@ -1665,7 +1722,7 @@ function openForm(salon,tarih,seans,msg){
     '</div>'+
 
     '<h3 class="fsec">Organizasyon</h3><div class="fgrid">'+
-      '<div class="fld"><label for="f-sozlesme-tarihi">Sözleşme imza tarihi</label><input id="f-sozlesme-tarihi" type="date" value="'+esc(v.sozlesmeTarihi||(r?'':todayStr()))+'"'+dis+'></div>'+
+      '<div class="fld"><label for="f-sozlesme-tarihi">Sözleşme imza tarihi</label><input id="f-sozlesme-tarihi" type="date" value="'+esc(v.sozlesmeTarihi||(r&&!don?'':todayStr()))+'"'+dis+'></div>'+
       '<div class="fld"><label for="f-kisi">Kişi sayısı</label><input id="f-kisi" class="money" type="text" inputmode="numeric" autocomplete="off" maxlength="6" value="'+(v.kisi!=null?fmtN(v.kisi):'')+'"'+dis+'><span class="hint bad" id="f-kisi-uyari" hidden></span></div>'+
     '</div>'+
 
@@ -1696,21 +1753,21 @@ function openForm(salon,tarih,seans,msg){
     '<h3 class="fsec">Özel istekler ve notlar</h3>'+
     '<div class="fld"><textarea id="f-not" maxlength="2000" aria-label="Özel istekler ve notlar"'+dis+'>'+esc(v.not)+'</textarea></div>'+
     (cfg.dipNot?'<p class="fine">'+esc(cfg.dipNot)+'</p>':'')+
-    (r&&st.admin?'<div class="iptalk" id="f-iptal-kutu" hidden><p><b>Bu sözleşme iptal edilecek.</b> Seans boşalır ve yeni sözleşme alınabilir. İptal kaydı İstatistik bölümünde saklanır; işlem geri alınamaz.</p>'+
+    (r&&!don&&st.admin?'<div class="iptalk" id="f-iptal-kutu" hidden><p><b>Bu sözleşme iptal edilecek.</b> Seans boşalır ve yeni sözleşme alınabilir. İptal kaydı İstatistik bölümünde saklanır; işlem geri alınamaz.</p>'+
       '<div class="fld"><label for="f-iptal-neden">İptal nedeni (isteğe bağlı)</label><input id="f-iptal-neden" type="text" maxlength="200" autocomplete="off"></div>'+
       '<div class="iptalb"><button type="button" class="btn" id="f-iptal-vazgec">Vazgeç</button><button type="button" class="btn tehlike dolu" id="f-iptal-onay">Evet, sözleşmeyi iptal et</button></div></div>':'')+
     '<p class="err" id="f-err" hidden></p>'+
     '<div class="dfoot"><span class="meta" id="f-meta"></span><span class="kok" id="f-ok" role="status" hidden>✓ Kaydedildi</span>'+
-      (r&&st.admin?'<button type="button" class="btn tehlike" id="f-iptal">Sözleşmeyi iptal et</button>':'')+
-      (r?'<button type="button" class="btn" id="f-yazdir">Sözleşmeyi yazdır / PDF</button>':'')+
+      (r&&!don&&st.admin?'<button type="button" class="btn tehlike" id="f-iptal">Sözleşmeyi iptal et</button>':'')+
+      (r&&!don?'<button type="button" class="btn" id="f-yazdir">Sözleşmeyi yazdır / PDF</button>':'')+
       '<button type="button" class="btn" data-close>'+(ro?'Kapat':'Vazgeç')+'</button>'+
-      (ro?'':'<button type="submit" class="btn primary" id="f-kaydet">'+(r?'Değişiklikleri kaydet':'Sözleşmeyi kaydet')+'</button>')+
+      (ro?'':'<button type="submit" class="btn primary" id="f-kaydet">'+(don?'Satışa dönüştür ve kaydet':r?'Değişiklikleri kaydet':'Sözleşmeyi kaydet')+'</button>')+
     '</div></form>';
   show(h);
   akisCiz();
   ekCiz();
   ozet();
-  if(r)fillMeta(r,id);
+  if(r&&!don)fillMeta(r,id);
   if(!ro&&!r){var f=$('f-musteri');if(f)f.focus();}
 }
 
@@ -1754,7 +1811,7 @@ function save(){
   if(c.ek.diger.some(function(d){return !String(d.ad||'').trim()&&String(d.detay||'').trim();})){fail('Ek hizmetin adını yazın.');return;}
   detay.ekHizmetler=ekYaz(c.ek);
   var alan={musteri:musteri,telefon:tel,tur:val('f-tur'),sozlesme_tarihi:val('f-sozlesme-tarihi')||null,
-    kisi:kisi,menu:val('f-menu'),kisi_basi:kisiBasi,bedel:bedel,kapora:kapora,notlar:val('f-not'),detay:detay};
+    kisi:kisi,menu:val('f-menu'),kisi_basi:kisiBasi,bedel:bedel,kapora:kapora,notlar:val('f-not'),detay:detay,durum:'sozlesme',opsiyon_bitis:null};
   var btn=$('f-kaydet'),eski=btn.textContent;
   c.busy=true;btn.disabled=true;btn.textContent='Kaydediliyor…';
   function done(){c.busy=false;if($('f-kaydet')){btn.disabled=false;btn.textContent=eski;}}
@@ -1763,7 +1820,9 @@ function save(){
     alan.id=c.id;alan.salon=c.salon;alan.tarih=c.tarih;alan.seans=c.seans;
     p=sb.from('sozlesmeler').insert(alan).select().single();
   }else{
-    p=sb.from('sozlesmeler').update(alan).eq('id',c.id).select().single();
+    var q=sb.from('sozlesmeler').update(alan).eq('id',c.id);
+    if(c.don)q=q.eq('durum','opsiyon');
+    p=q.select().single();
   }
   p.then(function(r){
     if(r.error){
@@ -1775,15 +1834,17 @@ function save(){
         });
       }
       done();
-      if(r.error.code==='PGRST116')fail('Kayıt kabul edilmedi. Bu hesabın sözleşme yazma yetkisi olmayabilir.');
-      else if(r.error.code==='PGRST204'||/detay/.test(r.error.message||''))fail('Veritabanı henüz güncellenmemiş: "detay" alanı eksik. Yöneticinize haber verin.');
+      if(r.error.code==='PGRST116')fail(c.don?'Opsiyon bulunamadı; kaldırılmış ya da seans başka bir kayda verilmiş olabilir. Pencereyi kapatıp takvime bakın.':'Kayıt kabul edilmedi. Bu hesabın sözleşme yazma yetkisi olmayabilir.');
+      else if(r.error.code==='PGRST204'||/detay|durum|opsiyon_bitis/.test(r.error.message||''))fail('Veritabanı henüz güncellenmemiş: yeni alanlar eksik. Yöneticinize haber verin.');
       else fail(hataMetni(r.error));
       return;
     }
     putLocal(c.id,satirdanKayit(r.data));
+    ops=ops.filter(function(o){return o.id!==c.id;});renderZil();opsYukle();
+    if(c.don){if(r.data.tarih.slice(0,4)!==String(st.yukluYil)){hide();toast('Opsiyon satışa dönüştürüldü.');return;}}
     /* Kayıttan sonra pencere açık kalır; sözleşme buradan yazdırılabilir. */
-    openForm(c.salon,c.tarih,c.seans,c.mode==='new'?'Sözleşme kaydedildi. Seans artık dolu; sözleşmeyi aşağıdaki düğmeyle yazdırabilirsiniz.':'Değişiklikler kaydedildi.');
-    toast(c.mode==='new'?'Sözleşme kaydedildi. Seans artık dolu.':'Değişiklikler kaydedildi.');
+    openForm(c.salon,c.tarih,c.seans,c.don?'Opsiyon satışa dönüştürüldü. Seans artık sözleşmeli; sözleşmeyi aşağıdaki düğmeyle yazdırabilirsiniz.':c.mode==='new'?'Sözleşme kaydedildi. Seans artık dolu; sözleşmeyi aşağıdaki düğmeyle yazdırabilirsiniz.':'Değişiklikler kaydedildi.');
+    toast(c.don?'Opsiyon satışa dönüştürüldü.':c.mode==='new'?'Sözleşme kaydedildi. Seans artık dolu.':'Değişiklikler kaydedildi.');
     var okEl=$('f-ok'),kb=$('f-kaydet');
     if(okEl)okEl.hidden=false;
     if(kb){kb.classList.add('oldu');kb.textContent='✓ Kaydedildi';
@@ -2057,7 +2118,7 @@ dlg.addEventListener('click',function(ev){
   if(o&&!o.disabled)openForm(st.salon,o.getAttribute('data-date'),o.getAttribute('data-open'));
 });
 dlg.addEventListener('close',function(){cur=null;});
-dlg.addEventListener('submit',function(ev){ev.preventDefault();if(ev.target.id==='sfrm')sifreKaydet();else save();});
+dlg.addEventListener('submit',function(ev){ev.preventDefault();if(ev.target.id==='sfrm')sifreKaydet();else if(ev.target.id==='ofrm')opsKaydet();else save();});
 dlg.addEventListener('change',function(ev){
   var t=ev.target;if(!cur||!t)return;
   if(t.hasAttribute('data-tel')&&t.value.trim()){var d=telDuzelt(t.value);if(d)t.value=d;}
@@ -2492,9 +2553,11 @@ document.addEventListener('visibilitychange',function(){
 window.addEventListener('pagehide',function(){if(aj.kirli)ajKaydet();});
 
 /* ---------- geçmiş tarihler ----------
-   Geçmiş güne yeni sözleşme yazılmaz. Yönetici dışındaki kullanıcılar geçmiş günleri ve ayları görmez. */
+   Takvim, programın kullanılmaya başlandığı aydan (Ekim 2026) başlar; öncesi kimseye gösterilmez.
+   Geçmiş güne yeni sözleşme yazılmaz. Yönetici dışındaki kullanıcılar geçmiş günleri ve ayları da görmez. */
+var BASLANGIC_AY='2026-10';
 function gecmis(t){return t<todayStr();}
-function enErkenAy(){return st.admin?null:todayStr().slice(0,7);}
+function enErkenAy(){var b=todayStr().slice(0,7);return st.admin||b<BASLANGIC_AY?BASLANGIC_AY:b;}
 
 /* ---------- menü detayı ----------
    Sözleşmede boş bırakılan alan, seçili menünün Ayarlar'daki içeriğiyle tamamlanır
@@ -2563,6 +2626,187 @@ function iptalHtml(y){
   });
   return h+'</tbody></table></div></section>';
 }
+
+/* ---------- opsiyon (süreli ön rezervasyon) ----------
+   Opsiyon, sözleşme tablosunda durum = 'opsiyon' olan kayıttır. Bitiş günü sonuna kadar seansı tutar;
+   süresi dolunca takvimde seans boş görünür ve yerine yeni kayıt yazılabilir (sunucu eski opsiyonu o anda siler).
+   Zil: açık opsiyonların sayısını gösterir; bitişine 1 gün ya da daha az kalan opsiyon varsa kırmızı yanar. */
+var ops=[];                       /* tüm yıllardaki opsiyonlar (süresi yeni dolanlar dahil) */
+function opsMu(r){return !!r&&r.durum==='opsiyon';}
+function opsGecerli(r){return opsMu(r)&&!!r.opsiyonBitis&&r.opsiyonBitis>=todayStr();}
+function sozVar(id){var r=st.recs.get(id);return !!r&&!opsMu(r);}
+function gunFark(a,b){return Math.round((toDate(b)-toDate(a))/86400000);}
+function opsKalan(r){return gunFark(todayStr(),r.opsiyonBitis);}       /* 0: bugün bitiyor, 1: yarın, <0: doldu */
+function opsYakin(r){var k=opsKalan(r);return k>=0&&k<=1;}
+function opsKalanMetin(r){
+  var k=opsKalan(r);
+  return k<0?'Süresi doldu':k===0?'Bugün bitiyor':k===1?'Yarın bitiyor':k+' gün kaldı';
+}
+function opsBul(id){for(var i=0;i<ops.length;i++)if(ops[i].id===id)return ops[i];return null;}
+function ileriGun(n){var d=toDate(todayStr());d.setDate(d.getDate()+n);return dateStr(d);}
+
+var opsSira=0;
+function opsYukle(){
+  if(!sb||st.oturum!=='ok')return;
+  var sira=++opsSira;
+  sb.from('sozlesmeler').select('*').eq('durum','opsiyon').order('opsiyon_bitis').then(function(r){
+    if(sira!==opsSira||st.oturum!=='ok')return;
+    var yeni=[];
+    if(!r.error)(r.data||[]).forEach(function(x){
+      if(x&&x.musteri&&KOD[x.salon]&&SEANS_SABIT[x.seans]&&typeof x.tarih==='string'&&x.durum==='opsiyon'){var k=satirdanKayit(x);k.id=x.id;yeni.push(k);}
+    });
+    yeni.sort(function(a,b){return a.opsiyonBitis<b.opsiyonBitis?-1:a.opsiyonBitis>b.opsiyonBitis?1:a.tarih<b.tarih?-1:1;});
+    ops=yeni;renderZil();
+  }).catch(function(){});
+}
+function opsAcik(){return ops.filter(function(o){return opsGecerli(o)&&!gecmis(o.tarih);});}
+function opsDolan(){var es=ileriGun(-7);return ops.filter(function(o){return !opsGecerli(o)&&o.opsiyonBitis>=es&&!gecmis(o.tarih);});}
+
+function renderZil(){
+  var b=$('zil');if(!b)return;
+  var ac=opsAcik(),yakin=ac.filter(opsYakin).length;
+  b.hidden=st.oturum!=='ok';
+  b.className='nbtn zil'+(ac.length?' var':'')+(yakin?' uyari':'');
+  $('zil-say').textContent=ac.length;
+  var et=ac.length?(ac.length+' açık opsiyon'+(yakin?'; '+yakin+' tanesinin süresi dolmak üzere':'')):'Açık opsiyon yok';
+  b.setAttribute('aria-label','Opsiyonlar: '+et);b.title=et;
+}
+
+function opsSatir(o,sinif){
+  var sal=salonOf(o.salon),s=seansOf(o.seans);
+  return '<li class="s-'+o.salon+(sinif?' '+sinif:'')+'"><button type="button" data-ops="'+esc(o.id)+'">'+
+    '<b>'+esc(o.musteri)+'</b><span class="ob">'+opsKalanMetin(o)+'<br>'+fmtKisa(o.opsiyonBitis)+'</span>'+
+    '<span class="ok2">'+esc(sal.ad)+' · '+fmtKisa(o.tarih)+' '+GUN_KISA[dow(o.tarih)]+' · '+esc(s.ad)+(o.telefon?' · '+esc(o.telefon):'')+'</span></button></li>';
+}
+function opsPanel(){
+  cur=null;
+  var ac=opsAcik(),yk=ac.filter(opsYakin),dg=ac.filter(function(o){return !opsYakin(o);}),dl=opsDolan();
+  var h='<div class="dbody"><div class="dh"><div><p class="eyebrow">Opsiyon takibi</p><h2 id="dlg-title">'+(ac.length?ac.length+' açık opsiyon':'Açık opsiyon yok')+'</h2></div>'+
+    '<button type="button" class="x" data-close aria-label="Kapat">&times;</button></div>';
+  if(!ac.length&&!dl.length)h+='<p class="fine">Takvimde boş bir seansa tıklayıp “Bu seansa opsiyon koy” diyerek opsiyon ekleyebilirsiniz. Süresi bitmesine 1 gün kalan opsiyonlar burada kırmızı görünür ve zil yanar.</p>';
+  if(yk.length)h+='<p class="opbas">Süresi dolmak üzere</p><ul class="opl">'+yk.map(function(o){return opsSatir(o,'yakin');}).join('')+'</ul>';
+  if(dg.length)h+='<p class="opbas">Açık opsiyonlar</p><ul class="opl">'+dg.map(function(o){return opsSatir(o,'');}).join('')+'</ul>';
+  if(dl.length)h+='<p class="opbas">Son 7 günde süresi dolanlar · seans boşaldı</p><ul class="opl">'+dl.map(function(o){return opsSatir(o,'doldu');}).join('')+'</ul>';
+  if(ac.length||dl.length)h+='<p class="fine">Satıra tıklayınca opsiyon açılır: süreyi uzatabilir, satışa dönüştürebilir ya da kaldırabilirsiniz.</p>';
+  show(h+'</div>');
+}
+
+/* Opsiyon penceresi: yeni opsiyon ya da var olan opsiyonun düzenlenmesi */
+function openOpsiyon(salon,tarih,seans){
+  var id=slotId(salon,tarih,seans),kayit=st.recs.get(id)||opsBul(id)||null,r=opsMu(kayit)?kayit:null,s=seansOf(seans),sal=salonOf(salon);
+  if(kayit&&!r){openForm(salon,tarih,seans);return;}                    /* seansta sözleşme var */
+  if(gecmis(tarih)){if(!r)toast('Geçmiş tarihe opsiyon konulamaz.');return;}
+  var ro=!st.canWrite,dis=ro?' disabled':'',v=r||{};
+  if(!r&&ro)return;
+  cur={tip:'ops',salon:salon,tarih:tarih,seans:seans,id:id,mode:r?'edit':'new',rec:r,busy:false,degisti:false};
+  var vars=ileriGun(3);if(vars>tarih)vars=tarih;
+  var bilgi='';
+  if(r){
+    var k=opsKalan(r);
+    bilgi='<p class="opbilgi'+(k<0?' doldu':k<=1?' yakin':'')+'" id="o-bilgi">'+(k<0
+      ?'<b>Bu opsiyonun süresi '+fmtKisa(r.opsiyonBitis)+' günü doldu.</b> Seans şu an boş görünüyor. Bitiş tarihini ileri alıp kaydederseniz opsiyon yeniden geçerli olur.'
+      :'<b>'+opsKalanMetin(r)+'.</b> Opsiyon '+fmtKisa(r.opsiyonBitis)+' günü sonunda kendiliğinden düşer ve seans boşalır.')+'</p>';
+  }
+  var h='<form id="ofrm" class="dbody s-'+salon+'" novalidate>'+
+    dhead(r?(ro?'Opsiyon':'Opsiyonu düzenle'):'Yeni opsiyon',tarih)+
+    '<div class="ctx"><span class="chip salon">'+esc(sal.ad)+'</span><span class="chip">'+icon(s.ic)+esc(s.ad)+' seansı'+(s.saat?' · '+esc(s.saat):'')+'</span><span class="chip">Opsiyon</span></div>'+
+    bilgi+
+    (!r?'<p class="opsgec">Opsiyon, seansı seçtiğiniz tarihe kadar bu müşteri için tutar. Müşteri karar verdiyse: <button type="button" class="lnk" id="o-soz-gec">bunun yerine sözleşme yaz</button></p>':'')+
+    '<div class="fgrid">'+
+      '<div class="fld wide"><label for="o-musteri">Müşteri adı soyadı</label><input id="o-musteri" type="text" autocomplete="off" maxlength="120" value="'+esc(v.musteri||'')+'"'+dis+'></div>'+
+      '<div class="fld"><label for="o-telefon">Müşteri telefonu</label><input id="o-telefon" type="tel" autocomplete="off" maxlength="20" inputmode="tel" placeholder="05xx xxx xx xx" data-tel value="'+esc(v.telefon||'')+'"'+dis+'></div>'+
+      '<div class="fld"><label for="o-kisi">Kişi sayısı (yaklaşık)</label><input id="o-kisi" class="money" type="text" inputmode="numeric" autocomplete="off" maxlength="6" value="'+(v.kisi!=null?fmtN(v.kisi):'')+'"'+dis+'></div>'+
+      '<div class="fld wide"><label for="o-bitis">Opsiyon bitiş tarihi</label><input id="o-bitis" type="date" min="'+todayStr()+'" max="'+tarih+'" value="'+esc(r?r.opsiyonBitis:vars)+'"'+dis+'>'+
+        (ro?'':'<div class="ohizli"><button type="button" data-ogun="1">Yarın</button><button type="button" data-ogun="3">3 gün</button><button type="button" data-ogun="7">1 hafta</button><button type="button" data-ogun="14">2 hafta</button></div>')+
+        '<span class="hint">Bu günün sonunda opsiyon kendiliğinden düşer. Bitişinden bir gün önce zil kırmızı yanar.</span></div>'+
+    '</div>'+
+    '<div class="fld"><label for="o-not">Not</label><textarea id="o-not" maxlength="1000"'+dis+'>'+esc(v.not||'')+'</textarea></div>'+
+    (r&&!ro?'<div class="iptalk" id="o-sil-kutu" hidden><p><b>Opsiyon kaldırılacak.</b> Seans boşalır; bu işlem geri alınamaz.</p>'+
+      '<div class="iptalb"><button type="button" class="btn" id="o-sil-vazgec">Vazgeç</button><button type="button" class="btn tehlike dolu" id="o-sil-onay">Evet, opsiyonu kaldır</button></div></div>':'')+
+    '<p class="err" id="f-err" hidden></p>'+
+    '<div class="dfoot"><span class="meta" id="f-meta"></span><span class="kok" id="f-ok" role="status" hidden>✓ Kaydedildi</span>'+
+      (r&&!ro?'<button type="button" class="btn tehlike" id="o-sil">Opsiyonu kaldır</button>':'')+
+      '<button type="button" class="btn" data-close>'+(ro?'Kapat':'Vazgeç')+'</button>'+
+      (ro?'':'<button type="submit" class="btn'+(r?'':' primary')+'" id="o-kaydet">'+(r?'Değişiklikleri kaydet':'Opsiyonu kaydet')+'</button>')+
+      (r&&!ro?'<button type="button" class="btn primary" id="o-donustur">Satışa dönüştür</button>':'')+
+    '</div></form>';
+  show(h);
+  if(r)fillMeta(r,id);
+  if(!ro&&!r){var f=$('o-musteri');if(f)f.focus();}
+}
+
+function opsKaydet(){
+  if(!cur||cur.tip!=='ops'||cur.busy||!sb)return;
+  var c=cur,val=function(i){return $(i).value.trim();};
+  $('f-err').hidden=true;
+  var musteri=val('o-musteri'),tel=telDuzelt(val('o-telefon')),bitis=val('o-bitis'),kisi=parseN(val('o-kisi'));
+  if(!musteri){fail('Müşteri adı soyadı boş bırakılamaz.');$('o-musteri').focus();return;}
+  if(!tel){fail('Müşteri telefonu 11 haneli olmalı. Örnek: 0535 123 45 67');$('o-telefon').focus();return;}
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(bitis)){fail('Opsiyon bitiş tarihini seçin.');$('o-bitis').focus();return;}
+  if(bitis<todayStr()){fail('Opsiyon bitiş tarihi bugünden önce olamaz.');$('o-bitis').focus();return;}
+  if(bitis>c.tarih){fail('Opsiyon, organizasyon gününden ('+fmtKisa(c.tarih)+') sonra bitemez.');$('o-bitis').focus();return;}
+  if(kisi!==null&&kisi<1){fail('Kişi sayısı en az 1 olmalı.');$('o-kisi').focus();return;}
+  var alan={musteri:musteri,telefon:tel,kisi:kisi,notlar:val('o-not'),durum:'opsiyon',opsiyon_bitis:bitis};
+  var btn=$('o-kaydet'),eski=btn.textContent,p;
+  c.busy=true;btn.disabled=true;btn.textContent='Kaydediliyor…';
+  function done(){c.busy=false;if($('o-kaydet')===btn){btn.disabled=false;btn.textContent=eski;}}
+  if(c.mode==='new'){
+    alan.id=c.id;alan.salon=c.salon;alan.tarih=c.tarih;alan.seans=c.seans;
+    p=sb.from('sozlesmeler').insert(alan).select().single();
+  }else p=sb.from('sozlesmeler').update(alan).eq('id',c.id).eq('durum','opsiyon').select().single();
+  p.then(function(r){
+    if(r.error){
+      done();
+      var em=(r.error.code||'')+' '+(r.error.message||'');
+      if(c.mode==='new'&&r.error.code==='23505')fail('Bu seans az önce doldu; opsiyon konulamadı. Pencereyi kapatıp takvime bakın.');
+      else if(/PGRST204|durum|opsiyon_bitis/.test(em)&&!/Opsiyon bitiş/.test(em))fail('Veritabanı henüz güncellenmemiş: opsiyon alanları eksik. Yöneticinize haber verin.');
+      else if(r.error.code==='PGRST116')fail(c.mode==='new'?'Kayıt kabul edilmedi. Bu hesabın opsiyon koyma yetkisi olmayabilir.':'Opsiyon bulunamadı; kaldırılmış ya da yerine başka kayıt yazılmış olabilir.');
+      else fail(/Opsiyon bitiş/.test(em)?r.error.message:hataMetni(r.error));
+      if(c.mode==='new'&&r.error.code==='23505')yilYukle();
+      return;
+    }
+    var k=satirdanKayit(r.data);
+    putLocal(c.id,k);opsYukle();
+    openOpsiyon(c.salon,c.tarih,c.seans);
+    toast(c.mode==='new'?'Opsiyon konuldu. Seans '+fmtKisa(k.opsiyonBitis)+' gününe kadar tutuluyor.':'Opsiyon güncellendi.');
+    var ok=$('f-ok');if(ok)ok.hidden=false;
+  }).catch(function(err){done();fail(hataMetni(err));});
+}
+
+function opsSil(){
+  if(!cur||cur.tip!=='ops'||!cur.rec||cur.busy||!sb)return;
+  var c=cur,b=$('o-sil-onay');
+  c.busy=true;b.disabled=true;b.textContent='Kaldırılıyor…';
+  function geri(m){c.busy=false;if($('o-sil-onay')===b){b.disabled=false;b.textContent='Evet, opsiyonu kaldır';}fail(m);}
+  sb.from('sozlesmeler').delete().eq('id',c.id).eq('durum','opsiyon').then(function(r){
+    if(r.error){geri(hataMetni(r.error));return;}
+    c.busy=false;
+    var m=new Map(st.recs);m.delete(c.id);st.recs=m;sonImza='';
+    ops=ops.filter(function(o){return o.id!==c.id;});
+    hide();render();opsYukle();yilYukle();
+    toast('Opsiyon kaldırıldı. Seans boşaldı.');
+  }).catch(function(err){geri(hataMetni(err));});
+}
+
+$('zil').addEventListener('click',opsPanel);
+dlg.addEventListener('click',function(ev){
+  var b=ev.target.closest('button');if(!b)return;
+  if(b.hasAttribute('data-ops')){var o=opsBul(b.getAttribute('data-ops'));if(o)openOpsiyon(o.salon,o.tarih,o.seans);return;}
+  if(b.hasAttribute('data-opsyeni')){openOpsiyon(st.salon,b.getAttribute('data-date'),b.getAttribute('data-opsyeni'));return;}
+  if(b.id==='f-ops-gec'&&cur){openOpsiyon(cur.salon,cur.tarih,cur.seans);return;}
+  if(!cur||cur.tip!=='ops')return;
+  if(b.id==='o-soz-gec'){openForm(cur.salon,cur.tarih,cur.seans);return;}
+  if(b.hasAttribute('data-ogun')){var t=ileriGun(+b.getAttribute('data-ogun'));if(t>cur.tarih)t=cur.tarih;$('o-bitis').value=t;cur.degisti=true;var ok=$('f-ok');if(ok)ok.hidden=true;return;}
+  if(b.id==='o-sil'){var k=$('o-sil-kutu');k.hidden=false;try{k.scrollIntoView({block:'nearest'});}catch(e){}return;}
+  if(b.id==='o-sil-vazgec'){$('o-sil-kutu').hidden=true;return;}
+  if(b.id==='o-sil-onay'){opsSil();return;}
+  if(b.id==='o-donustur'){
+    if(cur.degisti){fail('Önce değişiklikleri kaydedin, sonra satışa dönüştürün.');return;}
+    openForm(cur.salon,cur.tarih,cur.seans,null,{donustur:true});return;
+  }
+});
+dlg.addEventListener('input',function(ev){if(cur&&cur.tip==='ops'&&ev.target&&/^o-/.test(ev.target.id||'')){cur.degisti=true;var ok=$('f-ok');if(ok)ok.hidden=true;}});
+dlg.addEventListener('change',function(ev){if(cur&&cur.tip==='ops'&&ev.target&&ev.target.id==='o-bitis')cur.degisti=true;});
 
 /* ---------- başlangıç ---------- */
 renkYaz();
