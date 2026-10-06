@@ -244,8 +244,9 @@ table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
 .ablok h2{margin:0;font-family:var(--f-display);font-weight:500;font-size:14px;letter-spacing:.1em}
 .ablok .fine{margin-top:-6px}
 .arow{display:grid;grid-template-columns:44px minmax(0,1fr) 130px;gap:10px;align-items:center}
-.arow.r2{grid-template-columns:44px 44px minmax(0,1fr) 130px}
-.arow.r2 .iki{grid-column:span 2}
+.arow.r2{grid-template-columns:56px 56px 56px minmax(0,1fr) 130px}
+.arow.r2 input[type="color"].renk{width:100%}
+.arow.r2.h span{white-space:nowrap}
 .arow.h{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 .arow.s2{grid-template-columns:90px minmax(0,1fr) minmax(0,1fr)}
 .arow.l{grid-template-columns:minmax(0,1fr) 40px;max-width:460px}
@@ -573,7 +574,8 @@ textarea.ain.oto{field-sizing:content;min-height:84px;max-height:70vh;line-heigh
   .akrow{grid-template-columns:64px minmax(0,1fr) 40px}
   .akrow input{font-size:16px}
   .arow{grid-template-columns:44px minmax(0,1fr) 84px;gap:8px}
-  .arow.r2{grid-template-columns:44px 44px minmax(0,1fr) 72px}
+  .arow.r2{grid-template-columns:44px 44px 44px minmax(0,1fr) 60px}
+  .arow.r2.h{font-size:9.5px;letter-spacing:.02em}
   .arow.s2{grid-template-columns:64px minmax(0,1fr) minmax(0,1fr)}
   .hb{grid-template-columns:minmax(0,104px) minmax(0,1fr) auto}
   .xax{font-size:9.5px}
@@ -706,12 +708,12 @@ var KOD={mercan:'MER',safir:'SAF',inci:'INC',yakut:'YAK',cadir:'KNK',kulup:'KUL'
 var ESKI_RENK={mercan:['#E0796B'],safir:['#1F3A6E'],inci:['#9C917C'],yakut:['#1E6B4F','#006400','#6EAA5E','#317873'],cadir:['#A85A1A','#E0115F'],kulup:['#5B2A6B','#9400D3']};
 var VARSAYILAN={
   salonlar:[
-    {id:'mercan',ad:'Mercan',renk:'#FEDFDC',renk2:'#FFFFFF',kapasite:null},   /* pembe + beyaz */
-    {id:'safir',ad:'Safir',renk:'#090949',renk2:'#D4AF37',kapasite:null},     /* lacivert + altın */
-    {id:'inci',ad:'İnci',renk:'#F0EAD6',renk2:'#808080',kapasite:null},       /* inci + gri */
-    {id:'yakut',ad:'Yakut',renk:'#2E8B57',renk2:'#C0C0C0',kapasite:null},     /* yeşil + gümüş */
-    {id:'cadir',ad:'Kına Konağı',renk:'#9B111E',renk2:'#D40000',kapasite:null}, /* koyu kırmızı + kırmızı */
-    {id:'kulup',ad:'Kulüp',renk:'#8350AF',renk2:'#D4AF37',kapasite:null}      /* mor + altın */
+    {id:'mercan',ad:'Mercan',renk:'#FEDFDC',renk2:'#FFFFFF',yan:'#F4917B',kapasite:null},   /* pembe + beyaz */
+    {id:'safir',ad:'Safir',renk:'#090949',renk2:'#D4AF37',yan:'#0B1D4A',kapasite:null},     /* lacivert + altın */
+    {id:'inci',ad:'İnci',renk:'#F0EAD6',renk2:'#808080',yan:'#E6D6B8',kapasite:null},       /* inci + gri */
+    {id:'yakut',ad:'Yakut',renk:'#2E8B57',renk2:'#C0C0C0',yan:'#7DB69A',kapasite:null},     /* yeşil + gümüş */
+    {id:'cadir',ad:'Kına Konağı',renk:'#9B111E',renk2:'#D40000',yan:'#D9362C',kapasite:null}, /* koyu kırmızı + kırmızı */
+    {id:'kulup',ad:'Kulüp',renk:'#8350AF',renk2:'#D4AF37',yan:'#A88FD0',kapasite:null}      /* mor + altın */
   ],
   seanslar:{gunduz:{ad:'Gündüz',saat:''},aksam:{ad:'Akşam',saat:''}},
   yogunGunler:[4,5,6],
@@ -841,6 +843,7 @@ function normalize(raw){
       var eski=typeof r.renk==='string'&&ESKI_RENK[s.id].indexOf(r.renk.toUpperCase())>=0;
       if(!eski&&typeof r.renk==='string'&&/^#[0-9a-fA-F]{6}$/.test(r.renk))s.renk=r.renk.toUpperCase();
       if(typeof r.renk2==='string'&&/^#[0-9a-fA-F]{6}$/.test(r.renk2))s.renk2=r.renk2.toUpperCase();
+      if(typeof r.yan==='string'&&/^#[0-9a-fA-F]{6}$/.test(r.yan))s.yan=r.yan.toUpperCase();
       s.kapasite=(typeof r.kapasite==='number'&&r.kapasite>0)?Math.round(r.kapasite):null;
     });
   }
@@ -883,9 +886,9 @@ function rgb2hex(c){return '#'+c.map(function(v){var x=v.toString(16);return x.l
 function lum(c){var a=c.map(function(v){v/=255;return v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4);});return 0.2126*a[0]+0.7152*a[1]+0.0722*a[2];}
 function ustRenk(c){return lum(c)>0.2?'#1E1A14':'#FFFFFF';}
 function koyuTon(c){var t=0,x=c;while(lum(x)<0.3&&t<0.84){t+=0.06;x=c.map(function(v){return Math.round(v+(255-v)*t);});}return x;}
-/* Salon teması: her salonun iki tonu vardır (ana renk + eşlik eden renk). Tek bir salon seçiliyken yalnızca sol sütun boyanır:
-   zemin ana renk, yazı ve vurgular ikinci renk olur. Takvim tarafı her zaman varsayılan renklerde kalır.
-   "Tüm salonlar"da sol sütun da varsayılandır. Renkler Ayarlar'daki salon renklerinden hesaplanır. */
+/* Salon teması: tek bir salon seçiliyken yalnızca sol sütun boyanır. Zemin, salonun "sol sütun rengi"nin kendisidir
+   (açık ve koyu temada aynı); başlık ve seçili satır "yazı rengi"nden, diğer yazılar zemine göre koyu ya da beyaz seçilir.
+   Takvim tarafı her zaman varsayılan renklerde kalır; "Tüm salonlar"da sol sütun da varsayılandır. */
 function karis(a,b,t){return a.map(function(v,i){return Math.round(v+(b[i]-v)*t);});}
 function kontrast(a,b){var x=lum(a),y=lum(b);return (Math.max(x,y)+0.05)/(Math.min(x,y)+0.05);}
 function hslOf(c){
@@ -911,48 +914,21 @@ function acikTon(c){
   while(kontrast(x,B)<1.8&&l>0.3){l-=0.02;x=hsl(o.h,s,l);}
   return x;
 }
-function temaHesap(hex,hex2){
-  var B=[255,255,255],Z=[0,0,0];
-  var P=hex2rgb(hex),S=hex2rgb(hex2||'#FFFFFF'),p=hslOf(P),s=hslOf(S),kp=canli(p),ks=canli(s);
-  var pKoyu=kontrast(P,B)>=3;            /* ana renk, üstünde beyaz yazı taşıyacak kadar koyu mu */
-  var sBeyaz=lum(S)>0.8&&ks<0.25;        /* ikinci renk beyazsa yumuşak tonlar ana renkten alınır */
-  var yh=sBeyaz?p.h:s.h,yk=sBeyaz?kp:ks;
-  function yaz(o,ek){var t='';Object.keys(o).forEach(function(n){t+='--'+n+':'+(o[n]?rgb2hex(o[n]):'initial')+';';});return '{'+t+ek+'}';}
-
-  /* açık tema */
-  var bg=hsl(p.h,0.45*kp,0.962);
-  var soft=(sBeyaz&&!pKoyu)?hsl(p.h,Math.min(p.s,0.8),0.9):hsl(yh,0.5*yk,0.9);
-  var we=(sBeyaz&&!pKoyu)?P:hsl(yh,0.6*yk,0.925);
-  var pOrta=!pKoyu&&kontrast(P,B)>=1.8; /* beyaz yazı taşımaz ama kendisi koyultulup yazı rengi olabilir */
-  var gold=karsit((pKoyu||pOrta)?P:(sBeyaz?hsl(p.h,0.5*kp,0.45):S),soft,4.5,Z);
-  var parlak=sBeyaz?(pKoyu?karsit(P,B,2.8,Z):karsit(hsl(p.h,Math.min(p.s,0.7),0.72),B,2.2,Z)):karsit(S,B,2.6,Z);
-  var A={'bg':bg,'muted':karsit(hsl(p.h,0.08*kp,0.42),bg,4.5,Z),'line':hsl(p.h,0.3*kp,0.845),'line-strong':hsl(p.h,0.3*kp,0.715),
-    'gold':gold,'gold-bright':parlak,'gold-soft':soft,'weekend':we};
-
-  /* koyu tema */
-  var softK=sBeyaz?hsl(p.h,0.32*kp,0.19):hsl(s.h,0.32*ks,0.2);
-  var yuz=hsl(p.h,0.12*kp,0.142),kg=karsit(koyuTon(P),softK,4.5,B);
-  var K={'bg':hsl(p.h,0.12*kp,0.104),'surface':yuz,'muted':hsl(p.h,0.1*kp,0.62),'line':hsl(p.h,0.12*kp,0.21),'line-strong':hsl(p.h,0.22*kp,0.3),
-    'gold':kg,'gold-bright':sBeyaz?kg:karsit(S,yuz,3,B),'gold-soft':softK,'weekend':sBeyaz?hsl(p.h,0.26*kp,0.175):hsl(s.h,0.26*ks,0.18)};
-
-  /* sol panel: ana rengin kendisi; yazılar o zeminde okunacak şekilde ikinci renkten (ya da beyazdan) seçilir */
-  function yan(z){
-    var v=karsit(sBeyaz?B:S,z,4.5,B);
-    var act=karis(z,v,0.18);if(kontrast(v,act)<4.5)act=karis(z,Z,0.3);
-    return {'side-bg':z,'side-ink':karis(B,z,0.06),'side-muted':karsit(karis(B,z,0.3),z,4.5,B),'side-acc':v,'side-act':act,'side-line':karis(z,B,0.22)};
-  }
-  var YA,YK,zk=yuz;
-  if(pKoyu){
-    YA=yan(P);
-    zk=lum(P)>0.05?karis(P,Z,0.3):P;    /* koyu temada canlı renkler bir ton kısılır */
-    YK=yan(zk);
-  }else{
-    YA={'side-bg':P,'side-ink':null,'side-muted':karsit(A.muted,P,4.5,Z),'side-acc':karsit(gold,P,4.5,Z),'side-act':B,'side-line':null};
-    zk=hsl(p.h,0.42*kp,0.2);            /* açık renkli salon: koyu temada sol sütun aynı rengin koyu tonu olur */
-    YK=yan(zk);
-  }
-
-  return {acik:yaz(YA,''),koyu:yaz(YK,''),zeminA:rgb2hex(P),zeminK:rgb2hex(zk)};
+function temaHesap(hex,hex2,yanHex){
+  var B=[255,255,255],Z=[0,0,0],M=[43,42,40];
+  var z=hex2rgb(yanHex||hex),S=hex2rgb(hex2||'#FFFFFF'),zh=hslOf(z);
+  var acikZemin=kontrast(z,Z)>kontrast(z,B);              /* açık zeminde koyu, koyu zeminde beyaz yazı */
+  var uc=acikZemin?Z:B,ink=acikZemin?karsit(M,z,4.5,Z):karis(B,z,0.06);
+  if(kontrast(ink,z)<4.5)ink=uc;
+  function oku(c){var x=karsit(c,z,4.5,uc);return kontrast(x,z)<4.5?uc:x;}   /* zeminde okunana kadar koyult / aç */
+  var sBeyaz=lum(S)>0.8&&canli(hslOf(S))<0.25;            /* yazı rengi beyaz bırakıldıysa vurgu sütun renginden türetilir */
+  var v=oku(sBeyaz?(acikZemin?hsl(zh.h,Math.min(zh.s,0.65),0.3):B):S);
+  var act;
+  if(acikZemin)act=karis(z,B,0.45);
+  else{act=karis(z,v,0.18);if(kontrast(v,act)<4.5)act=karis(z,Z,0.3);}
+  var Y={'side-bg':z,'side-ink':ink,'side-muted':oku(karis(ink,z,0.3)),'side-acc':v,'side-act':act,'side-line':acikZemin?karis(z,Z,0.2):karis(z,B,0.22)};
+  var t='';Object.keys(Y).forEach(function(n){t+='--'+n+':'+rgb2hex(Y[n])+';';});
+  return {kural:'{'+t+'}',zemin:rgb2hex(z)};
 }
 var temaZemin={};
 function renkYaz(){
@@ -963,11 +939,9 @@ function renkYaz(){
     a+='.s-'+s.id+'{--sc:'+rgb2hex(ac)+';--son:'+ustRenk(ac)+'}';
     b+=':root:not([data-theme="light"]) .s-'+s.id+kr;
     d+=':root[data-theme="dark"] .s-'+s.id+kr;
-    var t=temaHesap(s.renk,s.renk2),q='[data-salon="'+s.id+'"]';
+    var t=temaHesap(s.renk,s.renk2,s.yan);
     temaZemin[s.id]=t;
-    a+=':root'+q+t.acik;
-    b+=':root'+q+':not([data-theme="light"])'+t.koyu;
-    d+=':root'+q+'[data-theme="dark"]'+t.koyu;
+    a+=':root[data-salon="'+s.id+'"]'+t.kural;
   });
   $('salon-renk').textContent=a+'@media (prefers-color-scheme:dark){'+b+'}'+d;
 }
@@ -975,7 +949,7 @@ function renkYaz(){
 function temaUygula(){
   var el=document.documentElement,id=(st.oturum==='ok'&&st.salon!=='tum'&&temaZemin[st.salon])?st.salon:'';
   if(el.getAttribute('data-salon')!==(id||null)){if(id)el.setAttribute('data-salon',id);else el.removeAttribute('data-salon');}
-  var ma=$('tc-acik'),mk=$('tc-koyu'),za=id?temaZemin[id].zeminA:'#FAF7F0',zk=id?temaZemin[id].zeminK:'#1C1B19';
+  var ma=$('tc-acik'),mk=$('tc-koyu'),za=id?temaZemin[id].zemin:'#FAF7F0',zk=id?temaZemin[id].zemin:'#1C1B19';
   if(ma&&ma.getAttribute('content')!==za)ma.setAttribute('content',za);
   if(mk&&mk.getAttribute('content')!==zk)mk.setAttribute('content',zk);
 }
@@ -1248,11 +1222,12 @@ function renderStats(){
 function renderAyarlar(){
   var d=draft,h='';
   if(!md||mdMetin!==d.sozlesmeMetni){md=maddeAyir(d.sozlesmeMetni);mdMetin=d.sozlesmeMetni;}
-  h+='<section class="ablok"><h2>Salonlar</h2><p class="fine">Takvimde görünen ad ve renkler. İlk renk salonun ana tonu, ikincisi ona eşlik eden tondur; bir salon seçildiğinde yalnızca soldaki sütun bu iki tona döner, takvimin renkleri değişmez. Kapasite girilirse, kişi sayısı aşıldığında sözleşme ekranı uyarır.</p>'+
-     '<div class="arow r2 h"><span class="iki">Renkler</span><span>Salon adı</span><span>Kapasite (kişi)</span></div>';
+  h+='<section class="ablok"><h2>Salonlar</h2><p class="fine">Takvimde görünen ad ve renkler. İlk renk salonun takvimdeki rengidir. İkincisi, o salon seçildiğinde soldaki sütunun alacağı renktir; üçüncüsü sütundaki başlığın ve seçili satırın yazı rengidir (beyaz bırakılırsa program uygun tonu kendisi seçer). Salon seçmek takvimin renklerini değiştirmez. Kapasite girilirse, kişi sayısı aşıldığında sözleşme ekranı uyarır.</p>'+
+     '<div class="arow r2 h"><span>Takvim</span><span>Sütun</span><span>Yazı</span><span>Salon adı</span><span>Kapasite (kişi)</span></div>';
   d.salonlar.forEach(function(s,i){
-    h+='<div class="arow r2"><input type="color" class="renk" id="a-renk-'+s.id+'" data-p="salonlar.'+i+'.renk" value="'+esc(s.renk)+'" aria-label="'+esc(s.ad)+' ana rengi" title="Ana renk">'+
-       '<input type="color" class="renk" id="a-renk2-'+s.id+'" data-p="salonlar.'+i+'.renk2" value="'+esc(s.renk2||'#FFFFFF')+'" aria-label="'+esc(s.ad)+' ikinci rengi" title="İkinci renk">'+
+    h+='<div class="arow r2"><input type="color" class="renk" id="a-renk-'+s.id+'" data-p="salonlar.'+i+'.renk" value="'+esc(s.renk)+'" aria-label="'+esc(s.ad)+' takvim rengi" title="Takvimdeki renk">'+
+       '<input type="color" class="renk" id="a-yan-'+s.id+'" data-p="salonlar.'+i+'.yan" value="'+esc(s.yan||s.renk)+'" aria-label="'+esc(s.ad)+' sol sütun rengi" title="Sol sütun rengi">'+
+       '<input type="color" class="renk" id="a-renk2-'+s.id+'" data-p="salonlar.'+i+'.renk2" value="'+esc(s.renk2||'#FFFFFF')+'" aria-label="'+esc(s.ad)+' sol sütun yazı rengi" title="Sol sütundaki başlık ve seçili satırın rengi">'+
        '<input type="text" class="ain" id="a-ad-'+s.id+'" data-p="salonlar.'+i+'.ad" maxlength="30" value="'+esc(s.ad)+'" aria-label="Salon adı">'+
        '<input type="text" class="ain num" id="a-kap-'+s.id+'" data-p="salonlar.'+i+'.kapasite" data-num inputmode="numeric" maxlength="5" placeholder="—" value="'+(s.kapasite!=null?s.kapasite:'')+'" aria-label="'+esc(s.ad)+' kapasitesi"></div>';
   });
