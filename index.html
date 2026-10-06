@@ -90,6 +90,21 @@ button{cursor:pointer}
 .nbtn.arrow{font-size:18px;line-height:1;padding:0}
 .nbtn:hover,.nav select:hover{border-color:var(--gold-bright)}
 
+/* Ay / yıl seçimi: tarayıcının kendi açılır penceresi yerine programın kendi listesi (her cihazda aynı boy ve renk) */
+.dd{position:relative;display:inline-block}
+.dd[hidden]{display:none}
+.dd>select{position:absolute;inset:0;width:100%;height:100%;opacity:0;pointer-events:none}
+.ddb{height:38px;min-width:78px;display:inline-flex;align-items:center;justify-content:space-between;gap:10px;padding:0 10px 0 12px;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);border-radius:6px;font-size:13px;font-weight:500}
+.ddb:hover,.ddb[aria-expanded="true"]{border-color:var(--gold-bright)}
+.ddb::after{content:"";width:6px;height:6px;margin-top:-3px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg);opacity:.65;flex:none}
+.ddl{position:absolute;z-index:40;top:calc(100% + 4px);left:0;min-width:100%;max-height:min(296px,60vh);overflow-y:auto;display:flex;flex-direction:column;gap:1px;padding:4px;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);border-radius:6px;box-shadow:0 10px 28px rgba(0,0,0,.22)}
+.ddl[hidden]{display:none}
+.ddo{display:block;width:100%;height:30px;padding:0 10px;border:0;background:none;color:inherit;border-radius:4px;font-size:13px;font-weight:500;text-align:left;white-space:nowrap;cursor:pointer}
+.ddo:hover:not(:disabled),.ddo:focus-visible{background:var(--weekend);outline:none}
+.ddo[aria-selected="true"]{background:var(--gold-soft);color:var(--gold);font-weight:600}
+.ddo:disabled{opacity:.38;cursor:default}
+select option{background:var(--surface);color:var(--ink)}
+
 .banner{padding:10px 14px;border:1px solid var(--line-strong);background:var(--gold-soft);border-radius:6px;font-size:13px}
 .banner.bad{border-color:var(--danger);background:var(--danger-soft);color:var(--danger)}
 
@@ -707,6 +722,7 @@ var VARSAYILAN={
   tatlilar:['Yaş pasta','Dondurmalı pasta'],
   akisSablonu:['Misafir karşılama','Gelin ve damadın salona girişi','İlk dans','Yemek servisi','Pasta töreni','Takı töreni','Kapanış'],
   sonOdemeGun:7,
+  sonYil:2027,
   dipNot:'Tutarlar KDV hariçtir. Ödemeler nakit, makbuz karşılığı Lusso kasasına alınır.',
   /* Sözleşme çıktısı: başlık satırları, matbu maddeler ve senet metni Ayarlar'dan değiştirilebilir */
   baslik:'LUSSO WEDDING\nOvacık Mah. Kartaltepe Kent Ormanı Cad. 696. Sok. No:2 Keçiören / Ankara\nTel: 0312 578 04 04 · 0535 978 82 18',
@@ -838,6 +854,7 @@ function normalize(raw){
   var t=temizListe(raw.turler,c.turler);if(t.length)c.turler=t;
   if(Array.isArray(raw.menuler))c.menuler=temizMenuler(raw.menuler,c.menuler);
   if(typeof raw.sonOdemeGun==='number'&&raw.sonOdemeGun>=0&&raw.sonOdemeGun<=90)c.sonOdemeGun=Math.round(raw.sonOdemeGun);
+  if(typeof raw.sonYil==='number'&&raw.sonYil>=2026&&raw.sonYil<=2040)c.sonYil=Math.round(raw.sonYil);
   if(typeof raw.dipNot==='string')c.dipNot=raw.dipNot.trim().slice(0,400);
   ['baslangiclar','tatlilar','akisSablonu'].forEach(function(k){if(Array.isArray(raw[k]))c[k]=temizListe(raw[k],c[k]);});
   if(typeof raw.baslik==='string'&&!eskiBaslikMi(raw.baslik))c.baslik=raw.baslik.trim().slice(0,500);
@@ -866,9 +883,9 @@ function rgb2hex(c){return '#'+c.map(function(v){var x=v.toString(16);return x.l
 function lum(c){var a=c.map(function(v){v/=255;return v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4);});return 0.2126*a[0]+0.7152*a[1]+0.0722*a[2];}
 function ustRenk(c){return lum(c)>0.2?'#1E1A14':'#FFFFFF';}
 function koyuTon(c){var t=0,x=c;while(lum(x)<0.3&&t<0.84){t+=0.06;x=c.map(function(v){return Math.round(v+(255-v)*t);});}return x;}
-/* Salon teması: her salonun iki tonu vardır (ana renk + eşlik eden renk). Tek bir salon seçiliyken program o iki tona döner:
-   sol panel ana renge boyanır; başlıklar, dolu seanslar ve düğmeler ana renkten, çerçeveler, hafta sonu ve vurgu zeminleri
-   ikinci renkten türetilir. "Tüm salonlar"da varsayılan altın tema kalır. Renkler Ayarlar'daki salon renklerinden hesaplanır. */
+/* Salon teması: her salonun iki tonu vardır (ana renk + eşlik eden renk). Tek bir salon seçiliyken yalnızca sol sütun boyanır:
+   zemin ana renk, yazı ve vurgular ikinci renk olur. Takvim tarafı her zaman varsayılan renklerde kalır.
+   "Tüm salonlar"da sol sütun da varsayılandır. Renkler Ayarlar'daki salon renklerinden hesaplanır. */
 function karis(a,b,t){return a.map(function(v,i){return Math.round(v+(b[i]-v)*t);});}
 function kontrast(a,b){var x=lum(a),y=lum(b);return (Math.max(x,y)+0.05)/(Math.min(x,y)+0.05);}
 function hslOf(c){
@@ -921,7 +938,8 @@ function temaHesap(hex,hex2){
   /* sol panel: ana rengin kendisi; yazılar o zeminde okunacak şekilde ikinci renkten (ya da beyazdan) seçilir */
   function yan(z){
     var v=karsit(sBeyaz?B:S,z,4.5,B);
-    return {'side-bg':z,'side-ink':karis(B,z,0.06),'side-muted':karsit(karis(B,z,0.3),z,4.5,B),'side-acc':v,'side-act':karis(z,v,0.18),'side-line':karis(z,B,0.22)};
+    var act=karis(z,v,0.18);if(kontrast(v,act)<4.5)act=karis(z,Z,0.3);
+    return {'side-bg':z,'side-ink':karis(B,z,0.06),'side-muted':karsit(karis(B,z,0.3),z,4.5,B),'side-acc':v,'side-act':act,'side-line':karis(z,B,0.22)};
   }
   var YA,YK,zk=yuz;
   if(pKoyu){
@@ -930,24 +948,11 @@ function temaHesap(hex,hex2){
     YK=yan(zk);
   }else{
     YA={'side-bg':P,'side-ink':null,'side-muted':karsit(A.muted,P,4.5,Z),'side-acc':karsit(gold,P,4.5,Z),'side-act':B,'side-line':null};
-    YK={'side-bg':null,'side-ink':null,'side-muted':null,'side-acc':null,'side-act':null,'side-line':null};
+    zk=hsl(p.h,0.42*kp,0.2);            /* açık renkli salon: koyu temada sol sütun aynı rengin koyu tonu olur */
+    YK=yan(zk);
   }
 
-  /* Salon tonları uyarı kırmızısına ya da onay yeşiline çok yakınsa, karışmasınlar diye bu ikisi başka bir tona kaydırılır. */
-  var tonlar=[],ea='',ek='';
-  if(kp>=0.4)tonlar.push(p.h);
-  if(!sBeyaz&&ks>=0.4)tonlar.push(s.h);
-  function yakin(t){return tonlar.some(function(x){return aciFark(x,t)<30;});}
-  if(yakin(7)){
-    if(!yakin(331)){ea+='--danger:#9B1556;--danger-soft:#F9E3EC;';ek+='--danger:#FF9CC2;--danger-soft:#45202F;';}
-    else{ea+='--danger:#9A4B00;--danger-soft:#FFEFCF;';ek+='--danger:#FFC46B;--danger-soft:#3D2C10;';}
-  }
-  function uzak(t){var m=360;tonlar.forEach(function(x){m=Math.min(m,aciFark(x,t));});return m;}
-  if(tonlar.some(function(x){return aciFark(x,146)<45;})){
-    if(uzak(86)>=uzak(175)){ea+='--ok:#4D7A14;--ok-soft:#EBF3DC;';ek+='--ok:#B9D873;--ok-soft:#2C3719;';}
-    else{ea+='--ok:#0F766E;--ok-soft:#DDF3F0;';ek+='--ok:#6FD6CB;--ok-soft:#17383A;';}
-  }
-  return {acik:yaz(A,yaz(YA,'').slice(1,-1)+ea),koyu:yaz(K,yaz(YK,'').slice(1,-1)+ek),zeminA:rgb2hex(P),zeminK:rgb2hex(zk)};
+  return {acik:yaz(YA,''),koyu:yaz(YK,''),zeminA:rgb2hex(P),zeminK:rgb2hex(zk)};
 }
 var temaZemin={};
 function renkYaz(){
@@ -1025,7 +1030,7 @@ function renderNav(){
     ay.innerHTML=h;
   }
   var enE=enErkenAy(),ilkYil=+enE.slice(0,4);
-  var y0=ilkYil,y1=Math.max(now.getFullYear()+4,m.y);
+  var y0=ilkYil,y1=Math.max(cfg.sonYil,ilkYil);
   if(!yl.options.length||+yl.options[0].value!==y0||+yl.options[yl.options.length-1].value!==y1){
     h='';for(i=y0;i<=y1;i++)h+='<option value="'+i+'">'+i+'</option>';
     yl.innerHTML=h;
@@ -1036,8 +1041,10 @@ function renderNav(){
   /* Takvim Ekim 2026'dan başlar; yönetici dışındakiler içinde bulunulan aydan geriye de gidemez */
   for(i=0;i<ay.options.length;i++)ay.options[i].disabled=m.y===ilkYil&&(i+1)<+enE.slice(5);
   $('prev').disabled=ym?m.y<=ilkYil:st.ym<=enE;
+  $('next').disabled=ym?m.y>=cfg.sonYil:st.ym>=enGecAy();
   $('prev').setAttribute('aria-label',ym?'Önceki yıl':'Önceki ay');
   $('next').setAttribute('aria-label',ym?'Sonraki yıl':'Sonraki ay');
+  ddCiz(ay);ddCiz(yl);
 }
 
 function renderBanner(){
@@ -1066,15 +1073,15 @@ function counts(){
 }
 
 function renderTabs(){
-  var c=counts(),per=(st.salon==='tum'?yilGun(yil()):mi().days)*2,ok=periodReady(),h='';
+  var c=counts(),per=(st.salon==='tum'?yilAcikGun(yil()):mi().days)*2,ok=periodReady(),h='';
+  h+='<button type="button" role="tab" class="tab" data-salon="tum" aria-selected="'+(st.salon==='tum')+'">'+
+     '<span class="tn">Tüm salonlar</span>'+
+     '<span class="tc">'+(ok?c.tum+' / '+(per*salonlar().length)+' seans dolu':'—')+'</span></button>';
   salonlar().forEach(function(s){
     h+='<button type="button" role="tab" class="tab s-'+s.id+'" data-salon="'+s.id+'" aria-selected="'+(st.salon===s.id)+'">'+
        '<span class="tn"><span class="dot"></span>'+esc(s.ad)+'</span>'+
        '<span class="tc">'+(ok?c[s.id]+' / '+per+' seans dolu':'—')+'</span></button>';
   });
-  h+='<button type="button" role="tab" class="tab" data-salon="tum" aria-selected="'+(st.salon==='tum')+'">'+
-     '<span class="tn">Tüm salonlar</span>'+
-     '<span class="tc">'+(ok?c.tum+' / '+(per*salonlar().length)+' seans dolu':'—')+'</span></button>';
   $('salons').innerHTML=h;
 }
 
@@ -1084,7 +1091,7 @@ function renderHead(){
   var d=$('durum');
   if(st.conn==='wait'||(st.conn==='ok'&&!periodReady()))d.textContent='Kayıtlar yükleniyor…';
   else if(periodReady()){
-    var top=tum?yilGun(m.y)*2*salonlar().length:m.days*2,dolu=tum?c.tum:c[st.salon];
+    var top=tum?yilAcikGun(m.y)*2*salonlar().length:m.days*2,dolu=tum?c.tum:c[st.salon];
     d.textContent=dolu+' dolu · '+(c.ops?c.ops+' opsiyon · ':'')+(top-dolu-c.ops)+' boş seans';
   }else d.textContent='';
   var ym=yogunMetin(),yogun=ym?'<span><i class="lg we"></i>'+esc(ym)+': yoğun günler</span>':'';
@@ -1185,13 +1192,13 @@ function renderStats(){
     el.innerHTML='<p class="bos">'+(st.conn==='none'||st.conn==='err'?'Kayıtlara ulaşılamadığı için istatistik gösterilemiyor.':'Kayıtlar yükleniyor…')+'</p>';
     return;
   }
-  var gun=yilGun(y),yg=0,d=new Date(y,0,1),i;
+  var ilkAy=yilIlkAy(y),gun=yilAcikGun(y),yg=0,d=new Date(y,ilkAy,1),i;
   for(i=0;i<gun;i++){if(isYogun((d.getDay()+6)%7))yg++;d.setDate(d.getDate()+1);}
   var per={},ay=[],tur={},menu={},T={n:0,yn:0,bedel:0,kapora:0,kalan:0};
   S.forEach(function(s){per[s.id]={n:0,yn:0,bedel:0,kalan:0};});
   for(i=0;i<12;i++)ay.push({n:0,bedel:0});
   st.recs.forEach(function(r){
-    if(opsMu(r)||r.tarih.slice(0,4)!==String(y)||!per[r.salon])return;
+    if(opsMu(r)||r.tarih<BASLANGIC_GUN||r.tarih.slice(0,4)!==String(y)||!per[r.salon])return;
     var yo=isYogun(dow(r.tarih)),b=r.bedel||0,k=r.kapora||0,kl=r.bedel!=null?b-k:0,p=per[r.salon],a=ay[+r.tarih.slice(5,7)-1];
     T.n++;T.bedel+=b;T.kapora+=k;T.kalan+=kl;p.n++;p.bedel+=b;p.kalan+=kl;a.n++;a.bedel+=b;
     if(yo){T.yn++;p.yn++;}
@@ -1212,6 +1219,7 @@ function renderStats(){
   var mx=0;ay.forEach(function(a){if(a.n>mx)mx=a.n;});
   var us=ustSinir(mx),cols='',xs='';
   ay.forEach(function(a,k){
+    if(k<ilkAy)return;
     var tip=AYLAR[k]+': '+a.n+' sözleşme'+(a.bedel?' · '+para(a.bedel):'');
     cols+='<div class="colw">'+(a.n?'<button type="button" class="col" style="height:'+(a.n/us*100).toFixed(1)+'%" data-tip="'+esc(tip)+'" aria-label="'+esc(tip)+'"></button>':'')+'</div>';
     xs+='<span>'+AY_KISA[k]+'</span>';
@@ -1240,7 +1248,7 @@ function renderStats(){
 function renderAyarlar(){
   var d=draft,h='';
   if(!md||mdMetin!==d.sozlesmeMetni){md=maddeAyir(d.sozlesmeMetni);mdMetin=d.sozlesmeMetni;}
-  h+='<section class="ablok"><h2>Salonlar</h2><p class="fine">Takvimde görünen ad ve renkler. İlk renk salonun ana tonu, ikincisi ona eşlik eden tondur; bir salon seçildiğinde programın renk teması bu iki tona döner. Kapasite girilirse, kişi sayısı aşıldığında sözleşme ekranı uyarır.</p>'+
+  h+='<section class="ablok"><h2>Salonlar</h2><p class="fine">Takvimde görünen ad ve renkler. İlk renk salonun ana tonu, ikincisi ona eşlik eden tondur; bir salon seçildiğinde yalnızca soldaki sütun bu iki tona döner, takvimin renkleri değişmez. Kapasite girilirse, kişi sayısı aşıldığında sözleşme ekranı uyarır.</p>'+
      '<div class="arow r2 h"><span class="iki">Renkler</span><span>Salon adı</span><span>Kapasite (kişi)</span></div>';
   d.salonlar.forEach(function(s,i){
     h+='<div class="arow r2"><input type="color" class="renk" id="a-renk-'+s.id+'" data-p="salonlar.'+i+'.renk" value="'+esc(s.renk)+'" aria-label="'+esc(s.ad)+' ana rengi" title="Ana renk">'+
@@ -1289,6 +1297,9 @@ function renderAyarlar(){
     });
     h+='<button type="button" class="ekle" data-add="'+L[0]+'">+ '+L[3]+'</button></section>';
   });
+
+  h+='<section class="ablok"><h2>Takvim aralığı</h2><p class="fine">Program 1 Ekim 2026’dan başlar; öncesi gösterilmez. Takvim, ajanda ve istatistik aşağıdaki yılın sonuna kadar açıktır. Yeni sezonu açmak için yılı büyütüp kaydedin.</p>'+
+     '<div class="akisa"><label class="albl" for="a-sonyil">Takvim şu yılın sonuna kadar açık</label><input type="text" class="ain num" id="a-sonyil" data-p="sonYil" data-num inputmode="numeric" maxlength="4" value="'+(d.sonYil==null?'':d.sonYil)+'"></div></section>';
 
   h+='<section class="ablok"><h2>Sözleşme kuralları</h2>'+
      '<div class="akisa"><label class="albl" for="a-sonodeme">Son ödeme tarihi, organizasyondan</label><input type="text" class="ain num" id="a-sonodeme" data-p="sonOdemeGun" data-num inputmode="numeric" maxlength="2" value="'+d.sonOdemeGun+'"><span class="albl">gün önce</span></div>'+
@@ -1364,6 +1375,7 @@ function ayarKaydet(){
   if(!d.turler.length)hata='En az bir organizasyon türü olmalı.';
   if(d.sonOdemeGun==null)d.sonOdemeGun=VARSAYILAN.sonOdemeGun;
   if(d.sonOdemeGun>90)hata='Son ödeme süresi en fazla 90 gün olabilir.';
+  if(!(d.sonYil>=2026&&d.sonYil<=2040))hata='Takvimin açık olduğu son yıl 2026 ile 2040 arasında olmalı.';
   d.dipNot=String(d.dipNot||'').trim();
   d.yogunGunler.sort();
   if(hata){ayarDurum(hata,true);return;}
@@ -1499,6 +1511,7 @@ function render(){
   if(st.view==='ajanda'&&!ajErisim())st.view='takvim';
   if(BOLUMLER.some(function(b){return b.id===st.view&&b.yonetici;})&&!st.admin)st.view='takvim';
   var enR=enErkenAy();if(enR&&st.ym<enR){st.ym=enR;subscribe();}
+  if(st.ym>enGecAy()&&enGecAy()>=enR){st.ym=enGecAy();subscribe();}
   renderMenu();renderNav();renderBanner();renderZil();
   BOLUMLER.forEach(function(b){if(b.id===st.view)$('vt').textContent=b.ad;$('v-'+b.id).hidden=b.id!==st.view;});
   if(st.view==='takvim'){renderTabs();renderHead();renderCal();renderList();}
@@ -1572,7 +1585,8 @@ function setMonth(y,m){
   if(m<1){m=12;y--;}if(m>12){m=1;y++;}
   var ym=y+'-'+pad(m),enE=enErkenAy();
   if(enE&&ym<enE)ym=enE;
-  if(ym===st.ym){if(enE)renderNav();return;}
+  if(ym>enGecAy())ym=enGecAy();
+  if(ym===st.ym){renderNav();return;}
   st.ym=ym;subscribe();render();
 }
 
@@ -2471,6 +2485,8 @@ function ajGit(dep,tarih){
   var p=aj.kirli?ajKaydet():Promise.resolve();
   Promise.resolve(p).then(function(){
     if(aj.kirli)return;
+    if(tarih<BASLANGIC_GUN)tarih=BASLANGIC_GUN;
+    if(tarih>enGecGun())tarih=enGecGun();
     aj.dep=dep;aj.tarih=tarih;aj.rtKirli=false;ajYukle();
   });
 }
@@ -2508,9 +2524,9 @@ function ajCiz(){
 }
 function ajGunHtml(){
   var g=aj.gun,bugun=aj.tarih===todayStr(),n=Math.max(aj.satir,g.isler.length,10),i,h='';
-  h+='<div class="ajnav"><button type="button" class="nbtn arrow" id="aj-once" aria-label="Önceki gün">&#8249;</button>'+
-     '<input type="date" id="aj-tarih" value="'+aj.tarih+'" aria-label="Tarih">'+
-     '<button type="button" class="nbtn arrow" id="aj-sonra" aria-label="Sonraki gün">&#8250;</button>'+
+  h+='<div class="ajnav"><button type="button" class="nbtn arrow" id="aj-once" aria-label="Önceki gün"'+(aj.tarih<=BASLANGIC_GUN?' disabled':'')+'>&#8249;</button>'+
+     '<input type="date" id="aj-tarih" value="'+aj.tarih+'" min="'+BASLANGIC_GUN+'" max="'+enGecGun()+'" aria-label="Tarih">'+
+     '<button type="button" class="nbtn arrow" id="aj-sonra" aria-label="Sonraki gün"'+(aj.tarih>=enGecGun()?' disabled':'')+'>&#8250;</button>'+
      (bugun?'':'<button type="button" class="nbtn" id="aj-bugun">Bugün</button>')+
      '<span class="ajgun">'+fmtUzun(aj.tarih)+(bugun?'<i>Bugün</i>':'')+'</span></div>';
   h+='<section class="ablok"><h2>Günün odağı</h2><p class="fine">Bugün üzerinde çalışılacak tek ana konu.</p>'+
@@ -2977,6 +2993,82 @@ function ogunIsaretle(){
 dlg.addEventListener('click',function(ev){var b=ev.target.closest('[data-ogun]');if(b)ogunIsaretle();});
 dlg.addEventListener('input',function(ev){if(ev.target&&ev.target.id==='o-bitis')ogunIsaretle();});
 dlg.addEventListener('change',function(ev){if(ev.target&&ev.target.id==='o-bitis')ogunIsaretle();});
+
+/* ---------- program aralığı ----------
+   Takvim 1 Ekim 2026'da başlar ve Ayarlar'da yazılı yılın (varsayılan 2027) sonunda biter; dışındaki tarihler gösterilmez. */
+var BASLANGIC_GUN=BASLANGIC_AY+'-01';
+function enGecAy(){return cfg.sonYil+'-12';}
+function enGecGun(){return cfg.sonYil+'-12-31';}
+/* Yılın programa açık gün sayısı (2026 için 1 Ekim – 31 Aralık) ve ilk açık ayı (0 = Ocak) */
+function yilIlkAy(y){return String(y)===BASLANGIC_AY.slice(0,4)?+BASLANGIC_AY.slice(5,7)-1:0;}
+function yilAcikGun(y){return Math.round((new Date(y,11,31)-new Date(y,yilIlkAy(y),1))/86400000)+1;}
+
+/* ---------- ay / yıl açılır listesi ---------- */
+/* <select> veri kaynağı olarak yerinde durur; ekranda onun yerine düğme + liste gösterilir. */
+var ddAcik=null;
+function ddKapat(odak){
+  if(!ddAcik)return;
+  var w=ddAcik;ddAcik=null;
+  w.querySelector('.ddl').hidden=true;
+  var b=w.querySelector('.ddb');b.setAttribute('aria-expanded','false');
+  if(odak)b.focus();
+}
+function ddAc(w){
+  if(ddAcik===w)return;
+  ddKapat(false);
+  var l=w.querySelector('.ddl'),b=w.querySelector('.ddb');
+  l.hidden=false;b.setAttribute('aria-expanded','true');ddAcik=w;
+  var s=l.querySelector('.ddo[aria-selected="true"]:not(:disabled)')||l.querySelector('.ddo:not(:disabled)');
+  if(s){s.focus({preventScroll:true});l.scrollTop=Math.max(0,s.offsetTop-l.clientHeight/2+s.offsetHeight/2);}
+}
+function ddCiz(sel){
+  var w=sel.parentNode;
+  if(!w.classList||!w.classList.contains('dd')){
+    w=document.createElement('span');w.className='dd';
+    sel.parentNode.insertBefore(w,sel);
+    var b=document.createElement('button');b.type='button';b.className='ddb';
+    b.setAttribute('aria-haspopup','listbox');b.setAttribute('aria-expanded','false');
+    var l=document.createElement('div');l.className='ddl';l.hidden=true;l.setAttribute('role','listbox');
+    l.setAttribute('aria-label',sel.getAttribute('aria-label')||'');
+    w.appendChild(b);w.appendChild(l);w.appendChild(sel);
+    sel.tabIndex=-1;sel.setAttribute('aria-hidden','true');
+  }
+  var dugme=w.querySelector('.ddb'),liste=w.querySelector('.ddl'),h='',i,o,sec=sel.options[sel.selectedIndex];
+  w.hidden=sel.hidden;
+  dugme.textContent=sec?sec.textContent:'';
+  dugme.setAttribute('aria-label',(sel.getAttribute('aria-label')||'')+(sec?': '+sec.textContent:''));
+  for(i=0;i<sel.options.length;i++){
+    o=sel.options[i];
+    h+='<button type="button" class="ddo" role="option" data-v="'+esc(o.value)+'" aria-selected="'+(i===sel.selectedIndex)+'"'+(o.disabled?' disabled':'')+'>'+esc(o.textContent)+'</button>';
+  }
+  if(liste.getAttribute('data-h')!==h){liste.innerHTML=h;liste.setAttribute('data-h',h);}
+  if(w.hidden&&ddAcik===w)ddKapat(false);
+}
+document.addEventListener('click',function(ev){
+  var t=ev.target,o=t.closest&&t.closest('.ddo'),b=t.closest&&t.closest('.ddb');
+  if(o&&!o.disabled){
+    var w=o.closest('.dd'),sel=w.querySelector('select'),v=o.getAttribute('data-v');
+    ddKapat(true);
+    if(sel.value!==v){sel.value=v;sel.dispatchEvent(new Event('change',{bubbles:true}));}
+    return;
+  }
+  if(b){var kutu=b.parentNode;if(ddAcik===kutu)ddKapat(false);else ddAc(kutu);return;}
+  if(ddAcik&&!(t.closest&&t.closest('.ddl')))ddKapat(false);
+});
+document.addEventListener('keydown',function(ev){
+  var t=ev.target,k=ev.key;
+  if(t.classList&&t.classList.contains('ddb')&&(k==='ArrowDown'||k==='ArrowUp')){ev.preventDefault();ddAc(t.parentNode);return;}
+  if(!ddAcik)return;
+  if(k==='Escape'){ev.preventDefault();ev.stopPropagation();ddKapat(true);return;}
+  if(k==='Tab'){ddKapat(false);return;}
+  if(!(t.classList&&t.classList.contains('ddo')))return;
+  var a=[].slice.call(ddAcik.querySelectorAll('.ddo:not(:disabled)')),i=a.indexOf(t),n=-1;
+  if(k==='ArrowDown')n=Math.min(a.length-1,i+1);
+  else if(k==='ArrowUp')n=Math.max(0,i-1);
+  else if(k==='Home')n=0;
+  else if(k==='End')n=a.length-1;
+  if(n>=0){ev.preventDefault();a[n].focus();}
+},true);
 
 /* ---------- başlangıç ---------- */
 renkYaz();
