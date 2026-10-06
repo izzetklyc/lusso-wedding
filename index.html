@@ -719,9 +719,12 @@ var VARSAYILAN={
   yogunGunler:[4,5,6],
   turler:['Düğün','Nişan','Kına','Sünnet','Nikâh','Toplantı / Konferans','Diğer'],
   /* Menü içeriği Ayarlar'dan düzenlenir; sözleşmede menü seçilince bu alanlar kendiliğinden dolar */
-  menuler:['Tavuk Sote','Tavuk Sarma','Düğün Kavurması','Hünkâr Beğendi','Serpme Kokteyl','Servis Kokteyl','Lusso Tabağı','Lusso Prestij'].map(function(a){return {ad:a,baslangic:'',araSicak:'',anaYemek:a,meyve:'Mevsim meyveleri',tatli:'',ikram:''};}),
-  baslangiclar:['Çorba','Ordövr tabağı','Çorba ve ordövr tabağı'],
-  tatlilar:['Yaş pasta','Dondurmalı pasta'],
+  /* yemekli menüler: çorba + menünün kendi yemeği; kuru pastalı menüler: kurudite + kuru pasta; hepsinde düğün pastası */
+  menuler:[['Tavuk Sote','Çorba',''],['Tavuk Sarma','Çorba',''],['Düğün Kavurması','Çorba',''],['Hünkâr Beğendi','Çorba',''],
+    ['Serpme Kokteyl','Kurudite','Serpme kuru pastalar'],['Servis Kokteyl','Kurudite','Kişi başı servis kuru pasta'],['Lusso Tabağı','',''],['Lusso Prestij','','']]
+    .map(function(a){return {ad:a[0],baslangic:a[1],araSicak:'',anaYemek:a[2]||a[0],meyve:'Mevsim meyveleri',tatli:'Düğün pastası',ikram:''};}),
+  baslangiclar:['Çorba','Kurudite','Ordövr tabağı','Çorba ve ordövr tabağı'],
+  tatlilar:['Düğün pastası','Yaş pasta','Dondurmalı pasta'],
   akisSablonu:['Misafir karşılama','Gelin ve damadın salona girişi','İlk dans','Yemek servisi','Pasta töreni','Takı töreni','Kapanış'],
   sonOdemeGun:7,
   sonYil:2027,
@@ -2018,6 +2021,7 @@ function yazdirHtml(r){
   var ekl=Array.isArray(dt.ekHizmetler)?dt.ekHizmetler.filter(function(x){return x&&x.ad;}):[];
   var mdt=r.menu||dt.baslangic||dt.araSicak||dt.anaYemek||dt.tatli||dt.ikram?menuDetay(r.menu||'',dt):{};
   function satir(k,v){return v?'<tr><th>'+k+'</th><td>'+v+'</td></tr>':'';}
+  function satirS(k,v){return '<tr><th>'+k+'</th><td>'+(v||'—')+'</td></tr>';}   /* standart başlık: boş olsa da basılır */
   function kisi(ad,tel){return [esc(ad||''),esc(tel?telGoster(tel):'')].filter(Boolean).join(' · ');}
   /* Sağ üst: tamamı büyük harfle yazılan satır (LUSSO WEDDING) kalın basılır */
   var baslik=String(cfg.baslik||'').split(/\n+/).map(function(l){return l.trim();}).filter(Boolean).map(function(l){
@@ -2041,7 +2045,7 @@ function yazdirHtml(r){
     (ekl.length?'<h3>Ek hizmetler</h3><table class="ykunye">'+ekl.map(function(x){return satir(esc(x.ad),esc(x.detay)||'Var');}).join('')+'</table>':'')+
     '</div><div>'+
       '<h3>Menü</h3><table class="ykunye">'+
-      (satir('Menü',esc(r.menu))+satir('Başlangıç',esc(mdt.baslangic))+satir('Ara sıcak',esc(mdt.araSicak))+satir('Ana yemek',esc(mdt.anaYemek))+satir('Meyve',esc(mdt.meyve))+satir('Tatlı',esc(mdt.tatli))+satir('Diğer ikramlar',esc(mdt.ikram))||'<tr><td>Menü belirlenmedi.</td></tr>')+
+      (Object.keys(mdt).length?satir('Menü',esc(r.menu))+satirS('Başlangıç',esc(mdt.baslangic))+satir('Ara sıcak',esc(mdt.araSicak))+satirS('Ana yemek',esc(mdt.anaYemek))+satir('Meyve',esc(mdt.meyve))+satirS('Tatlı',esc(mdt.tatli))+satir('Diğer ikramlar',esc(mdt.ikram)):'<tr><td>Menü belirlenmedi.</td></tr>')+
       '</table>'+
       '<h3>Ödeme</h3><table class="ykunye">'+
       (satir('Kişi başı fiyat',r.kisiBasi!=null?paraTL(r.kisiBasi):'')+
