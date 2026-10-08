@@ -302,6 +302,10 @@ dialog::backdrop{background:rgba(20,18,14,.6)}
 .fine{margin:0;font-size:12px;color:var(--muted)}
 .err{margin:0;padding:9px 12px;border:1px solid var(--danger);border-radius:6px;background:var(--danger-soft);color:var(--danger);font-size:13px}
 .dfoot{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:10px}
+.kapsor{position:sticky;bottom:0;z-index:4;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px;margin:0 -22px -22px;padding:14px 22px;border-top:1px solid var(--line-strong);background:var(--gold-soft);box-shadow:0 -8px 20px rgba(0,0,0,.12)}
+.kapsor[hidden]{display:none}
+.kapsor p{margin:0;font-size:13px;flex:1 1 240px}
+.kapsor .iptalb{margin:0}
 .dfoot .meta{margin-right:auto;font-size:12px;color:var(--muted)}
 .btn{height:40px;padding:0 18px;border:1px solid var(--line-strong);border-radius:6px;background:transparent;font-size:13px;font-weight:600;letter-spacing:.03em}
 .btn:hover{border-color:var(--gold-bright)}
@@ -407,7 +411,7 @@ textarea.ain.oto{field-sizing:content;min-height:84px;max-height:70vh;line-heigh
 .ysenet{break-inside:avoid;margin-top:1.3em;padding-top:.9em;border-top:.6pt solid #000}
 .ybono{width:calc(100% - 1.4pt);margin:0 .7pt .7em;border-collapse:collapse;font-size:.92em}
 .ybono td{padding:.35em .6em;border:.6pt solid #000}
-.ygovde{margin:0 0 .9em;line-height:1.4;text-align:justify}
+.ygovde{margin:0 0 .9em;line-height:1.4;text-align:left}
 .yborclu{display:grid;grid-template-columns:1.25fr 1fr;gap:.9em 2em;margin-top:.6em;font-size:.94em}
 
 @page{size:A4;margin:11mm 13mm 12mm}
@@ -568,6 +572,7 @@ textarea.ain.oto{field-sizing:content;min-height:84px;max-height:70vh;line-heigh
   .fgrid{grid-template-columns:minmax(0,1fr)}
   .fld input,.fld select,.fld textarea,.ain{font-size:16px}
   .dbody{padding:16px 16px 18px}
+  .kapsor{margin:0 -16px -18px;padding:12px 16px}
   .dfoot .meta{flex-basis:100%}
   .dfoot .btn{flex:1 1 auto}
   .gunsal li{grid-template-columns:66px minmax(0,1fr);gap:8px}
@@ -777,7 +782,14 @@ function fmtZaman(iso){var d=new Date(iso);if(isNaN(d))return '';return d.getDat
 function fmtN(n){return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,'.');}
 function para(n){return (n===null||n===undefined||n==='')?'—':fmtN(n)+' ₺';}
 function yuzde(x){return x==null?'—':'%'+(x*100).toFixed(1).replace('.',',');}
-function parseN(s){var d=String(s==null?'':s).replace(/\D/g,'');return d?parseInt(d,10):null;}
+function kurusAyir(s){
+  s=String(s==null?'':s);var i=s.indexOf(',');
+  if(i>=0&&s.indexOf(',',i+1)<0){var k=s.slice(i+1).replace(/\D/g,'');if(k.length<=2)return [s.slice(0,i),','+k];}
+  return [s,''];
+}
+function parseN(s){var d=kurusAyir(s)[0].replace(/\D/g,'');return d?parseInt(d,10):null;}
+/* Yazarken gösterim: tam kısım noktalı; kuruş yazılıyorsa olduğu gibi durur ama tutara katılmaz. */
+function paraYaz(s){var a=kurusAyir(s),d=a[0].replace(/\D/g,'');return d?fmtN(parseInt(d,10))+a[1]:(a[1]?'0'+a[1]:'');}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function clone(o){return JSON.parse(JSON.stringify(o));}
 function slotId(salon,tarih,seans){return salon+'_'+tarih+'_'+seans;}
@@ -810,7 +822,14 @@ function temizMenuler(a,yedek){
   return o;
 }
 function menuAdlari(){return cfg.menuler.map(function(m){return m.ad;});}
-function menuOf(ad){for(var i=0;i<cfg.menuler.length;i++)if(cfg.menuler[i].ad===ad)return cfg.menuler[i];return null;}
+function menuAnahtar(a){return String(a||'').toLocaleLowerCase('tr').replace(/â/g,'a').replace(/î/g,'i').replace(/û/g,'u').replace(/\s+/g,' ').trim();}
+function menuOf(ad){
+  var i,k;
+  for(i=0;i<cfg.menuler.length;i++)if(cfg.menuler[i].ad===ad)return cfg.menuler[i];
+  k=menuAnahtar(ad);if(!k)return null;
+  for(i=0;i<cfg.menuler.length;i++)if(menuAnahtar(cfg.menuler[i].ad)===k)return cfg.menuler[i];
+  return null;
+}
 /* Sözleşme metni tek bir yazı olarak saklanır; Ayarlar'da madde madde düzenlenir. */
 function maddeAyir(t){
   var o={giris:'',maddeler:[],beyan:''},g=[],son=null;
@@ -881,6 +900,9 @@ function yogunMetin(){
   var t=a.join(', ');return t.charAt(0).toLocaleUpperCase('tr')+t.slice(1);
 }
 function sonOdeme(s){var d=toDate(s);d.setDate(d.getDate()-cfg.sonOdemeGun);return dateStr(d);}
+/* Organizasyona az kala yazılan sözleşmede hesaplanan gün geçmişte kalır; son ödeme günü sözleşme imza gününden önce olamaz. */
+function sonOdemeIcin(tarih,soz){var v=sonOdeme(tarih),alt=soz||todayStr();if(alt>tarih)alt=tarih;return v<alt?alt:v;}
+function kayitGunu(r){if(r.sozlesmeTarihi)return r.sozlesmeTarihi;if(r.olusturma){var d=new Date(r.olusturma);if(!isNaN(d))return dateStr(d);}return '';}
 function kayitNo(salon,tarih,seans){var p=tarih.split('-');return KOD[salon]+'-'+p[2]+p[1]+p[0].slice(2)+'-'+SEANS_SABIT[seans].kod;}
 
 /* Salon rengi: zemin üstü yazı rengi ve koyu temadaki açık tonu hesaplanır. */
@@ -1863,7 +1885,7 @@ function openForm(salon,tarih,seans,msg,sec){
       '<div class="fld"><label for="f-kapora">Alınan kapora (₺)</label><input id="f-kapora" class="money" type="text" inputmode="numeric" autocomplete="off" maxlength="15" value="'+(v.kapora!=null?fmtN(v.kapora):'')+'"'+dis+'></div>'+
     '</div>'+
     '<dl class="ozet"><div><dt>Kalan bakiye</dt><dd id="o-kalan">—</dd><small>Senet bu tutar üzerinden düzenlenir</small></div>'+
-      '<div><dt>Son ödeme tarihi</dt><dd>'+fmtKisa(sonOdeme(tarih))+'</dd><small>'+(cfg.sonOdemeGun?'Organizasyondan '+cfg.sonOdemeGun+' gün önce, otomatik':'Organizasyon günü, otomatik')+'</small></div></dl>'+
+      '<div><dt>Son ödeme tarihi</dt><dd id="o-vade">'+fmtKisa(sonOdeme(tarih))+'</dd><small id="o-vade-not"></small></div></dl>'+
 
     '<h3 class="fsec">Özel istekler ve notlar</h3>'+
     '<div class="fld"><textarea id="f-not" maxlength="2000" aria-label="Özel istekler ve notlar"'+dis+'>'+esc(v.not)+'</textarea></div>'+
@@ -1889,6 +1911,12 @@ function openForm(salon,tarih,seans,msg,sec){
 function ozet(){
   var b=parseN($('f-bedel').value),k=parseN($('f-kapora').value)||0,el=$('o-kalan');
   el.textContent=b==null?'—':para(b-k);
+  var ve=$('o-vade'),vn=$('o-vade-not');
+  if(ve&&cur){
+    var soz=$('f-sozlesme-tarihi').value||(cur.rec?kayitGunu(cur.rec):''),vd=sonOdemeIcin(cur.tarih,soz),erken=vd!==sonOdeme(cur.tarih);
+    ve.textContent=fmtKisa(vd);
+    if(vn)vn.textContent=erken?'Organizasyona '+cfg.sonOdemeGun+' günden az kaldı: sözleşme günü':(cfg.sonOdemeGun?'Organizasyondan '+cfg.sonOdemeGun+' gün önce, otomatik':'Organizasyon günü, otomatik');
+  }
   var u=$('f-kisi-uyari'),kisi=parseN($('f-kisi').value),sal=cur&&salonOf(cur.salon);
   if(u&&sal){
     var asim=sal.kapasite&&kisi&&kisi>sal.kapasite;
@@ -2016,7 +2044,7 @@ function onemliHtml(kalan,vade){
 }
 function yazdirHtml(r){
   var dt=r.detay||{},s=seansOf(r.seans),sal=salonOf(r.salon),no=kayitNo(r.salon,r.tarih,r.seans);
-  var kalan=r.bedel!=null?r.bedel-(r.kapora||0):null,vade=sonOdeme(r.tarih);
+  var kalan=r.bedel!=null?r.bedel-(r.kapora||0):null,vade=sonOdemeIcin(r.tarih,kayitGunu(r));
   var akisVar=Array.isArray(dt.akis)&&dt.akis.some(function(a){return a&&(a.ad||a.saat);});
   var ekl=Array.isArray(dt.ekHizmetler)?dt.ekHizmetler.filter(function(x){return x&&x.ad;}):[];
   var mdt=r.menu||dt.baslangic||dt.araSicak||dt.anaYemek||dt.tatli||dt.ikram?menuDetay(r.menu||'',dt):{};
@@ -2215,7 +2243,9 @@ $('ayar').addEventListener('click',function(ev){
 });
 
 dlg.addEventListener('click',function(ev){
-  if(ev.target.closest('[data-close]')){hide();return;}
+  if(ev.target.closest('#kap-cik')){hide();return;}
+  if(ev.target.closest('#kap-don')){var ks=$('kap-sor');if(ks)ks.hidden=true;return;}
+  if(ev.target.closest('[data-close]')){kapatIste();return;}
   var b=ev.target.closest('button');
   if(b&&cur&&$('frm')){
     if(b.id==='f-yazdir'){yazdir();return;}
@@ -2241,6 +2271,8 @@ dlg.addEventListener('change',function(ev){
   if(t.hasAttribute('data-ek')){cur.ek.sabit[t.getAttribute('data-ek')].varmi=t.checked;cur.degisti=true;var okC=$('f-ok');if(okC)okC.hidden=true;}
   if(t.id==='f-menu'){cur.degisti=true;menuDoldur(t.value);}
   if(t.id==='f-tur'||t.id==='f-sozlesme-tarihi')cur.degisti=true;
+  if(t.id==='f-sozlesme-tarihi'&&$('frm'))ozet();
+  if(t.classList&&t.classList.contains('money')){var pn=parseN(t.value);t.value=pn==null?'':fmtN(pn);}   /* kutudan çıkınca kuruş kısmı atılır */
 });
 /* İptal nedeni kutusunda Enter, formu kaydetmesin */
 dlg.addEventListener('keydown',function(ev){if(ev.key==='Enter'&&ev.target&&ev.target.id==='f-iptal-neden')ev.preventDefault();});
@@ -2254,7 +2286,7 @@ dlg.addEventListener('input',function(ev){
     if(t.value.trim()&&!ek.varmi){ek.varmi=true;var kc=$('f-ek-'+t.getAttribute('data-ekd'));if(kc)kc.checked=true;}return;}
   if(t.hasAttribute('data-eko')){cur.ek.diger[+t.getAttribute('data-eko')][t.getAttribute('data-f')]=t.value;return;}
   if(t.id==='f-anayemek')cur.anaOto=false;
-  if(t.classList.contains('money')){var n=parseN(t.value);t.value=n==null?'':fmtN(n);}
+  if(t.classList.contains('money'))t.value=paraYaz(t.value);
   if(t.id==='f-bedel')cur.bedelManual=t.value!=='';
   if((t.id==='f-kisi'||t.id==='f-kisibasi')&&!cur.bedelManual){
     var k=parseN($('f-kisi').value),f=parseN($('f-kisibasi').value);
@@ -2441,6 +2473,12 @@ function ajDegisti(hemen){
   aj.kirli=true;ajDurum('Kaydediliyor…');
   clearTimeout(ajT);ajT=setTimeout(ajKaydet,hemen?120:700);
 }
+/* Kayıt gitmediyse yazı ekranda durur; bağlantı gelene kadar 5 saniyede bir kendiliğinden yeniden denenir. */
+function ajKalan(dep,tarih,e){
+  aj.kirli=true;
+  if(aj.dep===dep&&aj.tarih===tarih)ajDurum('Kaydedilemedi: '+ajHata(e)+' Yeniden denenecek.','bad');
+  clearTimeout(ajT);ajT=setTimeout(ajKaydet,5000);
+}
 function ajKaydet(){
   clearTimeout(ajT);ajT=null;
   if(!aj.kirli||!sb||!aj.gun||!aj.dep)return Promise.resolve();
@@ -2451,13 +2489,13 @@ function ajKaydet(){
   var satir={departman:dep,tarih:tarih,odak:String(g.odak||'').trim().slice(0,500),isler:isler,notlar:String(g.notlar||'').trim().slice(0,4000),rutin:rutin};
   aj.kirli=false;
   return sb.from('ajanda_gun').upsert(satir,{onConflict:'departman,tarih'}).then(function(r){
-    if(r.error){aj.kirli=true;if(aj.dep===dep&&aj.tarih===tarih)ajDurum('Kaydedilemedi: '+ajHata(r.error),'bad');return;}
+    if(r.error){ajKalan(dep,tarih,r.error);return;}
     if(aj.dep===dep&&aj.tarih===tarih){
       g.guncelleyen=benId;g.guncelleme=new Date().toISOString();
       if(!aj.kirli)ajDurum('✓ Kaydedildi · '+ajSaat(),'ok');
       var m=$('aj-meta');if(m)m.textContent=ajMeta(g);
     }
-  }).catch(function(e){aj.kirli=true;if(aj.dep===dep&&aj.tarih===tarih)ajDurum('Kaydedilemedi: '+ajHata(e),'bad');});
+  }).catch(function(e){ajKalan(dep,tarih,e);});
 }
 /* Başka güne / departmana geçmeden önce bekleyen değişiklik kaydedilir */
 function ajGit(dep,tarih){
@@ -3048,6 +3086,23 @@ document.addEventListener('keydown',function(ev){
   else if(k==='End')n=a.length-1;
   if(n>=0){ev.preventDefault();a[n].focus();}
 },true);
+
+/* ---------- kaydedilmemiş değişiklik varken pencereyi kapatma ---------- */
+/* Sözleşme ya da opsiyon formunda yazılanlar kaydedilmeden Esc / Vazgeç / × ile kaybolmasın diye önce sorulur. */
+function kapatSorulur(){return !!(cur&&cur.degisti&&!cur.busy&&st.canWrite&&($('frm')||$('ofrm')));}
+function kapatSor(){
+  var f=$('frm')||$('ofrm');if(!f){hide();return;}
+  var k=$('kap-sor');
+  if(!k){
+    k=document.createElement('div');k.id='kap-sor';k.className='kapsor';k.setAttribute('role','alertdialog');k.setAttribute('aria-label','Kaydedilmemiş değişiklikler');
+    k.innerHTML='<p><b>Kaydedilmemiş değişiklikler var.</b> Pencereyi kapatırsanız yazdıklarınız silinir.</p>'+
+      '<div class="iptalb"><button type="button" class="btn" id="kap-cik">Kaydetmeden kapat</button><button type="button" class="btn primary" id="kap-don">Geri dön</button></div>';
+    f.appendChild(k);
+  }
+  k.hidden=false;$('kap-don').focus();
+}
+function kapatIste(){if(kapatSorulur())kapatSor();else hide();}
+dlg.addEventListener('cancel',function(ev){if(kapatSorulur()){ev.preventDefault();kapatSor();}});
 
 /* ---------- başlangıç ---------- */
 renkYaz();
