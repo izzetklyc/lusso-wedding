@@ -552,6 +552,52 @@ textarea.ain.oto{field-sizing:content;min-height:84px;max-height:70vh;line-heigh
   .ksdenk>div{flex-basis:40%}
   .ksdenk .son{flex-basis:100%}
 }
+/* ---------- Kasa · Genel cari ---------- */
+.seg.ana button{height:42px;padding:0 20px;font-size:14px;letter-spacing:.02em}
+.seg.ana button[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:var(--surface)}
+.craraclar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+.craraclar .ain{flex:1 1 220px;max-width:340px}
+.cralt{display:block;margin-top:2px;font-size:12px;color:var(--muted)}
+.crbas{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+.crbas h2{margin:0;font-family:var(--f-display);font-weight:500;font-size:17px;letter-spacing:.06em;overflow-wrap:anywhere}
+.crform{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px 12px}
+.crform .fld.iki{grid-column:span 2}
+.crdugme{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.liste.cr{min-width:820px}
+.liste.cr td{font-variant-numeric:tabular-nums}
+.liste.cr td.crac{white-space:normal;min-width:170px;max-width:380px;overflow-wrap:anywhere}
+.liste.cr .guclu{font-weight:700}
+.liste.cr tfoot td{border-top:1px solid var(--line-strong);border-bottom:0;font-weight:600;background:var(--bg)}
+.liste.cr tr.devir td{background:var(--gold-soft);font-weight:500}
+.liste.cr tr.secili td{background:var(--gold-soft)}
+.liste.cr tr.soluk td{opacity:.55}
+.liste.cr tr.odendi td{color:var(--muted)}
+.liste.cr tr.odendi td.tut{text-decoration:line-through}
+.liste.cr tr.gecmis td.tut{color:var(--danger);font-weight:600}
+.liste.cr tr[hidden]{display:none}
+.liste.cr .who{font-family:var(--f-ui);font-size:14px;font-weight:600;white-space:normal;overflow-wrap:anywhere}
+.liste.cr td .akt{white-space:nowrap}
+.crsag{margin-left:auto}
+.crsil{margin-left:auto;display:inline-flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:13px;color:var(--danger)}
+.liste.cr th,.liste.cr td{padding:8px 9px;font-size:13px}
+.liste.cr th{font-size:10.5px;letter-spacing:.05em}
+.liste.cr td.crfa{white-space:normal;min-width:190px;max-width:300px;overflow-wrap:anywhere}
+.liste.cr .btn.kucuk{height:30px}
+.crbilgi>summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.crbilgi>summary::-webkit-details-marker{display:none}
+.crbilgi>summary::after{content:"";flex:none;width:7px;height:7px;margin-right:4px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg);opacity:.6}
+.crbilgi[open]>summary::after{transform:rotate(-135deg)}
+.tile .tv.kok{color:var(--ok)}
+.tile .tv.kbad{color:var(--danger)}
+.akth{margin:8px 0 0;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+#ks-aktar input[type="file"]{height:auto;padding:8px 10px}
+@media (max-width:640px){
+  .crform{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .crform .fld.iki,.crform .fld.wide{grid-column:1/-1}
+  .seg.ana button{flex:1 1 0;padding:0 10px}
+  #ks .tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #ks .tiles .tile:last-child:nth-child(odd){grid-column:1/-1}
+}
 /* Geçmiş günler soluk; iptal onayı; iptal listesi */
 .day.gecmis{opacity:.55}
 .day.gecmis.kapali{opacity:.4}
@@ -1496,7 +1542,7 @@ function renderKullanicilar(zorla){
   if(!st.admin){el.innerHTML='';kulImza='';return;}
   if(!$('kul-liste')){
     el.innerHTML='<section class="ablok"><h2>Kullanıcılar</h2>'+
-      '<p class="fine">Yönetici her şeyi görür ve değiştirir. Sözleşme yetkilisi takvimi görür, sözleşme yazar ve düzenler. Görüntüleyici yalnızca takvime bakar. Pasif yapılan kullanıcı programa giremez. Her kişinin hangi ajandayı kullanacağını Ajanda sütunundan seçersiniz: kişi sol menüdeki Ajanda bölümünde yalnızca o ajandayı görür ve yazar; “Ajanda yok” seçilirse Ajanda bölümü ona hiç görünmez. Yönetici bütün ajandaları görür. Kasa sütununu işaretlediğiniz kişi sol menüde Kasa bölümünü görür ve yalnızca bugünün kasa sayfasını doldurabilir; geçmiş günleri yalnızca yönetici düzeltir.</p>'+
+      '<p class="fine">Yönetici her şeyi görür ve değiştirir. Sözleşme yetkilisi takvimi görür, sözleşme yazar ve düzenler. Görüntüleyici yalnızca takvime bakar. Pasif yapılan kullanıcı programa giremez. Her kişinin hangi ajandayı kullanacağını Ajanda sütunundan seçersiniz: kişi sol menüdeki Ajanda bölümünde yalnızca o ajandayı görür ve yazar; “Ajanda yok” seçilirse Ajanda bölümü ona hiç görünmez. Yönetici bütün ajandaları görür. Kasa sütununu işaretlediğiniz kişi sol menüde Kasa bölümünü görür: Günlük Kasa’da yalnızca bugünün sayfasını doldurabilir (geçmiş günleri yalnızca yönetici düzeltir), Genel Cari’de kayıt girip düzeltebilir (kayıt silmeyi yalnızca yönetici yapar).</p>'+
       '<div id="kul-liste"></div></section>'+
       '<section class="ablok"><h2>Yeni kullanıcı</h2><p class="fine">Kullanıcı, burada yazdığınız e-posta ve şifreyle giriş yapar. Şifreyi kendisine siz iletirsiniz; isterse girişten sonra değiştirir. Şifreyi verirken kişinin kullanacağı ajandayı da aşağıdan seçin; sonradan listeden değiştirebilirsiniz.</p>'+
       '<form id="kul-yeni" novalidate><div class="fgrid">'+
@@ -1505,7 +1551,7 @@ function renderKullanicilar(zorla){
       '<div class="fld"><label for="k-sifre">Şifre</label><input id="k-sifre" type="text" autocomplete="off" maxlength="72"><span class="hint">En az 8 karakter.</span></div>'+
       '<div class="fld"><label for="k-rol">Yetki</label><select id="k-rol">'+rolSecenek('kayit')+'</select></div>'+
       '<div class="fld"><label for="k-dep">Kullanacağı ajanda</label><select id="k-dep">'+depSecenek('')+'</select></div>'+
-      '<div class="fld"><label for="k-kasa">Kasa yetkisi</label><select id="k-kasa"><option value="">Yok</option><option value="1">Var — Günlük Kasa’yı kullanır</option></select></div>'+
+      '<div class="fld"><label for="k-kasa">Kasa yetkisi</label><select id="k-kasa"><option value="">Yok</option><option value="1">Var — Günlük Kasa ve Genel Cari’yi kullanır</option></select></div>'+
       '</div><p class="err" id="kul-err" hidden style="margin-top:12px"></p>'+
       '<div class="dfoot" style="margin-top:14px"><button type="submit" class="btn primary" id="kul-ekle">Kullanıcıyı ekle</button></div></form></section>';
     kulImza='';
@@ -1605,7 +1651,7 @@ function render(){
   if(!ok)return;
   if(st.view==='ajanda'&&!ajErisim())st.view='takvim';
   if(st.view==='kasa'&&!ksErisim())st.view='takvim';
-  if(!ksErisim()&&(ks.yuklu||$('ks').firstChild)){clearTimeout(ksT);ks=ksYeni();$('ks').innerHTML='';}   /* kasa yetkisi alınan kişinin ekranında veri kalmaz */
+  if(!ksErisim()&&(ks.yuklu||cr.yuklu||$('ks').firstChild)){clearTimeout(ksT);ks=ksYeni();cr=crYeni();akt=null;$('ks').innerHTML='';}   /* kasa yetkisi alınan kişinin ekranında veri kalmaz */
   if(BOLUMLER.some(function(b){return b.id===st.view&&b.yonetici;})&&!st.admin)st.view='takvim';
   var enR=enErkenAy();if(enR&&st.ym<enR){st.ym=enR;subscribe();}
   if(st.ym>enGecAy()&&enGecAy()>=enR){st.ym=enGecAy();subscribe();}
@@ -1622,12 +1668,14 @@ function setView(v){
   if(st.view==='ajanda'&&v!=='ajanda'&&aj.kirli)ajKaydet();
   var ajGeri=v==='ajanda'&&st.view!=='ajanda'&&aj.dep&&aj.gun&&!aj.kirli;
   if(st.view==='kasa'&&v!=='kasa'&&ks.kirli)ksKaydet();
-  var ksGeri=v==='kasa'&&st.view!=='kasa'&&ks.yuklu&&ks.gun&&!ks.kirli&&!ks.tKirli;
+  var ksGeri=v==='kasa'&&st.view!=='kasa'&&ks.bolum==='gunluk'&&ks.yuklu&&ks.gun&&!ks.kirli&&!ks.tKirli;
+  var crGeri=v==='kasa'&&st.view!=='kasa'&&ks.bolum==='cari'&&cr.yuklu;
   st.view=v;
   if(v==='ayarlar'){if(!dirty)draft=clone(cfg);render();renderAyarlar();renderKullanicilar(true);}
   else render();
   if(ajGeri)ajYukle(true);
   if(ksGeri)ksYukle(true);
+  if(crGeri)crYukle(true);
   try{window.scrollTo(0,0);}catch(e){}
 }
 
@@ -1755,7 +1803,7 @@ function oturumDegisti(session){
     canliDurdur();hide();
     st.me=null;st.admin=false;st.canWrite=false;st.kullanicilar=[];st.recs=new Map();st.yukluYil=null;sonImza='';st.view='takvim';dirty=false;
     /* Çıkışta ekrandaki kayıtlar da temizlenir; sonraki kullanıcı öncekinin gördüğünü görmez. */
-    ['kul','ayar','ist','cal','liste','salons','aj','ks'].forEach(function(i){$(i).innerHTML='';});kulImza='';draft=clone(cfg);$('toast').hidden=true;clearTimeout(ajT);aj=ajYeni();clearTimeout(ksT);ks=ksYeni();iptal={yil:null,rows:[],yukleniyor:false,hata:''};ops=[];renderZil();
+    ['kul','ayar','ist','cal','liste','salons','aj','ks'].forEach(function(i){$(i).innerHTML='';});kulImza='';draft=clone(cfg);$('toast').hidden=true;clearTimeout(ajT);aj=ajYeni();clearTimeout(ksT);ks=ksYeni();cr=crYeni();akt=null;iptal={yil:null,rows:[],yukleniyor:false,hata:''};ops=[];renderZil();
     sb.rpc('kurulum_durumu').then(function(r){
       if(benId)return;
       st.oturum=r.error?(/fetch|network/i.test(r.error.message||'')?'hata':'giris'):(r.data===false?'ilk':'giris');
@@ -2822,7 +2870,8 @@ window.addEventListener('pagehide',function(){if(aj.kirli)ajKaydet();if(ks.kirli
 document.addEventListener('visibilitychange',function(){
   if(st.view!=='kasa'||st.oturum!=='ok')return;
   if(document.hidden){if(ks.kirli)ksKaydet();}
-  else if(ks.yuklu&&ks.gun&&!ks.kirli&&!ks.tKirli)ksYukle(true);
+  else if(ks.bolum==='cari'){if(cr.yuklu)crYukle(true);}
+  else if(ks.yuklu&&ks.gun&&!ks.kirli&&!ks.tKirli&&!(akt&&akt.calisiyor))ksYukle(true);
 });
 
 /* ---------- geçmiş tarihler ----------
@@ -3236,7 +3285,7 @@ var KS_VARSAYILAN={
     .map(function(a){return {ad:a[0],fiyat:a[1]};}),
   giderTur:['Personel','Gıda','İçecek','Mutfak Sarf','Temizlik','Kiralama','Dekorasyon','Müzik','Foto-Video','Bakım-Onarım','Tadilat','Fatura','Nakliye-Yakıt','Reklam','Ofis-Kırtasiye','Vergi-SGK','Banka','Ortak Ödemesi','Diğer']
 };
-function ksYeni(){return {sekme:'gun',tarih:null,ay:null,gun:null,meta:null,ayar:clone(KS_VARSAYILAN),ayarVar:false,taslak:null,tKirli:false,ozet:[],soz:[],durum:'',durumTur:'',hata:'',kirli:false,sira:0,yuklu:false};}
+function ksYeni(){return {bolum:'gunluk',sekme:'gun',tarih:null,ay:null,gun:null,meta:null,ayar:clone(KS_VARSAYILAN),ayarVar:false,taslak:null,tKirli:false,ozet:[],soz:[],durum:'',durumTur:'',hata:'',kirli:false,sira:0,yuklu:false};}
 var ks=ksYeni(),ksT=null;
 function ksErisim(){return !!(st.me&&st.oturum==='ok'&&(st.admin||st.me.kasa===true));}
 function ksYazabilir(t){return ksErisim()&&(st.admin||t===todayStr());}
@@ -3485,14 +3534,21 @@ function ksMeta(){
 function ksRender(){
   var el=$('ks');
   if(!ksErisim()){el.innerHTML='';return;}
+  if(ks.bolum==='cari'){if(!cr.yuklu&&!cr.hata&&!cr.bekle)crYukle();else if(!el.firstChild)ksCiz();return;}
   if(!ks.tarih){ks.tarih=todayStr();if(ks.tarih<BASLANGIC_GUN)ks.tarih=BASLANGIC_GUN;if(ks.tarih>enGecGun())ks.tarih=enGecGun();ks.ay=ks.tarih.slice(0,7);ksYukle();return;}
   if(!el.firstChild)ksCiz();
 }
 function ksCiz(){
   var el=$('ks');if(!el)return;
   if(!ksErisim()){el.innerHTML='';return;}
+  var bolumSec='<div class="seg ana" role="group" aria-label="Kasa bölümleri"><button type="button" data-ksbolum="gunluk" aria-pressed="'+(ks.bolum==='gunluk')+'">Günlük kasa</button>'+
+    '<button type="button" data-ksbolum="cari" aria-pressed="'+(ks.bolum==='cari')+'">Genel cari</button></div>';
+  if(ks.bolum==='cari'){
+    el.innerHTML='<div class="phead"><h1>'+crBaslik()+'</h1><span class="ajdurum" id="ks-durum"></span></div><div class="ajust">'+bolumSec+crSekmeHtml()+'</div>'+crHtml();
+    return;
+  }
   var bas={gun:'Günlük Kasa',ay:'Günlük Kasa · Ay özeti',ayar:'Kasa ayarları'}[ks.sekme];
-  var h='<div class="phead"><h1>'+bas+'</h1><span class="ajdurum" id="ks-durum"></span></div><div class="ajust">'+
+  var h='<div class="phead"><h1>'+bas+'</h1><span class="ajdurum" id="ks-durum"></span></div><div class="ajust">'+bolumSec+
     '<div class="seg" role="group" aria-label="Kasa bölümü"><button type="button" data-kssekme="gun" aria-pressed="'+(ks.sekme==='gun')+'">Gün sayfası</button>'+
     '<button type="button" data-kssekme="ay" aria-pressed="'+(ks.sekme==='ay')+'">Ay özeti</button>'+
     (st.admin?'<button type="button" data-kssekme="ayar" aria-pressed="'+(ks.sekme==='ayar')+'">Kasa ayarları</button>':'')+'</div></div>';
@@ -3685,6 +3741,7 @@ function ksAyarHtml(){
   h+='<section class="ablok"><h2>Gider türleri</h2><p class="fine">Gider tablosundaki “Türü” listesinde çıkar.</p><div class="ksturler">';
   t.giderTur.forEach(function(x,i){h+='<div class="ksr2"><input type="text" class="ain" id="ks-tur-'+i+'" data-gt="'+i+'" maxlength="30" autocomplete="off" value="'+esc(x)+'" aria-label="Gider türü"><button type="button" class="sil" data-gtdel="'+i+'" aria-label="Türü kaldır">&times;</button></div>';});
   h+='</div><button type="button" class="ekle" id="ks-tur-ekle">+ Tür ekle</button></section>';
+  h+=aktHtml();
   h+='<div class="ksfoot"><span class="fine" id="ks-ayar-durum">'+(ks.tKirli?'Kaydedilmemiş değişiklikler var.':'Kasa ayarları kayıtlı.')+'</span><button type="button" class="btn primary" id="ks-ayar-kaydet"'+(ks.tKirli?'':' disabled')+'>Kasa ayarlarını kaydet</button></div><p class="err" id="ks-ayar-err" hidden></p>';
   return h;
 }
@@ -3716,6 +3773,7 @@ function ksAyarKaydet(){
 function ksOrgBul(t){var k=t.closest('.kskart');return k?ks.gun.org[k.getAttribute('data-bant')][k.getAttribute('data-salon')]:null;}
 $('ks').addEventListener('input',function(ev){
   var t=ev.target,f=t.getAttribute('data-f'),r;
+  if(ks.bolum==='cari'){crInput(ev);return;}
   if(!ks.gun)return;
   /* kasa ayarları */
   if(ks.sekme==='ayar'){
@@ -3760,6 +3818,8 @@ $('ks').addEventListener('input',function(ev){
 });
 $('ks').addEventListener('change',function(ev){
   var t=ev.target;
+  if(ks.bolum==='cari'){crChange(ev);return;}
+  if(t.id==='ks-akt-dosya'){if(st.admin)aktDosya(t);return;}
   if(t.id==='ks-tarih'){if(/^\d{4}-\d{2}-\d{2}$/.test(t.value))ksGit(t.value);else t.value=ks.tarih;return;}
   /* kutudan çıkınca tutar düzgün biçime çekilir */
   if(t.classList.contains('tl')){var n=tlOku(t.value);t.value=tlYaz(n);}
@@ -3767,6 +3827,17 @@ $('ks').addEventListener('change',function(ev){
 });
 $('ks').addEventListener('click',function(ev){
   var b=ev.target.closest('button');if(!b)return;
+  if(b.hasAttribute('data-ksbolum')){
+    var hb=b.getAttribute('data-ksbolum');
+    if(hb===ks.bolum)return;
+    if(ks.kirli)ksKaydet();
+    if(ks.sekme==='ayar'&&ks.tKirli){ks.taslak=clone(ks.ayar);ks.tKirli=false;}
+    ks.bolum=hb==='cari'?'cari':'gunluk';
+    $('ks').innerHTML='';ksRender();
+    if(ks.bolum==='cari'&&cr.yuklu)crYukle(true);
+    return;
+  }
+  if(ks.bolum==='cari'){crClick(ev);return;}
   if(b.hasAttribute('data-kssekme')){
     var hedef=b.getAttribute('data-kssekme');
     if(ks.sekme==='ayar'&&hedef!=='ayar'&&ks.tKirli){ks.taslak=clone(ks.ayar);ks.tKirli=false;}
@@ -3782,6 +3853,7 @@ $('ks').addEventListener('click',function(ev){
     ks.ay=ymd(y,m,1).slice(0,7);ksCiz();return;
   }
   if(ks.sekme==='ayar'&&st.admin&&ks.taslak){
+    if(b.id==='ks-akt-baslat'){aktCalistir();return;}
     if(b.hasAttribute('data-kbekle')){ks.taslak[b.getAttribute('data-kbekle')].push({ad:'',fiyat:null});ksCiz();ksTaslakDegisti();return;}
     if(b.hasAttribute('data-kbdel')){var r=b.closest('[data-kb]');ks.taslak[r.getAttribute('data-kb')].splice(+r.getAttribute('data-i'),1);ksCiz();ksTaslakDegisti();return;}
     if(b.id==='ks-tur-ekle'){ks.taslak.giderTur.push('');ksCiz();ksTaslakDegisti();return;}
@@ -3803,6 +3875,643 @@ function ksAcikKoru(){
   ksCiz();
   [].forEach.call(document.querySelectorAll('#ks .kskart'),function(k){var a=acik[k.getAttribute('data-bant')+'-'+k.getAttribute('data-salon')];if(a!==undefined)k.open=a;});
   window.scrollTo(0,y);
+}
+
+/* ---------- KASA · GENEL CARİ ---------- */
+/* Tedarikçi hesapları: her firmanın bir ekstresi vardır (alım = borç, ödeme = alacak; bakiye = devreden + alım − ödeme).
+   Excel'deki Genel Cari dosyasının karşılığıdır: firma icmali, firma ekstresi, vade listesi (çek / senet / taksit) ve tadilat listesi.
+   Kasa yetkisi olan herkes kayıt girer ve düzeltir; kayıt silmeyi yalnızca yönetici yapar. Tutarlar kuruşlu tutulur. */
+var CR_EVRAK=['Fatura','Makbuz','Sipariş fişi','İrsaliye','Dekont','Senet','Çek','Kredi kartı'];
+var CR_BELGE=['Çek','Senet','Kredi kartı','Fatura','Diğer'];
+var CR_LISTE={vade:{ad:'Vade listesi',bos:'Vade listesinde kayıt yok.',aciklama:'Verilen çek, senet ve taksitler; vadesi yaklaşan ödemeler buradan izlenir.'},
+  tadilat:{ad:'Tadilat listesi',bos:'Tadilat listesinde kayıt yok.',aciklama:'Tadilat işleri için verilen çek, senet ve ödemeler; firma ekstrelerinden bağımsızdır.'}};
+function crBosFrm(){return {id:null,tur:'alim',tarih:todayStr(),vade:'',evrak:'',aciklama:'',birim:'',miktar:null,fiyat:null,matrah:null,kdv:null,tutar:null,mEl:false,el:false};}
+function crBosEfrm(){return {id:null,firma:'',tur:'',no:'',aciklama:'',tarih:'',vade:'',tutar:null};}
+function crYeni(){return {sekme:'firma',firma:null,firmalar:[],ozet:{},hareket:[],hYuklu:false,evrak:[],yuklu:false,hata:'',ara:'',pasif:false,yeni:null,bilgi:null,frm:crBosFrm(),efrm:crBosEfrm(),silOnay:null,sira:0,mesgul:false,bekle:false};}
+var cr=crYeni();
+
+function crHata(e){
+  var c=(e&&e.code)||'',m=(e&&e.message)||'';
+  if(c==='42P01'||c==='42703'||c==='PGRST205'||c==='PGRST204'||/cari_/.test(m)&&/does not exist|schema cache|could not find/i.test(m))
+    return 'Genel cari için veritabanı eklemesi henüz yapılmamış. Yöneticinize haber verin.';
+  if(c==='23503')return 'Bu firmanın hareketleri var; firma silinemez.';
+  return hataMetni(e);
+}
+/* PostgREST bir istekte en çok 1000 satır verir; uzun listeler parça parça okunur. */
+function crHepsi(kur){
+  var hepsi=[];
+  function adim(bas){
+    return kur().range(bas,bas+999).then(function(r){
+      if(r.error)throw r.error;
+      var d=r.data||[];hepsi=hepsi.concat(d);
+      return d.length===1000?adim(bas+1000):hepsi;
+    });
+  }
+  return adim(0);
+}
+function crSayi(n,hane){
+  if(n===null||n===undefined||n===''||isNaN(n))return '';
+  var s=(+n).toFixed(hane===undefined?3:hane).replace(/0+$/,'').replace(/\.$/,''),p=s.split('.');
+  return fmtN(parseInt(p[0],10))+(p[1]?','+p[1]:'');
+}
+function crSayiOku(s,hane){
+  s=String(s==null?'':s).replace(/[^\d.,]/g,'');
+  if(!/\d/.test(s))return null;
+  /* miktar ve birim fiyatta virgül ondalıktır; nokta yalnızca binlik ayırıcıdır ("1.250,5"); tek nokta ve sonrasında 3 hane yoksa ondalık sayılır ("33.5") */
+  if(s.indexOf(',')>=0)s=s.replace(/\./g,'').replace(',','.');
+  else if((s.match(/\./g)||[]).length>1||/\.\d{3}$/.test(s))s=s.replace(/\./g,'');
+  var n=parseFloat(s),k=Math.pow(10,hane===undefined?3:hane);
+  return isNaN(n)?null:Math.round(n*k)/k;
+}
+function crYazi(x,n){return String(x==null?'':x).slice(0,n);}
+function crPara(x){return (typeof x==='number'&&isFinite(x))?Math.round(x*100)/100:(x===null||x===undefined||x===''||isNaN(+x)?null:Math.round(+x*100)/100);}
+function crFirmaTemiz(f){
+  var b=(f.bilgi&&typeof f.bilgi==='object')?f.bilgi:{},bilgi={};
+  ['kod','vergi','eposta','adres','yetkili','satis','telefon','satisTel','not'].forEach(function(k){bilgi[k]=crYazi(b[k],k==='not'||k==='adres'?400:120);});
+  return {id:f.id,ad:crYazi(f.ad,80),unvan:crYazi(f.unvan,160),tur:crYazi(f.tur,60),bilgi:bilgi,devreden:crPara(f.devreden)||0,sira:+f.sira||0,aktif:f.aktif!==false};
+}
+function crHareketTemiz(h){
+  return {id:h.id,firma_id:h.firma_id,tarih:h.tarih||'',vade:h.vade||'',evrak:crYazi(h.evrak,60),aciklama:crYazi(h.aciklama,200),birim:crYazi(h.birim,20),
+    miktar:h.miktar===null||h.miktar===undefined?null:+h.miktar,fiyat:h.fiyat===null||h.fiyat===undefined?null:+h.fiyat,matrah:crPara(h.matrah),
+    kdv_oran:h.kdv_oran===null||h.kdv_oran===undefined?null:+h.kdv_oran,kdv:crPara(h.kdv),borc:crPara(h.borc)||0,alacak:crPara(h.alacak)||0,sira:+h.sira||0};
+}
+function crEvrakTemiz(e){
+  return {id:e.id,liste:e.liste==='tadilat'?'tadilat':'vade',firma:crYazi(e.firma,120),tarih:e.tarih||'',tur:crYazi(e.tur,40),no:crYazi(e.no,40),aciklama:crYazi(e.aciklama,240),
+    vade:e.vade||'',tutar:crPara(e.tutar)||0,odendi:e.odendi===true,sira:+e.sira||0};
+}
+function crFirma(id){var i;for(i=0;i<cr.firmalar.length;i++)if(cr.firmalar[i].id===id)return cr.firmalar[i];return null;}
+/* Devreden artı ise önceki dönemden borç, eksi ise firmadan alacak (fazla ödeme) demektir; icmalde alım / ödeme sütunlarına öyle girer. */
+function crFirmaHesap(f){
+  var o=cr.ozet[f.id]||{borc:0,alacak:0,adet:0,son:null},dv=krs(f.devreden);
+  var alim=Math.max(dv,0)+krs(o.borc),odeme=Math.max(-dv,0)+krs(o.alacak);
+  return {alim:alim/100,odeme:odeme/100,kalan:(alim-odeme)/100,adet:o.adet,son:o.son};
+}
+function crOzetYenile(){
+  if(!cr.firma||!cr.hYuklu)return;
+  var B=0,A=0,son=null;
+  cr.hareket.forEach(function(h){B+=krs(h.borc);A+=krs(h.alacak);if(h.tarih&&(!son||h.tarih>son))son=h.tarih;});
+  cr.ozet[cr.firma]={borc:B/100,alacak:A/100,adet:cr.hareket.length,son:son};
+}
+function crOdakta(){var a=document.activeElement,k=$('ks');return !!(a&&k&&k.contains(a)&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName));}
+function crKirli(){
+  var f=cr.frm,e=cr.efrm;
+  return !!(f.id||f.evrak||f.aciklama||f.tutar||f.miktar||f.fiyat||f.matrah||e.id||e.firma||e.tutar||e.aciklama||cr.yeni);
+}
+
+/* --- yükleme --- */
+function crYukle(sessiz){
+  if(!sb||!ksErisim())return;
+  var sira=++cr.sira,firma=cr.firma;
+  cr.bekle=true;
+  if(!sessiz){cr.hata='';cr.yuklu=false;ksCiz();}
+  Promise.all([
+    crHepsi(function(){return sb.from('cari_firma').select('*').order('sira').order('id');}),
+    crHepsi(function(){return sb.from('cari_ozet').select('*').order('firma_id');}),
+    crHepsi(function(){return sb.from('cari_evrak').select('*').order('sira').order('id');}),
+    firma?crHepsi(function(){return sb.from('cari_hareket').select('*').eq('firma_id',firma).order('sira').order('id');}):Promise.resolve(null)
+  ]).then(function(r){
+    if(sira!==cr.sira)return;
+    cr.bekle=false;
+    if(sessiz&&(crOdakta()||crKirli()||cr.mesgul))return;
+    cr.firmalar=r[0].map(crFirmaTemiz);
+    cr.ozet={};r[1].forEach(function(o){cr.ozet[o.firma_id]={borc:+o.borc||0,alacak:+o.alacak||0,adet:+o.adet||0,son:o.son||null};});
+    cr.evrak=r[2].map(crEvrakTemiz);
+    if(firma&&cr.firma===firma){
+      if(crFirma(firma)){cr.hareket=r[3].map(crHareketTemiz);cr.hYuklu=true;if(!cr.bilgi||sessiz)cr.bilgi=crBilgiTaslak(crFirma(firma));}
+      else{cr.firma=null;cr.hareket=[];cr.hYuklu=false;}
+    }
+    cr.yuklu=true;cr.hata='';ksCiz();
+  }).catch(function(e){if(sira!==cr.sira)return;cr.bekle=false;if(sessiz)return;cr.hata=crHata(e);cr.yuklu=false;ksCiz();});
+}
+function crFirmaAc(id){
+  cr.firma=id;cr.hareket=[];cr.hYuklu=false;cr.frm=crBosFrm();cr.silOnay=null;cr.bilgi=crFirma(id)?crBilgiTaslak(crFirma(id)):null;
+  var sira=++cr.sira;
+  ksCiz();try{window.scrollTo(0,0);}catch(e){}
+  crHepsi(function(){return sb.from('cari_hareket').select('*').eq('firma_id',id).order('sira').order('id');}).then(function(d){
+    if(sira!==cr.sira||cr.firma!==id)return;
+    cr.hareket=d.map(crHareketTemiz);cr.hYuklu=true;crOzetYenile();ksCiz();
+  }).catch(function(e){if(sira!==cr.sira)return;cr.hata=crHata(e);ksCiz();});
+}
+function crBilgiTaslak(f){
+  var b=f.bilgi;
+  return {ad:f.ad,unvan:f.unvan,tur:f.tur,devreden:Math.abs(f.devreden)||null,devYon:f.devreden<0?'alacak':'borc',aktif:f.aktif,kod:b.kod,vergi:b.vergi,eposta:b.eposta,adres:b.adres,yetkili:b.yetkili,satis:b.satis,telefon:b.telefon,satisTel:b.satisTel,not:b.not,kirli:false};
+}
+
+/* --- çizim --- */
+function crBaslik(){
+  if(cr.sekme==='vade'||cr.sekme==='tadilat')return 'Genel Cari · '+CR_LISTE[cr.sekme].ad;
+  return 'Genel Cari'+(cr.firma&&crFirma(cr.firma)?' · Firma ekstresi':'');
+}
+function crSekmeHtml(){
+  return '<div class="seg" role="group" aria-label="Genel cari bölümü"><button type="button" data-crsekme="firma" aria-pressed="'+(cr.sekme==='firma')+'">Firmalar</button>'+
+    '<button type="button" data-crsekme="vade" aria-pressed="'+(cr.sekme==='vade')+'">Vade listesi</button>'+
+    '<button type="button" data-crsekme="tadilat" aria-pressed="'+(cr.sekme==='tadilat')+'">Tadilat listesi</button></div>';
+}
+function crHtml(){
+  if(cr.hata)return '<p class="banner bad" id="cr-hata">'+esc(cr.hata)+'</p><div class="crdugme"><button type="button" class="btn" id="cr-yenile">Yeniden dene</button></div>';
+  if(!cr.yuklu)return '<p class="fine">Yükleniyor…</p>';
+  if(cr.sekme==='vade'||cr.sekme==='tadilat')return crEvrakHtml(cr.sekme);
+  return cr.firma&&crFirma(cr.firma)?crEkstreHtml():crFirmalarHtml();
+}
+function crKalanHtml(k){
+  if(k>0)return '<b>'+tlYaz(k/100)+'</b>';
+  if(k<0)return '<b class="kok">'+tlYaz(k/100)+'</b>';
+  return '0';
+}
+function crFirmalarHtml(){
+  var ara=cr.ara.toLocaleLowerCase('tr').trim(),T={alim:0,odeme:0,borc:0,fazla:0},satir='',n=0,gorunen=0,h='';
+  var pasifVar=cr.firmalar.some(function(f){return !f.aktif;});
+  cr.firmalar.forEach(function(f){
+    if(!f.aktif&&!cr.pasif)return;
+    var x=crFirmaHesap(f),k=krs(x.kalan);n++;
+    T.alim+=krs(x.alim);T.odeme+=krs(x.odeme);if(k>0)T.borc+=k;else T.fazla-=k;
+    /* aramaya uymayan satır da çizilir ama gizlenir: kutu boşaltılınca yeniden çizmeden geri gelir */
+    var gizli=!!ara&&(f.ad+' '+f.unvan+' '+f.tur).toLocaleLowerCase('tr').indexOf(ara)<0;
+    if(!gizli)gorunen++;
+    satir+='<tr data-ara="'+esc((f.ad+' '+f.unvan+' '+f.tur).toLocaleLowerCase('tr'))+'"'+(f.aktif?'':' class="soluk"')+(gizli?' hidden':'')+'><td class="num">'+n+'</td><td><button type="button" class="who" data-crfirma="'+f.id+'">'+esc(f.unvan||f.ad)+'</button>'+
+      (f.unvan&&f.ad&&f.ad!==f.unvan?'<span class="cralt">'+esc(f.ad)+(f.aktif?'':' · pasif')+'</span>':(f.aktif?'':'<span class="cralt">pasif</span>'))+'</td>'+
+      '<td>'+esc(f.tur||'—')+'</td><td class="num">'+tlYaz(x.alim)+'</td><td class="num">'+tlYaz(x.odeme)+'</td><td class="num">'+crKalanHtml(k)+'</td>'+
+      '<td>'+(x.son?fmtKisa(x.son):'—')+'</td></tr>';
+  });
+  h+='<div class="tiles"><div class="tile"><span class="tl">Firmalara toplam borcumuz</span><span class="tv" id="cr-t-borc">'+tlPara(T.borc/100)+'</span></div>'+
+     '<div class="tile"><span class="tl">Toplam alım</span><span class="tv" id="cr-t-alim">'+tlPara(T.alim/100)+'</span></div>'+
+     '<div class="tile"><span class="tl">Yapılan ödeme</span><span class="tv" id="cr-t-odeme">'+tlPara(T.odeme/100)+'</span></div>'+
+     (T.fazla?'<div class="tile"><span class="tl">Fazla ödediğimiz (firmadan alacak)</span><span class="tv kok" id="cr-t-fazla">'+tlPara(T.fazla/100)+'</span></div>':'')+
+     '<div class="tile"><span class="tl">Firma sayısı</span><span class="tv">'+n+'</span></div></div>';
+  h+='<div class="craraclar"><input type="search" class="ain" id="cr-ara" placeholder="Firma ara" autocomplete="off" value="'+esc(cr.ara)+'" aria-label="Firma ara">'+
+     (pasifVar?'<label class="akt"><input type="checkbox" id="cr-pasif"'+(cr.pasif?' checked':'')+'>Pasif firmaları göster</label>':'')+
+     '<button type="button" class="btn" id="cr-firma-ekle">+ Firma ekle</button></div>';
+  if(cr.yeni){
+    var y=cr.yeni;
+    h+='<section class="ablok" id="cr-yeni"><h2>Yeni firma</h2><div class="crform">'+
+       '<div class="fld"><label for="cr-y-ad">Kısa ad</label><input type="text" id="cr-y-ad" data-cy="ad" maxlength="80" autocomplete="off" value="'+esc(y.ad)+'"></div>'+
+       '<div class="fld iki"><label for="cr-y-unvan">Firma ünvanı</label><input type="text" id="cr-y-unvan" data-cy="unvan" maxlength="160" autocomplete="off" value="'+esc(y.unvan)+'"></div>'+
+       '<div class="fld"><label for="cr-y-tur">Cari türü</label><input type="text" id="cr-y-tur" data-cy="tur" maxlength="60" autocomplete="off" placeholder="Örn. Kuru pasta" value="'+esc(y.tur)+'"></div>'+
+       '<div class="fld"><label for="cr-y-dev">Devreden borç</label><input type="text" class="money tl" inputmode="decimal" id="cr-y-dev" data-cy="devreden" maxlength="16" autocomplete="off" value="'+esc(tlYaz(y.devreden))+'"></div></div>'+
+       '<p class="err" id="cr-y-err" hidden></p><div class="crdugme"><button type="button" class="btn primary" id="cr-y-kaydet">Firmayı kaydet</button><button type="button" class="btn" id="cr-y-vazgec">Vazgeç</button></div></section>';
+  }
+  if(!cr.firmalar.length)h+='<p class="fine">Henüz firma yok. “+ Firma ekle” ile başlayın'+(st.admin?' ya da Günlük kasa → Kasa ayarları’ndaki “Excel verilerini aktar” bölümünü kullanın':'')+'.</p>';
+  else h+='<div class="scroll"><table class="liste cr" id="cr-firmalar"><thead><tr><th class="num">Sıra</th><th>Firma</th><th>Cari türü</th><th class="num">Toplam alım</th><th class="num">Yapılan ödeme</th><th class="num">Kalan borç</th><th>Son hareket</th></tr></thead><tbody>'+
+     satir+'<tr id="cr-ara-yok"'+(gorunen?' hidden':'')+'><td colspan="7">Aramaya uyan firma yok.</td></tr></tbody><tfoot><tr><td></td><td colspan="2">Genel toplam</td><td class="num">'+tlYaz(T.alim/100)+'</td><td class="num">'+tlYaz(T.odeme/100)+'</td><td class="num"><b>'+tlYaz((T.alim-T.odeme)/100)+'</b></td><td></td></tr></tfoot></table></div>'+
+     '<p class="fine">Firmaya tıklayınca ekstresi açılır. Kalan borç = devreden + alım − ödeme. Eksi tutar, firmaya fazla ödeme yapıldığını gösterir.</p>';
+  return h;
+}
+function crFld(id,etiket,alan,val,ek,sinif){return '<div class="fld'+(sinif?' '+sinif:'')+'"><label for="'+id+'">'+etiket+'</label><input type="text" id="'+id+'" data-cb="'+alan+'" autocomplete="off" value="'+esc(val==null?'':val)+'"'+(ek||'')+'></div>';}
+function crEkstreHtml(){
+  var f=crFirma(cr.firma),h='',frm=cr.frm,alim=frm.tur==='alim';
+  h+='<div class="crbas"><button type="button" class="nbtn" id="cr-geri">&#8249; Firmalar</button><h2 id="cr-f-ad">'+esc(f.unvan||f.ad)+'</h2>'+(f.tur?'<span class="chip">'+esc(f.tur)+'</span>':'')+(f.aktif?'':'<span class="chip">Pasif</span>')+'</div>';
+  if(!cr.hYuklu)return h+'<p class="fine">Yükleniyor…</p>';
+  var dv=krs(f.devreden),bak=dv,B=Math.max(dv,0),A=Math.max(-dv,0),satir='';
+  if(dv)satir+='<tr class="devir"><td class="num">0</td><td colspan="5">Devreden '+(dv>0?'borç':'alacak')+' (önceki dönem)</td><td class="num">'+(dv>0?tlYaz(dv/100):'')+'</td><td class="num">'+(dv<0?tlYaz(-dv/100):'')+'</td><td class="num guclu">'+tlYaz(bak/100)+'</td><td></td></tr>';
+  cr.hareket.forEach(function(x,i){
+    bak+=krs(x.borc)-krs(x.alacak);B+=krs(x.borc);A+=krs(x.alacak);
+    satir+='<tr data-crh="'+x.id+'"'+(frm.id===x.id?' class="secili"':'')+'><td class="num">'+(i+1)+'</td><td>'+(x.tarih?fmtKisa(x.tarih):'—')+(x.vade?'<span class="cralt">vade '+fmtKisa(x.vade)+'</span>':'')+'</td><td>'+esc(x.evrak)+'</td><td class="crac">'+esc(x.aciklama)+'</td>'+
+      '<td class="num">'+(x.miktar!==null?crSayi(x.miktar)+(x.birim?' '+esc(x.birim):''):'')+(x.miktar!==null&&x.fiyat!==null?' × ':'')+(x.fiyat!==null?crSayi(x.fiyat,4):'')+'</td>'+
+      '<td class="num">'+(x.kdv?(x.kdv_oran!==null?'%'+crSayi(x.kdv_oran,2)+' · ':'')+tlYaz(x.kdv):'')+'</td>'+
+      '<td class="num">'+(x.borc?tlYaz(x.borc):'')+'</td><td class="num kok">'+(x.alacak?tlYaz(x.alacak):'')+'</td><td class="num guclu">'+tlYaz(bak/100)+'</td>'+
+      '<td><button type="button" class="btn kucuk" data-crduzelt="'+x.id+'">Düzelt</button></td></tr>';
+  });
+  var kalan=B-A;
+  h+='<div class="tiles"><div class="tile"><span class="tl">'+(kalan<0?'Firmadan alacağımız (fazla ödeme)':'Kalan borç')+'</span><span class="tv'+(kalan<0?' kok':'')+'" id="cr-e-kalan">'+tlPara(Math.abs(kalan)/100)+'</span></div>'+
+     '<div class="tile"><span class="tl">Toplam alım'+(dv>0?' (devreden dahil)':'')+'</span><span class="tv" id="cr-e-alim">'+tlPara(B/100)+'</span></div>'+
+     '<div class="tile"><span class="tl">Yapılan ödeme</span><span class="tv" id="cr-e-odeme">'+tlPara(A/100)+'</span></div>'+
+     '<div class="tile"><span class="tl">Hareket sayısı</span><span class="tv">'+cr.hareket.length+'</span></div></div>';
+
+  /* hareket formu */
+  h+='<section class="ablok" id="cr-form"><h2>'+(frm.id?'Hareketi düzelt':'Yeni hareket')+'</h2>'+
+     '<div class="seg" role="group" aria-label="Hareket türü"><button type="button" data-crtur="alim" aria-pressed="'+alim+'">Alım (borç)</button><button type="button" data-crtur="odeme" aria-pressed="'+(!alim)+'">Ödeme (alacak)</button></div>'+
+     '<div class="crform"><div class="fld"><label for="cr-f-tarih">Tarih</label><input type="date" id="cr-f-tarih" data-cf="tarih" value="'+esc(frm.tarih)+'"></div>'+
+     '<div class="fld"><label for="cr-f-evrak">Evrak</label><input type="text" id="cr-f-evrak" data-cf="evrak" maxlength="60" autocomplete="off" list="cr-dl-evrak" placeholder="'+(alim?'Fatura, sipariş fişi…':'Makbuz, dekont, senet…')+'" value="'+esc(frm.evrak)+'"></div>'+
+     '<div class="fld iki"><label for="cr-f-aciklama">'+(alim?'Ürün / hizmet / açıklama':'Açıklama')+'</label><input type="text" id="cr-f-aciklama" data-cf="aciklama" maxlength="200" autocomplete="off" placeholder="'+(alim?'Ürün alımı':'Ödeme — nakit, havale, kredi kartı…')+'" value="'+esc(frm.aciklama)+'"></div>';
+  if(alim)h+='<div class="fld"><label for="cr-f-miktar">Miktar</label><input type="text" class="money" inputmode="decimal" id="cr-f-miktar" data-cf="miktar" maxlength="12" autocomplete="off" value="'+esc(crSayi(frm.miktar))+'"></div>'+
+     '<div class="fld"><label for="cr-f-birim">Birim</label><input type="text" id="cr-f-birim" data-cf="birim" maxlength="20" autocomplete="off" list="cr-dl-birim" placeholder="kg, adet…" value="'+esc(frm.birim)+'"></div>'+
+     '<div class="fld"><label for="cr-f-fiyat">Birim fiyat</label><input type="text" class="money" inputmode="decimal" id="cr-f-fiyat" data-cf="fiyat" maxlength="14" autocomplete="off" value="'+esc(crSayi(frm.fiyat,4))+'"></div>'+
+     '<div class="fld"><label for="cr-f-matrah">Matrah (KDV hariç)</label><input type="text" class="money tl" inputmode="decimal" id="cr-f-matrah" data-cf="matrah" maxlength="16" autocomplete="off" value="'+esc(tlYaz(frm.matrah))+'"></div>'+
+     '<div class="fld"><label for="cr-f-kdv">KDV %</label><input type="text" class="money" inputmode="decimal" id="cr-f-kdv" data-cf="kdv" maxlength="5" autocomplete="off" placeholder="0" value="'+esc(crSayi(frm.kdv,2))+'"></div>';
+  h+='<div class="fld"><label for="cr-f-vade">Vade tarihi</label><input type="date" id="cr-f-vade" data-cf="vade" value="'+esc(frm.vade)+'"></div>'+
+     '<div class="fld"><label for="cr-f-tutar">'+(alim?'Tutar (KDV dahil)':'Ödenen tutar')+'</label><input type="text" class="money tl guclu" inputmode="decimal" id="cr-f-tutar" data-cf="tutar" maxlength="16" autocomplete="off" value="'+esc(tlYaz(frm.tutar))+'"></div></div>'+
+     (alim?'<p class="fine" id="cr-f-hesap">'+esc(crHesapYazi())+'</p>':'')+
+     '<p class="err" id="cr-f-err" hidden></p><div class="crdugme"><button type="button" class="btn primary" id="cr-f-kaydet">'+(frm.id?'Değişikliği kaydet':(alim?'Alımı ekle':'Ödemeyi ekle'))+'</button>'+
+     (frm.id?'<button type="button" class="btn" id="cr-f-vazgec">Vazgeç</button>'+(st.admin?(cr.silOnay?'<span class="crsil"><b>Bu hareket silinsin mi?</b><button type="button" class="btn tehlike dolu" id="cr-f-silevet">Evet, sil</button><button type="button" class="btn" id="cr-f-silhayir">Hayır</button></span>':'<button type="button" class="btn tehlike crsag" id="cr-f-sil">Hareketi sil</button>'):''):'')+'</div>'+
+     '<datalist id="cr-dl-evrak">'+CR_EVRAK.map(function(e){return '<option value="'+esc(e)+'"></option>';}).join('')+'</datalist>'+
+     '<datalist id="cr-dl-birim"><option value="kg"></option><option value="adet"></option><option value="koli"></option><option value="lt"></option><option value="paket"></option></datalist></section>';
+
+  /* ekstre */
+  h+='<div class="scroll"><table class="liste cr" id="cr-ekstre"><thead><tr><th class="num">S.No</th><th>Tarih</th><th>Evrak</th><th>Açıklama</th><th class="num">Miktar × fiyat</th><th class="num">KDV</th><th class="num">Alım (borç)</th><th class="num">Ödeme</th><th class="num">Bakiye</th><th></th></tr></thead><tbody>'+
+     (satir||'<tr><td colspan="10">Bu firmada henüz hareket yok.</td></tr>')+'</tbody><tfoot><tr><td></td><td colspan="5">Dönem toplamı</td><td class="num">'+tlYaz(B/100)+'</td><td class="num">'+tlYaz(A/100)+'</td><td class="num"><b>'+tlYaz(kalan/100)+'</b></td><td></td></tr></tfoot></table></div>';
+
+  /* firma bilgileri */
+  var b=cr.bilgi||(cr.bilgi=crBilgiTaslak(f));
+  h+='<details class="ablok crbilgi" id="cr-bilgi"'+(b.kirli?' open':'')+'><summary><h2>Firma bilgileri</h2></summary><div class="crform">'+
+     crFld('cr-b-ad','Kısa ad','ad',b.ad,' maxlength="80"')+crFld('cr-b-unvan','Firma ünvanı','unvan',b.unvan,' maxlength="160"','iki')+crFld('cr-b-tur','Cari türü','tur',b.tur,' maxlength="60"')+
+     crFld('cr-b-kod','Cari kodu','kod',b.kod,' maxlength="120"')+crFld('cr-b-vergi','Vergi d. / VKN','vergi',b.vergi,' maxlength="120"')+crFld('cr-b-adres','Adres','adres',b.adres,' maxlength="400"','iki')+
+     crFld('cr-b-yetkili','Yetkili kişi','yetkili',b.yetkili,' maxlength="120"')+crFld('cr-b-telefon','Telefon','telefon',b.telefon,' maxlength="120"')+crFld('cr-b-eposta','E-posta','eposta',b.eposta,' maxlength="120"')+
+     crFld('cr-b-satis','Satış sorumlusu','satis',b.satis,' maxlength="120"')+crFld('cr-b-satistel','Satış sorumlusu cep','satisTel',b.satisTel,' maxlength="120"')+
+     '<div class="fld"><label for="cr-b-dev">Devreden tutar</label><input type="text" class="money tl" inputmode="decimal" id="cr-b-dev" data-cb="devreden" maxlength="16" autocomplete="off" value="'+esc(tlYaz(b.devreden))+'"></div>'+
+     '<div class="fld"><label for="cr-b-yon">Devreden türü</label><select id="cr-b-yon" data-cb="devYon"><option value="borc"'+(b.devYon==='borc'?' selected':'')+'>Borç (firmaya borçluyuz)</option><option value="alacak"'+(b.devYon==='alacak'?' selected':'')+'>Alacak (fazla ödeme)</option></select></div>'+
+     crFld('cr-b-not','Not','not',b.not,' maxlength="400"','wide')+
+     '</div><label class="akt"><input type="checkbox" id="cr-b-aktif" data-cb="aktif"'+(b.aktif?' checked':'')+'>Aktif (işareti kaldırılan firma listede gizlenir; kayıtları silinmez)</label>'+
+     '<p class="err" id="cr-b-err" hidden></p><div class="crdugme"><button type="button" class="btn primary" id="cr-b-kaydet"'+(b.kirli?'':' disabled')+'>Firma bilgilerini kaydet</button></div></details>';
+  return h;
+}
+function crHesapYazi(){
+  var f=cr.frm;
+  if(f.matrah===null)return 'Miktar ve birim fiyat yazarsanız matrah, KDV ve tutar kendiliğinden hesaplanır; isterseniz yalnızca tutarı yazın.';
+  var kdv=f.kdv?Math.round(f.matrah*f.kdv)/100:0;
+  return 'Matrah '+tlPara(f.matrah)+' + KDV '+tlPara(kdv)+' = '+tlPara(Math.round((f.matrah+kdv)*100)/100)+(f.el&&f.tutar!==null&&Math.abs(f.tutar-(f.matrah+kdv))>0.005?' · tutar elle '+tlPara(f.tutar)+' yazıldı':'');
+}
+function crGunFark(t){return Math.round((toDate(t)-toDate(todayStr()))/86400000);}
+function crEvrakHtml(liste){
+  var L=CR_LISTE[liste],bugun=todayStr(),otuz=dateStr(new Date(toDate(bugun).getTime()+30*86400000)),e=cr.efrm,h='',satir='',n=0;
+  var T={acik:0,gecmis:0,otuz:0,odenen:0,yakin:null},rows=cr.evrak.filter(function(x){return x.liste===liste;});
+  rows.sort(function(a,b){var x=a.vade||'9999',y=b.vade||'9999';return x<y?-1:(x>y?1:a.sira-b.sira);});
+  rows.forEach(function(x){
+    var k=krs(x.tutar),fark=x.vade?crGunFark(x.vade):null;n++;
+    if(x.odendi)T.odenen+=k;else{T.acik+=k;if(x.vade&&x.vade<bugun)T.gecmis+=k;if(x.vade&&x.vade>=bugun&&x.vade<=otuz)T.otuz+=k;if(x.vade&&x.vade>=bugun&&(!T.yakin||x.vade<T.yakin))T.yakin=x.vade;}
+    satir+='<tr data-cre="'+x.id+'" class="'+(x.odendi?'odendi':(fark!==null&&fark<0?'gecmis':''))+(e.id===x.id?' secili':'')+'"><td class="num">'+n+'</td><td class="crfa">'+esc(x.firma)+'</td><td>'+esc(x.tur)+'</td><td>'+esc(x.no)+'</td><td class="crac">'+esc(x.aciklama)+'</td>'+
+      (liste==='tadilat'?'<td>'+(x.tarih?fmtKisa(x.tarih):'')+'</td>':'')+'<td>'+(x.vade?fmtKisa(x.vade):'—')+'</td>'+
+      '<td class="num">'+(x.odendi||fark===null?'':(fark<0?'<span class="kbad">'+fmtN(-fark)+' gün geçti</span>':(fark===0?'<b>bugün</b>':fmtN(fark)+' gün')))+'</td>'+
+      '<td class="num tut">'+tlYaz(x.tutar)+'</td><td><label class="akt"><input type="checkbox" data-crodendi="'+x.id+'"'+(x.odendi?' checked':'')+'>Ödendi</label></td>'+
+      '<td><button type="button" class="btn kucuk" data-creduzelt="'+x.id+'">Düzelt</button></td></tr>';
+  });
+  h+='<p class="fine">'+L.aciklama+' Ödenen belgeyi “Ödendi” diye işaretleyince toplamlardan düşer.</p>';
+  h+='<div class="tiles"><div class="tile"><span class="tl">Ödenmemiş toplam</span><span class="tv" id="cr-v-acik">'+tlPara(T.acik/100)+'</span></div>'+
+     '<div class="tile"><span class="tl">Vadesi geçmiş · ödenmemiş</span><span class="tv'+(T.gecmis?' kbad':'')+'" id="cr-v-gecmis">'+tlPara(T.gecmis/100)+'</span></div>'+
+     '<div class="tile"><span class="tl">Önümüzdeki 30 gün</span><span class="tv" id="cr-v-otuz">'+tlPara(T.otuz/100)+'</span></div>'+
+     '<div class="tile"><span class="tl">En yakın vade</span><span class="tv" id="cr-v-yakin">'+(T.yakin?fmtKisa(T.yakin):'—')+'</span></div>'+
+     '<div class="tile"><span class="tl">Belge sayısı</span><span class="tv" id="cr-v-adet">'+n+'</span><span class="ts">'+(T.odenen?'ödenen '+tlPara(T.odenen/100):'')+'</span></div></div>';
+  var firmaSec={};cr.firmalar.forEach(function(f){firmaSec[f.unvan||f.ad]=1;});cr.evrak.forEach(function(x){if(x.firma)firmaSec[x.firma]=1;});
+  h+='<section class="ablok" id="cr-eform"><h2>'+(e.id?'Belgeyi düzelt':'Yeni belge')+'</h2><div class="crform">'+
+     '<div class="fld iki"><label for="cr-e-firma">Firma / kişi</label><input type="text" id="cr-e-firma" data-ce="firma" maxlength="120" autocomplete="off" list="cr-dl-firma" value="'+esc(e.firma)+'"></div>'+
+     '<div class="fld"><label for="cr-e-tur">Belge türü</label><input type="text" id="cr-e-tur" data-ce="tur" maxlength="40" autocomplete="off" list="cr-dl-belge" placeholder="Çek, senet…" value="'+esc(e.tur)+'"></div>'+
+     '<div class="fld"><label for="cr-e-no">Belge no</label><input type="text" id="cr-e-no" data-ce="no" maxlength="40" autocomplete="off" value="'+esc(e.no)+'"></div>'+
+     '<div class="fld iki"><label for="cr-e-aciklama">Açıklama</label><input type="text" id="cr-e-aciklama" data-ce="aciklama" maxlength="240" autocomplete="off" value="'+esc(e.aciklama)+'"></div>'+
+     (liste==='tadilat'?'<div class="fld"><label for="cr-e-tarih">Tarih</label><input type="date" id="cr-e-tarih" data-ce="tarih" value="'+esc(e.tarih)+'"></div>':'')+
+     '<div class="fld"><label for="cr-e-vade">Vade tarihi</label><input type="date" id="cr-e-vade" data-ce="vade" value="'+esc(e.vade)+'"></div>'+
+     '<div class="fld"><label for="cr-e-tutar">Tutar</label><input type="text" class="money tl guclu" inputmode="decimal" id="cr-e-tutar" data-ce="tutar" maxlength="16" autocomplete="off" value="'+esc(tlYaz(e.tutar))+'"></div></div>'+
+     '<p class="err" id="cr-e-err" hidden></p><div class="crdugme"><button type="button" class="btn primary" id="cr-e-kaydet">'+(e.id?'Değişikliği kaydet':'Belgeyi ekle')+'</button>'+(e.id?'<button type="button" class="btn" id="cr-e-vazgec">Vazgeç</button>'+(st.admin?(cr.silOnay?'<span class="crsil"><b>Bu belge silinsin mi?</b><button type="button" class="btn tehlike dolu" id="cr-e-silevet">Evet, sil</button><button type="button" class="btn" id="cr-e-silhayir">Hayır</button></span>':'<button type="button" class="btn tehlike crsag" id="cr-e-sil">Belgeyi sil</button>'):''):'')+'</div>'+
+     '<datalist id="cr-dl-firma">'+Object.keys(firmaSec).sort(function(a,b){return a.localeCompare(b,'tr');}).map(function(a){return '<option value="'+esc(a)+'"></option>';}).join('')+'</datalist>'+
+     '<datalist id="cr-dl-belge">'+CR_BELGE.map(function(a){return '<option value="'+esc(a)+'"></option>';}).join('')+'</datalist></section>';
+  h+=rows.length?'<div class="scroll"><table class="liste cr" id="cr-evrak"><thead><tr><th class="num">Sıra</th><th>Firma</th><th>Belge türü</th><th>Belge no</th><th>Açıklama</th>'+(liste==='tadilat'?'<th>Tarih</th>':'')+'<th>Vade</th><th class="num">Kalan gün</th><th class="num">Tutar</th><th>Durum</th><th></th></tr></thead><tbody>'+satir+
+     '</tbody><tfoot><tr><td></td><td colspan="'+(liste==='tadilat'?7:6)+'">Ödenmemiş toplam</td><td class="num"><b>'+tlYaz(T.acik/100)+'</b></td><td colspan="2"></td></tr></tfoot></table></div>':'<p class="fine">'+L.bos+'</p>';
+  return h;
+}
+
+/* --- kayıt işlemleri --- */
+function crFormHata(id,m){var er=$(id);if(er){er.textContent=m;er.hidden=false;}return false;}
+function crMesgul(btn,yazi){cr.mesgul=true;if(btn){btn.disabled=true;btn.setAttribute('data-eski',btn.textContent);btn.textContent=yazi||'Kaydediliyor…';}}
+function crBitti(btn){cr.mesgul=false;if(btn&&document.body.contains(btn)){btn.disabled=false;btn.textContent=btn.getAttribute('data-eski')||btn.textContent;}}
+function crHareketKaydet(){
+  var f=cr.frm,alim=f.tur==='alim',btn=$('cr-f-kaydet'),firma=cr.firma;
+  if(cr.mesgul)return;
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(f.tarih||''))return crFormHata('cr-f-err','Tarihi seçin.');
+  if(!f.tutar||f.tutar<=0)return crFormHata('cr-f-err',alim?'Tutarı yazın (ya da miktar ve birim fiyatı).':'Ödenen tutarı yazın.');
+  if(f.vade&&!/^\d{4}-\d{2}-\d{2}$/.test(f.vade))return crFormHata('cr-f-err','Vade tarihi geçersiz.');
+  var kayit={firma_id:firma,tarih:f.tarih,vade:f.vade||null,evrak:f.evrak.replace(/\s+/g,' ').trim(),aciklama:f.aciklama.replace(/\s+/g,' ').trim(),
+    birim:alim?f.birim.trim():'',miktar:alim?f.miktar:null,fiyat:alim?f.fiyat:null,matrah:alim?f.matrah:null,kdv_oran:alim&&f.matrah!==null?(f.kdv||0):null,
+    kdv:alim&&f.matrah!==null?(f.kdv?Math.round(f.matrah*f.kdv)/100:0):null,borc:alim?f.tutar:0,alacak:alim?0:f.tutar};
+  var q;
+  if(f.id)q=sb.from('cari_hareket').update(kayit).eq('id',f.id).select().single();
+  else{kayit.sira=cr.hareket.reduce(function(a,x){return Math.max(a,x.sira);},0)+1;q=sb.from('cari_hareket').insert(kayit).select().single();}
+  crMesgul(btn);
+  q.then(function(r){
+    crBitti(btn);
+    if(r.error||!r.data){crFormHata('cr-f-err',r.error?crHata(r.error):'Kayıt yapılamadı; bu işlem için yetkiniz olmayabilir.');return;}
+    if(cr.firma!==firma)return;
+    var yeni=crHareketTemiz(r.data),i,bul=false;
+    for(i=0;i<cr.hareket.length;i++)if(cr.hareket[i].id===yeni.id){cr.hareket[i]=yeni;bul=true;}
+    if(!bul)cr.hareket.push(yeni);
+    crOzetYenile();
+    var eski=cr.frm;cr.frm=crBosFrm();cr.frm.tur=eski.tur;if(!eski.id)cr.frm.tarih=eski.tarih;cr.silOnay=null;
+    ksCiz();toast(bul?'Hareket güncellendi.':(alim?'Alım eklendi.':'Ödeme eklendi.'));
+  }).catch(function(e){crBitti(btn);crFormHata('cr-f-err',crHata(e));});
+}
+function crHareketSil(id){
+  if(cr.mesgul||!st.admin)return;
+  cr.mesgul=true;
+  sb.from('cari_hareket').delete().eq('id',id).select().then(function(r){
+    cr.mesgul=false;cr.silOnay=null;
+    if(r.error||!(r.data||[]).length){ksCiz();toast(r.error?crHata(r.error):'Silinemedi; kayıt silmeyi yalnızca yönetici yapar.');return;}
+    cr.hareket=cr.hareket.filter(function(x){return x.id!==id;});
+    if(cr.frm.id===id)cr.frm=crBosFrm();
+    crOzetYenile();ksCiz();toast('Hareket silindi.');
+  }).catch(function(e){cr.mesgul=false;cr.silOnay=null;ksCiz();toast(crHata(e));});
+}
+function crFirmaEkle(){
+  var y=cr.yeni,btn=$('cr-y-kaydet');
+  if(cr.mesgul||!y)return;
+  var ad=y.ad.replace(/\s+/g,' ').trim(),unvan=y.unvan.replace(/\s+/g,' ').trim();
+  if(!ad&&unvan)ad=unvan.slice(0,80);
+  if(!ad)return crFormHata('cr-y-err','Firmanın adını yazın.');
+  if(cr.firmalar.some(function(f){return f.ad.toLocaleLowerCase('tr')===ad.toLocaleLowerCase('tr');}))return crFormHata('cr-y-err','Bu adla bir firma zaten var.');
+  var kayit={ad:ad,unvan:unvan,tur:y.tur.replace(/\s+/g,' ').trim(),devreden:y.devreden||0,bilgi:{},sira:cr.firmalar.reduce(function(a,f){return Math.max(a,f.sira);},0)+1,aktif:true};
+  crMesgul(btn);
+  sb.from('cari_firma').insert(kayit).select().single().then(function(r){
+    crBitti(btn);
+    if(r.error||!r.data){crFormHata('cr-y-err',r.error?crHata(r.error):'Kayıt yapılamadı.');return;}
+    cr.firmalar.push(crFirmaTemiz(r.data));cr.yeni=null;
+    toast('Firma eklendi.');crFirmaAc(r.data.id);
+  }).catch(function(e){crBitti(btn);crFormHata('cr-y-err',crHata(e));});
+}
+function crBilgiKaydet(){
+  var b=cr.bilgi,f=crFirma(cr.firma),btn=$('cr-b-kaydet');
+  if(cr.mesgul||!b||!f)return;
+  var ad=b.ad.replace(/\s+/g,' ').trim();
+  if(!ad)return crFormHata('cr-b-err','Kısa ad boş olamaz.');
+  if(cr.firmalar.some(function(x){return x.id!==f.id&&x.ad.toLocaleLowerCase('tr')===ad.toLocaleLowerCase('tr');}))return crFormHata('cr-b-err','Bu adla başka bir firma var.');
+  var bilgi={};['kod','vergi','eposta','adres','yetkili','satis','telefon','satisTel','not'].forEach(function(k){bilgi[k]=String(b[k]||'').replace(/\s+/g,' ').trim();});
+  var kayit={ad:ad,unvan:b.unvan.replace(/\s+/g,' ').trim(),tur:b.tur.replace(/\s+/g,' ').trim(),bilgi:bilgi,devreden:(b.devreden||0)*(b.devYon==='alacak'?-1:1),aktif:!!b.aktif};
+  crMesgul(btn);
+  sb.from('cari_firma').update(kayit).eq('id',f.id).select().single().then(function(r){
+    crBitti(btn);
+    if(r.error||!r.data){crFormHata('cr-b-err',r.error?crHata(r.error):'Kayıt yapılamadı.');return;}
+    var yeni=crFirmaTemiz(r.data),i;for(i=0;i<cr.firmalar.length;i++)if(cr.firmalar[i].id===yeni.id)cr.firmalar[i]=yeni;
+    cr.bilgi=crBilgiTaslak(yeni);ksCiz();toast('Firma bilgileri kaydedildi.');
+  }).catch(function(e){crBitti(btn);crFormHata('cr-b-err',crHata(e));});
+}
+function crEvrakKaydet(){
+  var e=cr.efrm,btn=$('cr-e-kaydet'),liste=cr.sekme;
+  if(cr.mesgul)return;
+  var firma=e.firma.replace(/\s+/g,' ').trim();
+  if(!firma)return crFormHata('cr-e-err','Firma ya da kişi adını yazın.');
+  if(!e.tutar||e.tutar<=0)return crFormHata('cr-e-err','Tutarı yazın.');
+  if(liste==='vade'&&!e.vade)return crFormHata('cr-e-err','Vade tarihini seçin.');
+  var kayit={liste:liste,firma:firma,tur:e.tur.replace(/\s+/g,' ').trim(),no:e.no.trim(),aciklama:e.aciklama.replace(/\s+/g,' ').trim(),tarih:liste==='tadilat'?(e.tarih||null):null,vade:e.vade||null,tutar:e.tutar},q;
+  if(e.id)q=sb.from('cari_evrak').update(kayit).eq('id',e.id).select().single();
+  else{kayit.sira=cr.evrak.reduce(function(a,x){return Math.max(a,x.sira);},0)+1;q=sb.from('cari_evrak').insert(kayit).select().single();}
+  crMesgul(btn);
+  q.then(function(r){
+    crBitti(btn);
+    if(r.error||!r.data){crFormHata('cr-e-err',r.error?crHata(r.error):'Kayıt yapılamadı.');return;}
+    var yeni=crEvrakTemiz(r.data),i,bul=false;
+    for(i=0;i<cr.evrak.length;i++)if(cr.evrak[i].id===yeni.id){cr.evrak[i]=yeni;bul=true;}
+    if(!bul)cr.evrak.push(yeni);
+    cr.efrm=crBosEfrm();cr.silOnay=null;ksCiz();toast(bul?'Belge güncellendi.':'Belge eklendi.');
+  }).catch(function(x){crBitti(btn);crFormHata('cr-e-err',crHata(x));});
+}
+function crEvrakOdendi(id,deger,kutu){
+  kutu.disabled=true;
+  sb.from('cari_evrak').update({odendi:deger}).eq('id',id).select().single().then(function(r){
+    if(r.error||!r.data){kutu.disabled=false;kutu.checked=!deger;toast(r.error?crHata(r.error):'Kaydedilemedi.');return;}
+    cr.evrak.forEach(function(x){if(x.id===id)x.odendi=deger;});
+    ksCiz();
+  }).catch(function(e){kutu.disabled=false;kutu.checked=!deger;toast(crHata(e));});
+}
+function crEvrakSil(id){
+  if(cr.mesgul||!st.admin)return;
+  cr.mesgul=true;
+  sb.from('cari_evrak').delete().eq('id',id).select().then(function(r){
+    cr.mesgul=false;cr.silOnay=null;
+    if(r.error||!(r.data||[]).length){ksCiz();toast(r.error?crHata(r.error):'Silinemedi; kayıt silmeyi yalnızca yönetici yapar.');return;}
+    cr.evrak=cr.evrak.filter(function(x){return x.id!==id;});
+    if(cr.efrm.id===id)cr.efrm=crBosEfrm();
+    ksCiz();toast('Belge silindi.');
+  }).catch(function(e){cr.mesgul=false;cr.silOnay=null;ksCiz();toast(crHata(e));});
+}
+
+/* --- olaylar (#ks üzerindeki ortak dinleyicilerden çağrılır) --- */
+function crTutarHesap(){
+  var f=cr.frm,el;
+  if(!f.mEl){f.matrah=(f.miktar&&f.fiyat)?Math.round(f.miktar*f.fiyat*100)/100:null;el=$('cr-f-matrah');if(el&&document.activeElement!==el)el.value=tlYaz(f.matrah);}
+  if(!f.el&&f.matrah!==null){f.tutar=Math.round((f.matrah+(f.kdv?Math.round(f.matrah*f.kdv)/100:0))*100)/100;el=$('cr-f-tutar');if(el&&document.activeElement!==el)el.value=tlYaz(f.tutar);}
+  el=$('cr-f-hesap');if(el)el.textContent=crHesapYazi();
+}
+function crInput(ev){
+  var t=ev.target,a;
+  if(t.id==='cr-ara'){
+    cr.ara=t.value;
+    /* arama kutusu yeniden çizilmeden satırlar süzülür: imleç yerinde kalır */
+    var ara=cr.ara.toLocaleLowerCase('tr').trim(),rows=document.querySelectorAll('#cr-firmalar tbody tr[data-ara]'),i,gor=0,yok=$('cr-ara-yok');
+    for(i=0;i<rows.length;i++){rows[i].hidden=!!ara&&rows[i].getAttribute('data-ara').indexOf(ara)<0;if(!rows[i].hidden)gor++;}
+    if(yok)yok.hidden=gor>0;
+    return;
+  }
+  if((a=t.getAttribute('data-cf'))){
+    var f=cr.frm;
+    if(a==='miktar')f.miktar=crSayiOku(t.value,3);
+    else if(a==='fiyat')f.fiyat=crSayiOku(t.value,4);
+    else if(a==='kdv'){f.kdv=crSayiOku(t.value,2);if(f.kdv!==null&&f.kdv>100)f.kdv=100;}
+    else if(a==='matrah'){f.matrah=tlOku(t.value);f.mEl=f.matrah!==null;}
+    else if(a==='tutar'){f.tutar=tlOku(t.value);f.el=f.tutar!==null;}
+    else f[a]=t.value;
+    if(f.tur==='alim'&&(a==='miktar'||a==='fiyat'||a==='kdv'||a==='matrah'||a==='tutar'))crTutarHesap();
+    var er=$('cr-f-err');if(er)er.hidden=true;
+    return;
+  }
+  if((a=t.getAttribute('data-ce'))){cr.efrm[a]=a==='tutar'?tlOku(t.value):t.value;var er2=$('cr-e-err');if(er2)er2.hidden=true;return;}
+  if((a=t.getAttribute('data-cy'))&&cr.yeni){cr.yeni[a]=a==='devreden'?tlOku(t.value):t.value;return;}
+  if((a=t.getAttribute('data-cb'))&&cr.bilgi){
+    cr.bilgi[a]=a==='devreden'?tlOku(t.value):(a==='aktif'?t.checked:t.value);cr.bilgi.kirli=true;
+    var b=$('cr-b-kaydet');if(b)b.disabled=false;
+  }
+}
+function crChange(ev){
+  var t=ev.target;
+  if(t.classList.contains('tl')){t.value=tlYaz(tlOku(t.value));}
+  if(t.id==='cr-pasif'){cr.pasif=t.checked;ksCiz();return;}
+  if(t.hasAttribute('data-crodendi')){crEvrakOdendi(t.getAttribute('data-crodendi'),t.checked,t);return;}
+  if(t.getAttribute('data-cb')==='aktif'||t.getAttribute('data-cb')==='devYon')crInput(ev);
+  if(t.id==='cr-f-miktar')t.value=crSayi(cr.frm.miktar);
+  if(t.id==='cr-f-fiyat')t.value=crSayi(cr.frm.fiyat,4);
+  if(t.id==='cr-f-kdv')t.value=crSayi(cr.frm.kdv,2);
+}
+function crClick(ev){
+  var b=ev.target.closest('button');if(!b)return;
+  var a;
+  if(b.id==='cr-yenile'){crYukle();return;}
+  if(b.hasAttribute('data-crsekme')){cr.sekme=b.getAttribute('data-crsekme');cr.silOnay=null;
+    /* “Firmalar”a basmak her zaman firma listesine götürür */
+    if(cr.sekme==='firma'&&cr.firma){cr.firma=null;cr.hareket=[];cr.hYuklu=false;cr.frm=crBosFrm();cr.bilgi=null;++cr.sira;}
+    ksCiz();return;}
+  if(b.hasAttribute('data-crfirma')){crFirmaAc(b.getAttribute('data-crfirma'));return;}
+  if(b.id==='cr-geri'){cr.firma=null;cr.hareket=[];cr.hYuklu=false;cr.frm=crBosFrm();cr.bilgi=null;cr.silOnay=null;++cr.sira;ksCiz();return;}
+  if(b.id==='cr-firma-ekle'){cr.yeni=cr.yeni||{ad:'',unvan:'',tur:'',devreden:null};ksCiz();var y=$('cr-y-ad');if(y)y.focus();return;}
+  if(b.id==='cr-y-vazgec'){cr.yeni=null;ksCiz();return;}
+  if(b.id==='cr-y-kaydet'){crFirmaEkle();return;}
+  if(b.id==='cr-b-kaydet'){crBilgiKaydet();return;}
+  if(b.hasAttribute('data-crtur')){
+    var tur=b.getAttribute('data-crtur');
+    if(cr.frm.tur!==tur){cr.frm.tur=tur;if(tur==='odeme'){cr.frm.miktar=cr.frm.fiyat=cr.frm.matrah=cr.frm.kdv=null;cr.frm.birim='';cr.frm.mEl=false;cr.frm.el=cr.frm.tutar!==null;}ksCiz();}
+    return;
+  }
+  if(b.id==='cr-f-kaydet'){crHareketKaydet();return;}
+  if(b.id==='cr-f-vazgec'){cr.frm=crBosFrm();cr.silOnay=null;ksCiz();return;}
+  if((a=b.getAttribute('data-crduzelt'))){
+    var x=null;cr.hareket.forEach(function(k){if(k.id===a)x=k;});if(!x)return;
+    var alim=!x.alacak;
+    cr.frm={id:x.id,tur:alim?'alim':'odeme',tarih:x.tarih,vade:x.vade,evrak:x.evrak,aciklama:x.aciklama,birim:x.birim,miktar:x.miktar,fiyat:x.fiyat,matrah:alim?x.matrah:null,kdv:x.kdv_oran,
+      tutar:alim?x.borc:x.alacak,mEl:alim&&x.matrah!==null&&!(x.miktar&&x.fiyat&&Math.abs(Math.round(x.miktar*x.fiyat*100)/100-x.matrah)<0.005),el:true};
+    cr.silOnay=null;ksCiz();var fm=$('cr-form');if(fm&&fm.scrollIntoView)fm.scrollIntoView({block:'start'});return;
+  }
+  if(b.id==='cr-f-sil'||b.id==='cr-e-sil'){cr.silOnay=true;ksCiz();return;}
+  if(b.id==='cr-f-silhayir'||b.id==='cr-e-silhayir'){cr.silOnay=null;ksCiz();return;}
+  if(b.id==='cr-f-silevet'){if(cr.frm.id)crHareketSil(cr.frm.id);return;}
+  if(b.id==='cr-e-silevet'){if(cr.efrm.id)crEvrakSil(cr.efrm.id);return;}
+  if(b.id==='cr-e-kaydet'){crEvrakKaydet();return;}
+  if(b.id==='cr-e-vazgec'){cr.efrm=crBosEfrm();cr.silOnay=null;ksCiz();return;}
+  if((a=b.getAttribute('data-creduzelt'))){
+    var e=null;cr.evrak.forEach(function(k){if(k.id===a)e=k;});if(!e)return;
+    cr.efrm={id:e.id,firma:e.firma,tur:e.tur,no:e.no,aciklama:e.aciklama,tarih:e.tarih,vade:e.vade,tutar:e.tutar};
+    cr.silOnay=null;ksCiz();var ef=$('cr-eform');if(ef&&ef.scrollIntoView)ef.scrollIntoView({block:'start'});
+  }
+}
+
+/* ---------- KASA · EXCEL VERİLERİNİ AKTARMA (yalnızca yönetici) ---------- */
+/* Excel'de tutulmuş Günlük Kasa ve Genel Cari kayıtları bir aktarım dosyasıyla programa alınır. Dosya seçilince önce
+   önizleme gösterilir: her gün ve her firma programın kendi hesabıyla yeniden toplanır, Excel'deki rakamla karşılaştırılır.
+   Onaylanınca yazılır. Hiçbir kayıt ezilmez: zaten bulunan gün, firma, hareket ve belgeler atlanır; ikinci kez çalıştırmak zararsızdır. */
+var akt=null;
+function aktDurum(t){if(akt)akt.durum=t;var el=$('ks-akt-durum');if(el)el.textContent=t||'';}
+function aktDosya(inp){
+  var d=inp.files&&inp.files[0];if(!d)return;
+  if(d.size>8*1024*1024){akt={hata:'Bu dosya çok büyük; size verilen “lusso-aktarim.json” dosyasını seçin.'};ksCiz();return;}
+  var fr=new FileReader();
+  fr.onload=function(){
+    try{akt=aktHazirla(JSON.parse(String(fr.result)),d.name);}
+    catch(e){akt={hata:'Bu dosya okunamadı. Size verilen “lusso-aktarim.json” dosyasını seçin.'};}
+    ksCiz();
+  };
+  fr.onerror=function(){akt={hata:'Dosya okunamadı.'};ksCiz();};
+  fr.readAsText(d,'utf-8');
+}
+function aktHazirla(v,ad){
+  if(!v||v.tur!=='lusso-aktarim'||v.surum!==1||!v.kasa||!v.cari||!Array.isArray(v.kasa.gunler)||!Array.isArray(v.cari.firmalar))throw new Error('biçim');
+  var o={ad:ad,veri:v,hata:'',durum:'',calisiyor:false,bitti:false,sonuc:null,gunler:[],firmalar:[],uyari:0,hareket:0,evrak:{vade:0,tadilat:0,vadeTop:0,tadilatTop:0},borc:0};
+  var ac=v.kasa.acilis||{},n=krs(ac.nakit),b=krs(ac.banka),t=n+b,kayitli={};
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(ac.tarih||''))throw new Error('açılış');
+  ks.ozet.forEach(function(g){kayitli[g.tarih]=1;});
+  v.kasa.gunler.slice().sort(function(x,y){return x.tarih<y.tarih?-1:1;}).forEach(function(g){
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(g.tarih||''))throw new Error('gün');
+    var temiz=ksGunTemiz(g.veri),h=ksHesap(temiz),ex=g.excel||{};
+    n+=krs(h.nakit);b+=krs(h.banka);t+=krs(h.gelir)-krs(h.gider);
+    var ok=Math.abs(krs(ex.gelir)-krs(h.gelir))<1&&Math.abs(krs(ex.gider)-krs(h.gider))<1&&Math.abs(krs(ex.son)-t)<1&&Math.abs(krs(ex.nakit)-n)<1&&Math.abs(krs(ex.banka)-b)<1;
+    if(!ok)o.uyari++;
+    o.gunler.push({tarih:g.tarih,veri:temiz,h:h,son:t/100,nakit:n/100,banka:b/100,excel:ex,ok:ok,var:!!kayitli[g.tarih]});
+  });
+  v.cari.firmalar.forEach(function(f){
+    if(!f||!f.id||!f.aktarim||!String(f.ad||'').trim())throw new Error('firma');
+    var dv=krs(f.devreden),B=Math.max(dv,0),A=Math.max(-dv,0),ex=f.excel||{};
+    (f.hareket||[]).forEach(function(x){B+=krs(x.borc);A+=krs(x.alacak);});
+    /* Excel'de kuruştan küçük küsuratlar bulunabildiği için birkaç kuruşluk fark hata sayılmaz */
+    var ok=!!f.kontrolNotu||Math.abs(krs(ex.kalan)-(B-A))<=5;
+    if(!ok)o.uyari++;
+    if(B-A>0)o.borc+=B-A;
+    o.hareket+=(f.hareket||[]).length;
+    o.firmalar.push({ad:f.ad,unvan:f.unvan||'',alim:B/100,odeme:A/100,kalan:(B-A)/100,excel:ex,ok:ok,not:f.kontrolNotu||'',satir:(f.hareket||[]).length});
+  });
+  (v.cari.evrak||[]).forEach(function(e){var l=e.liste==='tadilat'?'tadilat':'vade';o.evrak[l]++;o.evrak[l+'Top']+=krs(e.tutar);});
+  return o;
+}
+/* Birim fiyat listesi: programdaki sıra korunur, dosyadaki fiyatlar işlenir, programda olmayan kalemler sona eklenir. */
+function aktListe(mevcut,dosya){
+  var o=clone(mevcut),harita={};
+  o.forEach(function(k){harita[k.ad.toLocaleLowerCase('tr')]=k;});
+  (Array.isArray(dosya)?dosya:[]).forEach(function(k){
+    if(!k||!String(k.ad||'').trim())return;
+    var a=harita[String(k.ad).toLocaleLowerCase('tr').trim()];
+    if(a){if(typeof k.fiyat==='number')a.fiyat=k.fiyat;}
+    else{var y={ad:String(k.ad).trim(),fiyat:typeof k.fiyat==='number'?k.fiyat:null};o.push(y);harita[y.ad.toLocaleLowerCase('tr')]=y;}
+  });
+  return o;
+}
+function aktHtml(){
+  var h='<section class="ablok" id="ks-aktar"><h2>Excel verilerini aktar</h2>'+
+    '<p class="fine">Excel’de tuttuğunuz Günlük Kasa ve Genel Cari kayıtlarını programa almak içindir. Size verilen “lusso-aktarim.json” dosyasını seçin: önce nelerin aktarılacağını görürsünüz, onaylayınca yazılır. Daha önce aktarılmış kayıtlar ikinci kez yazılmaz, programdaki hiçbir kayıt silinmez.</p>'+
+    '<div class="fld"><label for="ks-akt-dosya">Aktarım dosyası</label><input type="file" id="ks-akt-dosya" accept=".json,application/json"'+(akt&&akt.calisiyor?' disabled':'')+'></div>';
+  if(akt&&akt.hata)h+='<p class="err" id="ks-akt-err">'+esc(akt.hata)+'</p>';
+  if(akt&&akt.veri){
+    var v=akt.veri,ac=v.kasa.acilis,i,g,f;
+    h+='<p class="fine" id="ks-akt-dosyaad">Seçilen dosya: <b>'+esc(akt.ad)+'</b>'+(v.kaynak?' · kaynak: '+esc((v.kaynak.kasa||'')+(v.kaynak.cari?', '+v.kaynak.cari:'')):'')+'</p>';
+    h+='<h3 class="akth">Günlük kasa</h3><p class="fine" id="ks-akt-acilis">Kasa açılışı: '+fmtKisa(ac.tarih)+' · nakit '+tlPara(ac.nakit||0)+' · banka '+tlPara(ac.banka||0)+' · toplam <b>'+tlPara((krs(ac.nakit)+krs(ac.banka))/100)+'</b>'+
+       (ks.ayar.acilis.tarih?' — programda açılış zaten girilmiş ('+fmtKisa(ks.ayar.acilis.tarih)+'); değiştirilmeyecek.':'')+'</p>';
+    h+='<div class="scroll"><table class="liste cr" id="ks-akt-gunler"><thead><tr><th>Gün</th><th class="num">Gelir</th><th class="num">Gider</th><th class="num">Gün sonu kasa</th><th class="num">Nakit</th><th class="num">Banka</th><th>Excel ile</th><th>Durum</th></tr></thead><tbody>';
+    for(i=0;i<akt.gunler.length;i++){
+      g=akt.gunler[i];
+      h+='<tr><td>'+fmtKisa(g.tarih)+'</td><td class="num">'+tlYaz(g.h.gelir)+'</td><td class="num">'+tlYaz(g.h.gider)+'</td><td class="num guclu">'+tlYaz(g.son)+'</td><td class="num">'+tlYaz(g.nakit)+'</td><td class="num">'+tlYaz(g.banka)+'</td>'+
+         '<td>'+(g.ok?'<span class="kok">✓ tutuyor</span>':'<span class="kbad">⚠ Excel: '+tlYaz(g.excel.son)+'</span>')+'</td><td>'+(g.var?'Programda var — atlanacak':'Aktarılacak')+'</td></tr>';
+    }
+    h+='</tbody></table></div>';
+    h+='<h3 class="akth">Genel cari</h3><p class="fine" id="ks-akt-cari">'+akt.firmalar.length+' firma · '+akt.hareket+' hareket · vade listesinde '+akt.evrak.vade+' belge ('+tlPara(akt.evrak.vadeTop/100)+') · tadilat listesinde '+akt.evrak.tadilat+' belge ('+tlPara(akt.evrak.tadilatTop/100)+') · firmalara toplam borç <b>'+tlPara(akt.borc/100)+'</b></p>';
+    h+='<div class="scroll"><table class="liste cr" id="ks-akt-firmalar"><thead><tr><th>Firma</th><th class="num">Hareket</th><th class="num">Toplam alım</th><th class="num">Ödeme</th><th class="num">Kalan borç</th><th>Excel ile</th></tr></thead><tbody>';
+    for(i=0;i<akt.firmalar.length;i++){
+      f=akt.firmalar[i];
+      h+='<tr><td class="crfa">'+esc(f.unvan||f.ad)+'</td><td class="num">'+f.satir+'</td><td class="num">'+tlYaz(f.alim)+'</td><td class="num">'+tlYaz(f.odeme)+'</td><td class="num guclu">'+tlYaz(f.kalan)+'</td>'+
+         '<td class="crac">'+(f.not?'<span class="kbad">!</span> '+esc(f.not):(f.ok?'<span class="kok">✓ tutuyor</span>':'<span class="kbad">⚠ Excel: '+tlYaz(f.excel.kalan)+'</span>'))+'</td></tr>';
+    }
+    h+='</tbody></table></div>';
+    if(akt.uyari)h+='<p class="banner bad" id="ks-akt-uyari">'+akt.uyari+' satırda programın hesabı Excel’deki rakamı tutmuyor (⚠ işaretliler). Aktarmadan önce bu satırlara bakın.</p>';
+    if(akt.bitti&&akt.sonuc){
+      var s=akt.sonuc;
+      h+='<p class="banner" id="ks-akt-sonuc">✓ Aktarım tamamlandı: '+s.gun+' kasa günü, '+s.firma+' firma, '+s.hareket+' hareket, '+s.evrak+' belge yazıldı.'+
+         (s.ayar?' Kasa açılışı ve birim fiyatlar işlendi.':(s.ayarVar?' Kasa açılışı zaten girilmişti; değiştirilmedi.':''))+
+         (s.gunVar||s.vardi?' Daha önce bulunan '+(s.gunVar+s.vardi)+' kayıt yeniden yazılmadı.':'')+'</p>';
+    }else{
+      h+='<div class="crdugme"><button type="button" class="btn primary" id="ks-akt-baslat"'+(akt.calisiyor||ks.tKirli?' disabled':'')+'>Verileri programa aktar</button><span class="fine" id="ks-akt-durum">'+esc(akt.durum||(ks.tKirli?'Önce yukarıdaki kasa ayarı değişikliklerini kaydedin.':''))+'</span></div>';
+    }
+  }
+  return h+'</section>';
+}
+function aktCalistir(){
+  if(!akt||!akt.veri||akt.calisiyor||akt.bitti||!st.admin||ks.tKirli)return;
+  var v=akt.veri,S={ayar:false,ayarVar:false,gun:0,gunVar:0,firma:0,hareket:0,evrak:0,vardi:0};
+  akt.calisiyor=true;akt.hata='';
+  var dugme=$('ks-akt-baslat');if(dugme)dugme.disabled=true;
+  function parca(tablo,rows,ad){
+    var i=0;
+    function adim(){
+      if(i>=rows.length)return Promise.resolve();
+      aktDurum(ad+' yazılıyor… '+Math.min(i+200,rows.length)+' / '+rows.length);
+      return sb.from(tablo).insert(rows.slice(i,i+200)).then(function(r){if(r.error)throw r.error;i+=200;return adim();});
+    }
+    return adim();
+  }
+  aktDurum('Kasa kontrol ediliyor…');
+  crHepsi(function(){return sb.from('kasa_gun').select('tarih').order('tarih');}).then(function(d){
+    var kayitli={};d.forEach(function(x){kayitli[x.tarih]=1;});
+    akt.gunler.forEach(function(g){g.var=!!kayitli[g.tarih];});
+    if(ks.ayar.acilis.tarih){S.ayarVar=true;return;}
+    var yeni=ksAyarTemiz({acilis:v.kasa.acilis,personel:aktListe(ks.ayar.personel,v.kasa.personel),tedarik:aktListe(ks.ayar.tedarik,v.kasa.tedarik),giderTur:ks.ayar.giderTur});
+    aktDurum('Kasa açılışı yazılıyor…');
+    return sb.from('kasa_ayar').upsert({id:'genel',veri:yeni},{onConflict:'id'}).then(function(r){
+      if(r.error)throw r.error;
+      ks.ayar=yeni;ks.ayarVar=true;ks.taslak=clone(yeni);ks.tKirli=false;S.ayar=true;
+    });
+  }).then(function(){
+    var yeni=akt.gunler.filter(function(g){return !g.var;}).map(function(g){return {tarih:g.tarih,veri:ksGunSade(g.veri),gelir:g.h.gelir,gider:g.h.gider,nakit:g.h.nakit,banka:g.h.banka,tedarik:g.h.tedarik};});
+    S.gunVar=akt.gunler.length-yeni.length;
+    return parca('kasa_gun',yeni,'Kasa günleri').then(function(){S.gun=yeni.length;akt.gunler.forEach(function(g){g.var=true;});});
+  }).then(function(){
+    aktDurum('Genel cari kontrol ediliyor…');
+    return Promise.all(['cari_firma','cari_hareket','cari_evrak'].map(function(tb){
+      return crHepsi(function(){return sb.from(tb).select('aktarim').not('aktarim','is',null).order('aktarim');});
+    }));
+  }).then(function(r){
+    var var_=[{},{},{}],firmalar=[],hareket=[],evrak=[];
+    r.forEach(function(d,i){d.forEach(function(x){var_[i][x.aktarim]=1;});});
+    v.cari.firmalar.forEach(function(f){
+      if(var_[0][f.aktarim])S.vardi++;
+      else firmalar.push({id:f.id,ad:String(f.ad).trim(),unvan:f.unvan||'',tur:f.tur||'',bilgi:f.bilgi||{},devreden:crPara(f.devreden)||0,sira:+f.sira||0,aktif:true,aktarim:f.aktarim});
+      (f.hareket||[]).forEach(function(x){
+        if(!x.aktarim||var_[1][x.aktarim]){S.vardi++;return;}
+        hareket.push({firma_id:f.id,tarih:x.tarih||null,vade:x.vade||null,evrak:x.evrak||'',aciklama:x.aciklama||'',birim:x.birim||'',miktar:x.miktar==null?null:x.miktar,fiyat:x.fiyat==null?null:x.fiyat,
+          matrah:x.matrah==null?null:x.matrah,kdv_oran:x.kdv_oran==null?null:x.kdv_oran,kdv:x.kdv==null?null:x.kdv,borc:crPara(x.borc)||0,alacak:crPara(x.alacak)||0,sira:+x.sira||0,aktarim:x.aktarim});
+      });
+    });
+    (v.cari.evrak||[]).forEach(function(e){
+      if(!e.aktarim||var_[2][e.aktarim]){S.vardi++;return;}
+      evrak.push({liste:e.liste==='tadilat'?'tadilat':'vade',firma:e.firma||'',tarih:e.tarih||null,tur:e.tur||'',no:e.no||'',aciklama:e.aciklama||'',vade:e.vade||null,tutar:crPara(e.tutar)||0,odendi:false,sira:+e.sira||0,aktarim:e.aktarim});
+    });
+    return parca('cari_firma',firmalar,'Firmalar').then(function(){S.firma=firmalar.length;return parca('cari_hareket',hareket,'Hareketler');})
+      .then(function(){S.hareket=hareket.length;return parca('cari_evrak',evrak,'Belgeler');}).then(function(){S.evrak=evrak.length;});
+  }).then(function(){
+    akt.calisiyor=false;akt.bitti=true;akt.sonuc=S;akt.durum='';
+    cr.yuklu=false;cr.hata='';cr.firma=null;cr.hYuklu=false;      /* genel cari bir sonraki açılışta yeniden okunur */
+    ksCiz();ksYukle(true);toast('Aktarım tamamlandı.');
+  }).catch(function(e){
+    akt.calisiyor=false;akt.durum='';
+    akt.hata='Aktarım yarıda kaldı: '+(/cari_/.test((e&&e.message)||'')||(e&&(e.code==='42P01'||e.code==='PGRST205'))?crHata(e):ksHata(e))+' Yeniden “Verileri programa aktar”a basabilirsiniz; yazılmış olanlar ikinci kez yazılmaz.';
+    cr.yuklu=false;ksCiz();ksYukle(true);
+  });
 }
 
 /* ---------- başlangıç ---------- */
