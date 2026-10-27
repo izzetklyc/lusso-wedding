@@ -665,6 +665,7 @@ textarea.ain.oto{field-sizing:content;min-height:84px;max-height:70vh;line-heigh
 .banner.bakis b{color:#fff}
 .banner.bakis button{height:30px;padding:0 12px;border:1px solid #E8D9A8;border-radius:6px;background:transparent;color:#E8D9A8;font-size:12.5px;font-weight:600}
 .banner.bakis button:hover{background:#E8D9A8;color:#1F2233}
+#rt .akbtn{align-items:center;margin-top:4px}
 /* Geçmiş günler soluk; iptal onayı; iptal listesi */
 .day.gecmis{opacity:.55}
 .day.gecmis.kapali{opacity:.4}
@@ -905,6 +906,7 @@ textarea.ain.oto{field-sizing:content;min-height:84px;max-height:70vh;line-heigh
       </div>
       <div class="seg ana" id="ayar-sekme" role="group" aria-label="Ayar bölümleri"></div>
       <div class="view" id="ayar"></div>
+      <div class="view" id="rt" hidden></div>
       <div class="view" id="kul" hidden></div>
     </div>
   </main>
@@ -1956,7 +1958,7 @@ function oturumDegisti(session){
     canliDurdur();hide();
     st.me=null;st.admin=false;st.canWrite=false;st.yetki='';st.para=true;st.odeme=false;st.bakis='';st.sunucuMe=null;gr=grYeni();$('gr').innerHTML='';st.kullanicilar=[];st.recs=new Map();st.yukluYil=null;sonImza='';st.view='takvim';dirty=false;
     /* Çıkışta ekrandaki kayıtlar da temizlenir; sonraki kullanıcı öncekinin gördüğünü görmez. */
-    ['kul','ayar','ist','cal','liste','salons','aj','gr','ks'].forEach(function(i){$(i).innerHTML='';});gr=grYeni();clearTimeout(ksT);ks=ksYeni();cr=crYeni();akt=null;kulImza='';draft=clone(cfg);$('toast').hidden=true;clearTimeout(ajT);aj=ajYeni();iptal={yil:null,rows:[],yukleniyor:false,hata:''};ops=[];renderZil();
+    ['kul','ayar','ist','cal','liste','salons','aj','gr','ks','rt'].forEach(function(i){$(i).innerHTML='';});rt=rtYeni();gr=grYeni();clearTimeout(ksT);ks=ksYeni();cr=crYeni();akt=null;kulImza='';draft=clone(cfg);$('toast').hidden=true;clearTimeout(ajT);aj=ajYeni();iptal={yil:null,rows:[],yukleniyor:false,hata:''};ops=[];renderZil();
     sb.rpc('kurulum_durumu').then(function(r){
       if(benId)return;
       st.oturum=r.error?(/fetch|network/i.test(r.error.message||'')?'hata':'giris'):(r.data===false?'ilk':'giris');
@@ -2873,7 +2875,7 @@ function ajGunHtml(){
   h+='<section class="ablok"><h2>Not</h2><textarea class="ain oto" id="aj-not" maxlength="4000" aria-label="Not">'+esc(g.notlar)+'</textarea></section>';
   var yap=aj.rutin.filter(function(r){return g.rutin[r.id];}).length;
   h+='<section class="ablok"><h2>Rutin işler<span class="ajsay" id="aj-rsay">'+yap+' / '+aj.rutin.length+' yapıldı</span></h2>'+
-     '<p class="fine">Her gün aynı liste. Yapılan işin düğmesine basın; satır yeşile döner. Listeyi değiştirmek için aşağıdaki “Rutin iş listesini düzenle”yi açın.</p>';
+     '<p class="fine">Her gün aynı liste. Yapılan işin düğmesine basın; satır yeşile döner. Listeyi yönetici Ayarlar › Rutin işler bölümünden düzenler.</p>';
   aj.rutin.forEach(function(r,k){
     var ok=!!g.rutin[r.id];
     h+='<div class="ajr '+(ok?'yapildi':'yapilmadi')+'"><span class="sn">'+(k+1)+'</span><span class="mt">'+esc(r.metin)+'</span>'+
@@ -2881,13 +2883,7 @@ function ajGunHtml(){
   });
   if(!aj.rutin.length)h+='<p class="fine">Rutin iş tanımlı değil.</p>';
   h+='</section>';
-  h+='<details class="ajdet" id="aj-rt-det"'+(aj.rtKirli?' open':'')+'><summary>Rutin iş listesini düzenle</summary><section class="ablok"><h2>Rutin işler — ana liste</h2><p class="fine">Burada yapılan değişiklik bütün günlerin rutin iş listesine geçer. Değiştirdikten sonra “Listeyi kaydet”e basın.</p>';
-  aj.rutinTaslak.forEach(function(r,i){
-    h+='<div class="ajrt"><span class="sn">'+(i+1)+'</span><input type="text" class="ain" id="aj-rt-'+i+'" data-rt="'+i+'" maxlength="200" autocomplete="off" value="'+esc(r.metin)+'" aria-label="Rutin iş '+(i+1)+'">'+
-       '<button type="button" class="sil" data-rtdel="'+i+'" aria-label="Rutin işi kaldır">&times;</button></div>';
-  });
-  h+='<div class="akbtn"><button type="button" class="ekle" id="aj-rt-ekle">+ Rutin iş ekle</button>'+
-     '<button type="button" class="btn primary" id="aj-rt-kaydet"'+(aj.rtKirli?'':' disabled')+'>Listeyi kaydet</button></div></section></details>';
+  /* rutin listesi Ayarlar › Rutin işler'den düzenlenir */
   h+='<p class="ajalt" id="aj-meta">'+esc(ajMeta(g))+'</p>';
   return h;
 }
@@ -3433,7 +3429,7 @@ dlg.addEventListener('cancel',function(ev){if(kapatSorulur()){ev.preventDefault(
 /* ---------- AYAR SEKMELERİ ---------- */
 /* Sistem ayarları tek uzun sayfa yerine bölümlere ayrılır. Bütün kutular sayfada durur (taslak ve kayıt aynen çalışır);
    yalnızca seçili bölümün başlıkları gösterilir. Kaydet çubuğu ayar bölümlerinin hepsinde görünür, Kullanıcılar'da gizlenir. */
-var AYAR_SEKME=[['salon','Salonlar ve takvim'],['menu','Menüler'],['org','Organizasyon'],['sozlesme','Sözleşme ve senet'],['kul','Kullanıcılar']];
+var AYAR_SEKME=[['salon','Salonlar ve takvim'],['menu','Menüler'],['org','Organizasyon'],['sozlesme','Sözleşme ve senet'],['rutin','Rutin işler'],['kul','Kullanıcılar']];
 var AYAR_GRUP={'Salonlar':'salon','Seanslar':'salon','Yoğun günler':'salon','Takvim aralığı':'salon',
   'Menüler':'menu','Başlangıç seçenekleri':'menu','Tatlı seçenekleri':'menu',
   'Organizasyon türleri':'org','Program akışı şablonu':'org',
@@ -3450,8 +3446,10 @@ function ayarSekmeUygula(){
     bl[i].setAttribute('data-ag',g);
     bl[i].hidden=!!g&&g!==ayarSekme;      /* eşleşmeyen bir başlık olursa kaybolmasın diye her bölümde görünür */
   }
-  a.hidden=ayarSekme==='kul';
+  a.hidden=ayarSekme==='kul'||ayarSekme==='rutin';
   k.hidden=ayarSekme!=='kul';
+  $('rt').hidden=ayarSekme!=='rutin';
+  if(ayarSekme==='rutin')rtRender();
 }
 $('ayar-sekme').addEventListener('click',function(ev){
   var b=ev.target.closest('button[data-ayarsekme]');if(!b)return;
@@ -5005,6 +5003,86 @@ $('banner').addEventListener('click',function(ev){
 $('ben').addEventListener('change',function(ev){
   var t=ev.target;if(t.id!=='bakis-sec')return;
   bakisSec(t.value);
+});
+
+/* ---------- AYARLAR · RUTİN İŞLER (yönetici) ---------- */
+/* Her departmanın her gün tik atacağı rutin iş listesi buradan yönetilir. Değişiklik bütün günlerin listesine geçer;
+   o güne kadar atılmış tikler kalem kimliğiyle saklandığı için korunur. Her departman ayrı kaydedilir. */
+function rtYeni(){return {taslak:{},kayitli:{},kirli:{},yuklu:false,bekle:false,hata:'',mesgul:''};}
+var rt=rtYeni();
+function rtYukle(){
+  if(!sb||!st.admin)return;
+  rt.bekle=true;rt.hata='';rtCiz();
+  sb.from('ajanda_rutin').select('*').then(function(r){
+    rt.bekle=false;
+    if(r.error){rt.hata=ajHata(r.error);rtCiz();return;}
+    var h={};(r.data||[]).forEach(function(x){if(x&&x.departman)h[x.departman]=Array.isArray(x.liste)?temizRutin(x.liste):null;});
+    DEP_SIRA.forEach(function(dep){
+      var liste=h[dep]||rutinVarsayilan(dep);
+      rt.kayitli[dep]=liste;
+      if(!rt.kirli[dep])rt.taslak[dep]=clone(liste);
+    });
+    rt.yuklu=true;rtCiz();
+  }).catch(function(e){rt.bekle=false;rt.hata=ajHata(e);rtCiz();});
+}
+function rtRender(){
+  if(!st.admin)return;
+  if(!rt.yuklu&&!rt.bekle)rtYukle();
+  else if(rt.yuklu&&!Object.keys(rt.kirli).some(function(d){return rt.kirli[d];})&&!rt.bekle)rtYukle();   /* bölüme her girişte sunucudan tazelenir (değişiklik yoksa) */
+  else rtCiz();
+}
+function rtCiz(){
+  var el=$('rt');if(!el)return;
+  if(!st.admin){el.innerHTML='';return;}
+  var h='';
+  if(rt.hata)h+='<p class="banner bad">'+esc(rt.hata)+'</p><div class="crdugme"><button type="button" class="btn" id="rt-yenile">Yeniden dene</button></div>';
+  else if(!rt.yuklu)h+='<p class="fine">Yükleniyor…</p>';
+  else{
+    h+='<p class="fine">Departmanların ajandasında her gün tik atılan rutin işler. Satır ekleyip çıkarın, metni düzeltin; her departmanı ayrıca kaydedin. Yeni liste o günden itibaren bütün günlerde geçerlidir; geçmiş günlerin tikleri korunur.</p>';
+    DEP_SIRA.forEach(function(dep){
+      var L=rt.taslak[dep]||[],k=!!rt.kirli[dep];
+      h+='<section class="ablok" data-rtdep="'+dep+'"><h2>'+esc(DEPARTMAN[dep].ad)+'</h2>';
+      L.forEach(function(r,i){
+        h+='<div class="ajrt"><span class="sn">'+(i+1)+'</span><input type="text" class="ain" id="rt-'+dep+'-'+i+'" data-rtm="'+i+'" maxlength="200" autocomplete="off" value="'+esc(r.metin)+'" aria-label="'+esc(DEPARTMAN[dep].ad)+' rutin iş '+(i+1)+'">'+
+           '<button type="button" class="sil" data-rtdel="'+i+'" aria-label="Rutin işi kaldır">&times;</button></div>';
+      });
+      if(!L.length)h+='<p class="fine">Bu departmanda rutin iş yok.</p>';
+      h+='<div class="akbtn"><button type="button" class="ekle" data-rtekle>+ Rutin iş ekle</button>'+
+         '<button type="button" class="btn primary" data-rtkaydet'+(k&&rt.mesgul!==dep?'':' disabled')+'>'+(rt.mesgul===dep?'Kaydediliyor…':'Listeyi kaydet')+'</button>'+
+         '<span class="fine rtdurum">'+(k?'Kaydedilmemiş değişiklik var.':L.length+' rutin iş kayıtlı.')+'</span></div></section>';
+    });
+  }
+  el.innerHTML=h;
+}
+function rtKaydet(dep){
+  if(rt.mesgul||!rt.kirli[dep])return;
+  var liste=[];
+  (rt.taslak[dep]||[]).forEach(function(r){var m=String(r.metin||'').replace(/\s+/g,' ').trim().slice(0,200);if(m)liste.push({id:r.id,metin:m});});
+  rt.mesgul=dep;rtCiz();
+  sb.from('ajanda_rutin').upsert({departman:dep,liste:liste},{onConflict:'departman'}).then(function(r){
+    rt.mesgul='';
+    if(r.error){rtCiz();toast(ajHata(r.error));return;}
+    rt.kayitli[dep]=liste;rt.taslak[dep]=clone(liste);rt.kirli[dep]=false;rtCiz();
+    toast(DEPARTMAN[dep].ad+' rutin işleri kaydedildi.');
+    /* açık ajanda aynı departmansa listeyi hemen alsın */
+    if(aj.dep===dep&&aj.gun&&!aj.kirli){aj.rutin=clone(liste);aj.rutinTaslak=clone(liste);}
+  }).catch(function(e){rt.mesgul='';rtCiz();toast(ajHata(e));});
+}
+$('rt').addEventListener('input',function(ev){
+  var t=ev.target,sec=t.closest('[data-rtdep]');if(!sec||!t.hasAttribute('data-rtm'))return;
+  var dep=sec.getAttribute('data-rtdep'),i=+t.getAttribute('data-rtm');
+  if(!rt.taslak[dep]||!rt.taslak[dep][i])return;
+  rt.taslak[dep][i].metin=t.value;
+  if(!rt.kirli[dep]){rt.kirli[dep]=true;var b=sec.querySelector('[data-rtkaydet]'),d=sec.querySelector('.rtdurum');if(b)b.disabled=false;if(d)d.textContent='Kaydedilmemiş değişiklik var.';}
+});
+$('rt').addEventListener('click',function(ev){
+  var b=ev.target.closest('button');if(!b)return;
+  if(b.id==='rt-yenile'){rtYukle();return;}
+  var sec=b.closest('[data-rtdep]');if(!sec)return;
+  var dep=sec.getAttribute('data-rtdep');
+  if(b.hasAttribute('data-rtekle')){(rt.taslak[dep]=rt.taslak[dep]||[]).push({id:'r'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),metin:''});rt.kirli[dep]=true;rtCiz();var son=$('rt-'+dep+'-'+(rt.taslak[dep].length-1));if(son)son.focus();return;}
+  if(b.hasAttribute('data-rtdel')){rt.taslak[dep].splice(+b.getAttribute('data-rtdel'),1);rt.kirli[dep]=true;rtCiz();return;}
+  if(b.hasAttribute('data-rtkaydet')){rtKaydet(dep);}
 });
 
 /* ---------- başlangıç ---------- */
