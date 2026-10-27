@@ -657,6 +657,14 @@ textarea.ain.oto{field-sizing:content;min-height:84px;max-height:70vh;line-heigh
   #ks .tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
   #ks .tiles .tile:last-child:nth-child(odd){grid-column:1/-1}
 }
+/* ---------- Bakış modu ---------- */
+.bakis{display:flex;flex-direction:column;gap:4px;margin:6px 0 2px}
+.side .bakis label{font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--side-ink,var(--muted))}
+.side .bakis select{height:32px;padding:0 8px;border:1px solid var(--side-line,var(--line-strong));border-radius:6px;background:var(--surface);color:var(--ink);font-size:12.5px}
+.banner.bakis{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 14px;background:#1F2233;border-color:#1F2233;color:#E8D9A8}
+.banner.bakis b{color:#fff}
+.banner.bakis button{height:30px;padding:0 12px;border:1px solid #E8D9A8;border-radius:6px;background:transparent;color:#E8D9A8;font-size:12.5px;font-weight:600}
+.banner.bakis button:hover{background:#E8D9A8;color:#1F2233}
 /* Geçmiş günler soluk; iptal onayı; iptal listesi */
 .day.gecmis{opacity:.55}
 .day.gecmis.kapali{opacity:.4}
@@ -1201,7 +1209,7 @@ var st={
   yukluYil:null,    /* kayıtları okunmuş yıl */
   conn:'wait',      /* wait | ok | err */
   canWrite:false,
-  yetki:'',para:true,odeme:false,
+  yetki:'',para:true,odeme:false,bakis:'',sunucuMe:null,
   oturum:'yukleniyor', /* yukleniyor | ayarsiz | ilk | giris | yetkisiz | hata | ok */
   me:null,
   kullanicilar:[]
@@ -1264,6 +1272,7 @@ function renderNav(){
 function renderBanner(){
   var b=$('banner');
   if(st.conn==='err'){b.hidden=false;b.className='banner bad';b.textContent='Sunucuya ulaşılamıyor. İnternet bağlantınızı kontrol edin; bağlantı gelince kayıtlar kendiliğinden yenilenir.';}
+  else if(st.bakis){b.hidden=false;b.className='banner bakis';b.innerHTML='<span><b>'+esc(YETKI[st.bakis].ad)+'</b> gözüyle bakıyorsunuz. Ekran o yetkinin gördüğü gibidir; burada yaptığınız kayıtlar yine yönetici adına yazılır.</span><button type="button" data-bakis-don>Yönetici görünümüne dön</button>';}
   else if(!st.canWrite&&st.view==='takvim'){b.hidden=false;b.className='banner';b.textContent='Bu hesap takvimi yalnızca görüntüleyebilir. Sözleşme yazmak için yöneticinizden yetki isteyin.';}
   else b.hidden=true;
 }
@@ -1945,7 +1954,7 @@ function oturumDegisti(session){
   benId=uid;
   if(!uid){
     canliDurdur();hide();
-    st.me=null;st.admin=false;st.canWrite=false;st.yetki='';st.para=true;st.odeme=false;gr=grYeni();$('gr').innerHTML='';st.kullanicilar=[];st.recs=new Map();st.yukluYil=null;sonImza='';st.view='takvim';dirty=false;
+    st.me=null;st.admin=false;st.canWrite=false;st.yetki='';st.para=true;st.odeme=false;st.bakis='';st.sunucuMe=null;gr=grYeni();$('gr').innerHTML='';st.kullanicilar=[];st.recs=new Map();st.yukluYil=null;sonImza='';st.view='takvim';dirty=false;
     /* Çıkışta ekrandaki kayıtlar da temizlenir; sonraki kullanıcı öncekinin gördüğünü görmez. */
     ['kul','ayar','ist','cal','liste','salons','aj','gr','ks'].forEach(function(i){$(i).innerHTML='';});gr=grYeni();clearTimeout(ksT);ks=ksYeni();cr=crYeni();akt=null;kulImza='';draft=clone(cfg);$('toast').hidden=true;clearTimeout(ajT);aj=ajYeni();iptal={yil:null,rows:[],yukleniyor:false,hata:''};ops=[];renderZil();
     sb.rpc('kurulum_durumu').then(function(r){
@@ -1977,9 +1986,7 @@ function profilYukle(sessiz){
     st.kullanicilar=rows;
     if(!me.aktif){canliDurdur();hide();st.me=me;st.oturum='yetkisiz';kapiCiz();render();return;}
     var ilk=st.oturum!=='ok';
-    st.me=me;st.admin=me.rol==='yonetici';st.canWrite=me.rol!=='izleyici';st.yetki=yetkiOf(me);
-    st.para=st.admin||st.yetki==='satis'||st.yetki==='finans';            /* bedel, kapora, kalan ve ciro görünür mü */
-    st.odeme=st.admin||st.yetki==='finans';                                /* ödeme durumu sütunu */
+    st.sunucuMe=me;bakisUygula();
     st.oturum='ok';
     if(ilk){st.conn='ok';kapiCiz();ayarYukle();yilYukle();canliBaslat();}
     render();
@@ -2042,7 +2049,13 @@ function renderBen(){
   var el=$('ben');
   if(!st.me){el.hidden=true;return;}
   el.hidden=false;
-  el.innerHTML='<b>'+esc(st.me.ad||st.me.eposta)+'</b><span>'+(YETKI[st.yetki]?YETKI[st.yetki].ad:ROL[st.me.rol])+'</span>'+
+  var yon=st.sunucuMe&&st.sunucuMe.rol==='yonetici',bk='';
+  if(yon){
+    bk='<div class="bakis"><label for="bakis-sec">Gözüyle bak</label><select id="bakis-sec" aria-label="Hangi yetkinin gözüyle bakılsın">';
+    YETKI_SIRA.forEach(function(k){bk+='<option value="'+(k==='yonetici'?'':k)+'"'+((k==='yonetici'?'':k)===st.bakis?' selected':'')+'>'+YETKI[k].ad+'</option>';});
+    bk+='</select></div>';
+  }
+  el.innerHTML='<b>'+esc(st.me.ad||st.me.eposta)+'</b><span>'+(YETKI[st.yetki]?YETKI[st.yetki].ad:ROL[st.me.rol])+(st.bakis?' · önizleme':'')+'</span>'+bk+
     '<button type="button" class="lnk" id="yukle" data-ben="yukle"'+(kurulum?'':' hidden')+'>Uygulama olarak yükle</button>'+
     '<button type="button" class="lnk" data-ben="sifre">Şifremi değiştir</button><button type="button" class="lnk" data-ben="cikis">Çıkış yap</button>';
 }
@@ -4955,6 +4968,44 @@ $('ks').addEventListener('focusout',function(){
   if(ks.eskimis&&!ks.kirli&&!ks.yaziliyor){ks.eskimis=false;setTimeout(function(){if(!ksOdakta()&&!ks.kirli)ksYukle(true);},50);}
 });
 ksNabizT=setInterval(function(){if(st.oturum==='ok')ksTazele();},window.KS_NABIZ_MS||45000);
+
+/* ---------- BAKIŞ MODU (yönetici, başka bir yetkinin gözüyle bakar) ---------- */
+/* Yalnızca ekran değişir: menü, takvim yetkileri, para ve ödeme sütunları, ajanda departmanı o yetkiye göre gelir.
+   Sunucu yetkisi değişmez; önizlemede yapılan kayıtlar yine yönetici adına yazılır. Sayfa yenilenince yönetici görünümüne dönülür. */
+function yetkiKur(me){
+  st.me=me;st.admin=me.rol==='yonetici';st.canWrite=me.rol!=='izleyici';st.yetki=yetkiOf(me);
+  st.para=st.admin||st.yetki==='satis'||st.yetki==='finans';            /* bedel, kapora, kalan ve ciro görünür mü */
+  st.odeme=st.admin||st.yetki==='finans';                                /* ödeme durumu sütunu */
+}
+function bakisUygula(){
+  var me=st.sunucuMe;if(!me)return;
+  if(st.bakis&&me.rol==='yonetici'&&YETKI[st.bakis]&&st.bakis!=='yonetici'){me=clone(me);me.rol=YETKI[st.bakis].rol;me.departman=YETKI[st.bakis].dep;me.kasa=false;}
+  else st.bakis='';
+  yetkiKur(me);
+}
+function bakisSec(k){
+  if(!st.sunucuMe||st.sunucuMe.rol!=='yonetici')return;
+  k=YETKI[k]&&k!=='yonetici'?k:'';
+  if(k===st.bakis)return;
+  if(dirty){toast('Önce ayarlardaki değişiklikleri kaydedin ya da geri alın.');renderBen();return;}
+  if(aj.kirli)ajKaydet();
+  if(ks.kirli)ksKaydet();
+  st.bakis=k;bakisUygula();
+  /* açık bölümler yeni yetkiye göre baştan yüklenir */
+  clearTimeout(ajT);aj=ajYeni();gr=grYeni();clearTimeout(ksT);ks=ksYeni();cr=crYeni();akt=null;
+  ['aj','gr','ks'].forEach(function(i){$(i).innerHTML='';});
+  st.view='takvim';
+  render();
+  try{window.scrollTo(0,0);}catch(e){}
+}
+$('banner').addEventListener('click',function(ev){
+  var b=ev.target.closest('[data-bakis-don]');if(!b)return;
+  bakisSec('');
+});
+$('ben').addEventListener('change',function(ev){
+  var t=ev.target;if(t.id!=='bakis-sec')return;
+  bakisSec(t.value);
+});
 
 /* ---------- başlangıç ---------- */
 renkYaz();
