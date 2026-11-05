@@ -191,10 +191,14 @@ select option{background:var(--surface);color:var(--ink)}
 /* Tablolar */
 .scroll{overflow-x:auto;border:1px solid var(--line);background:var(--surface)}
 table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
-.liste{min-width:760px}
+.liste{min-width:820px}
 .liste th,.liste td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
 .liste th{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line-strong)}
 .liste td.num,.liste th.num{text-align:right}
+.liste th .sirala{display:inline-flex;align-items:center;gap:4px;padding:0;border:0;background:none;font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit;cursor:pointer;white-space:nowrap}
+.liste th .sirala:hover,.liste th .sirala.akt{color:var(--gold)}
+.liste th .sirala i{font-style:normal;font-size:9px;min-width:9px;line-height:1}
+.liste td.soz{color:var(--muted)}
 .liste tr.we td:first-child{color:var(--gold);font-weight:600}
 .liste .who{border:0;background:transparent;padding:0;font-family:var(--f-serif);font-size:17px;text-align:left;text-decoration:underline;text-decoration-color:var(--line-strong);text-underline-offset:3px}
 .liste .who:hover{color:var(--gold);text-decoration-color:var(--gold-bright)}
@@ -1086,7 +1090,7 @@ var GUN_KISA=['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'];
 var GUN_2=['Pt','Sa','Ça','Pe','Cu','Ct','Pz'];
 var BOLUMLER=[
   {id:'panel',ad:'Özet',ic:'i-panel',yonetici:true},
-  {id:'takvim',ad:'Takvim',ic:'i-cal',yonetici:false},
+  {id:'takvim',ad:'Takvim / Sözleşmeler',ic:'i-cal',yonetici:false},
   {id:'ajanda',ad:'Ajanda',ic:'i-ajanda',yonetici:false},
   {id:'gorusmeler',ad:'Görüşmeler',ic:'i-gorusme',yonetici:false},
   {id:'gorevler',ad:'Görevler',ic:'i-gorev',yonetici:false,kap:'ajanda'},
@@ -1118,6 +1122,12 @@ function kurusAyir(s){
 function parseN(s){var d=kurusAyir(s)[0].replace(/\D/g,'');return d?parseInt(d,10):null;}
 /* Yazarken gösterim: tam kısım noktalı; kuruş yazılıyorsa olduğu gibi durur ama tutara katılmaz. */
 function paraYaz(s){var a=kurusAyir(s),d=a[0].replace(/\D/g,'');return d?fmtN(parseInt(d,10))+a[1]:(a[1]?'0'+a[1]:'');}
+/* Müşteri adları: her kelimenin ilk harfi büyük, kalanı küçük — "izzet KALAYCI" → "İzzet Kalaycı" (tire ile bağlı adlar da) */
+function adDuzelt(s){
+  return String(s==null?'':s).replace(/\s+/g,' ').trim().split(' ').map(function(w){
+    return w.split('-').map(function(p){var l=p.toLocaleLowerCase('tr');return l.charAt(0).toLocaleUpperCase('tr')+l.slice(1);}).join('-');
+  }).join(' ');
+}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function clone(o){return JSON.parse(JSON.stringify(o));}
 function slotId(salon,tarih,seans){return salon+'_'+tarih+'_'+seans;}
@@ -1320,8 +1330,10 @@ var st={
   yetki:'',para:true,odeme:false,bakis:'',sunucuMe:null,
   oturum:'yukleniyor', /* yukleniyor | ayarsiz | ilk | giris | yetkisiz | hata | ok */
   me:null,
-  kullanicilar:[]
+  kullanicilar:[],
+  sira:{k:'tarih',yon:1}   /* sözleşme listesinin sıralaması */
 };
+try{var ss=JSON.parse(localStorage.getItem('lusso.liste.sira'));if(ss&&ss.k)st.sira={k:String(ss.k),yon:ss.yon<0?-1:1};}catch(e){}
 try{var sv=localStorage.getItem('lusso.takvim.salon');if(sv&&(sv==='tum'||salonOf(sv)))st.salon=sv;}catch(e){}
 
 var sb=null,cur=null,toastT=null,renderT=null;
@@ -1498,6 +1510,38 @@ function odemeHtml(r){
   if(fark<=7)return '<span class="odm yakin">Vade '+fmtKisa(d.vade)+(fark===0?' (bugün)':' ('+fark+' gün)')+' · kalan '+para(d.kalan)+'</span>';
   return '<span class="odm">Kalan '+para(d.kalan)+' · vade '+fmtKisa(d.vade)+'</span>';
 }
+/* Liste sıralaması: başlığa tıklanınca o sütuna göre; aynı başlığa yeniden tıklanınca yön değişir. Boş değerler hep sonda. */
+var LISTE_SIRA={sozlesme:1,tarih:1,seans:1,salon:1,musteri:1,bedel:1};
+function listeSiraSec(k){
+  if(!LISTE_SIRA[k])return;
+  if(st.sira.k===k)st.sira.yon=-st.sira.yon;else st.sira={k:k,yon:1};
+  try{localStorage.setItem('lusso.liste.sira',JSON.stringify(st.sira));}catch(e){}
+  renderList();
+}
+function listeSirala(rows){
+  var k=LISTE_SIRA[st.sira.k]?st.sira.k:'tarih',yon=st.sira.yon,ord={};salonlar().forEach(function(s,i){ord[s.id]=i;});
+  function temel(a,b){return a.tarih<b.tarih?-1:a.tarih>b.tarih?1:(SEANS_SABIT[a.seans].sira-SEANS_SABIT[b.seans].sira)||((ord[a.salon]||0)-(ord[b.salon]||0));}
+  function deger(r){
+    if(k==='sozlesme')return r.sozlesmeTarihi||'';
+    if(k==='seans')return SEANS_SABIT[r.seans].sira;
+    if(k==='salon')return salonOf(r.salon)?salonOf(r.salon).ad:'';
+    if(k==='musteri')return r.musteri||'';
+    if(k==='bedel')return r.bedel==null?null:r.bedel;
+    return r.tarih;
+  }
+  rows.sort(function(a,b){
+    var x=deger(a),y=deger(b),xb=x===null||x==='',yb=y===null||y==='',c;
+    if(xb!==yb)return xb?1:-1;
+    if(typeof x==='number'&&typeof y==='number')c=x-y;
+    else if(k==='musteri'||k==='salon')c=String(x).localeCompare(String(y),'tr');
+    else c=x<y?-1:x>y?1:0;
+    return (c*yon)||temel(a,b);
+  });
+}
+function listeBaslik(k,ad,cls){
+  var akt=st.sira.k===k;
+  return '<th'+(cls?' class="'+cls+'"':'')+(akt?' aria-sort="'+(st.sira.yon>0?'ascending':'descending')+'"':'')+'><button type="button" class="sirala'+(akt?' akt':'')+'" data-sirala="'+k+'" title="'+(akt?(st.sira.yon>0?'Tersine çevir':'Baştan sırala'):'Buna göre sırala')+'">'+ad+'<i>'+(akt?(st.sira.yon>0?'▲':'▼'):'')+'</i></button></th>';
+}
 function renderList(){
   var el=$('liste'),rows=[],tum=st.salon==='tum';
   $('liste-baslik').textContent=tum?yil()+' sözleşmeleri':'Bu ayın sözleşmeleri';
@@ -1506,7 +1550,7 @@ function renderList(){
   if(!periodReady()){el.innerHTML='<p class="bos">'+(st.conn==='none'||st.conn==='err'?'Kayıtlara ulaşılamadığı için liste gösterilemiyor.':'Kayıtlar yükleniyor…')+'</p>';return;}
   if(!rows.length){el.innerHTML='<p class="bos">'+(tum?'Bu yıl için kayıtlı sözleşme yok.':'Bu ay için kayıtlı sözleşme yok.')+(st.canWrite?(tum?' Takvimde bir güne tıklayıp boş bir seansa ilk sözleşmeyi yazın.':' Takvimde boş bir seansa tıklayarak ilk sözleşmeyi yazın.'):'')+'</p>';return;}
   var ord={};salonlar().forEach(function(s,i){ord[s.id]=i;});
-  rows.sort(function(a,b){return a.tarih<b.tarih?-1:a.tarih>b.tarih?1:(SEANS_SABIT[a.seans].sira-SEANS_SABIT[b.seans].sira)||(ord[a.salon]-ord[b.salon]);});
+  listeSirala(rows);
   /* toplamlar ve ortalamalar: ciro = bedel yazılı sözleşmelerin toplamı; ortalama = bedel / bedeli yazılı sözleşme sayısı */
   var T={n:0,kisi:0,bedel:0,kapora:0,kalan:0,bedelsiz:0,dugun:{n:0,top:0},diger:{n:0,top:0}},tur={};
   rows.forEach(function(r){
@@ -1536,18 +1580,18 @@ function renderList(){
     h+='<div class="tiles ltop" id="liste-odeme"><div class="tile"><span class="tl">Vadesi geçmiş · tahsil edilmemiş</span><span class="tv'+(OG?' kbad':'')+'" id="lo-gecmis">'+para(OG)+'</span><span class="ts">'+og+' sözleşme</span></div>'+
        '<div class="tile"><span class="tl">30 gün içinde vadesi gelen</span><span class="tv" id="lo-otuz">'+para(OY)+'</span><span class="ts">'+oy+' sözleşme</span></div></div>';
   }
-  h+='<div class="scroll"><table class="liste"><thead><tr><th>Tarih</th><th>Seans</th>'+(tum?'<th>Salon</th>':'')+
-        '<th>Müşteri</th><th>Tür</th><th class="num">Kişi</th>'+(st.para?'<th class="num">Bedel</th><th class="num">Kapora</th><th class="num">Kalan</th>':'')+(st.odeme?'<th>Ödeme durumu</th>':'')+'</tr></thead><tbody>';
+  h+='<div class="scroll"><table class="liste" id="soz-liste"><thead><tr>'+listeBaslik('sozlesme','Sözleşme tarihi')+listeBaslik('tarih','Organizasyon tarihi')+listeBaslik('seans','Seans')+(tum?listeBaslik('salon','Salon'):'')+
+        listeBaslik('musteri','Müşteri')+'<th>Tür</th><th class="num">Kişi</th>'+(st.para?listeBaslik('bedel','Bedel','num')+'<th class="num">Kapora</th><th class="num">Kalan</th>':'')+(st.odeme?'<th>Ödeme durumu</th>':'')+'</tr></thead><tbody>';
   rows.forEach(function(r){
     var kalan=(r.bedel!=null)?r.bedel-(r.kapora||0):null,w=dow(r.tarih);
-    h+='<tr'+(isYogun(w)?' class="we"':'')+'><td>'+fmtKisa(r.tarih)+' '+GUN_KISA[w]+'</td><td>'+esc(seansOf(r.seans).ad)+'</td>'+
+    h+='<tr'+(isYogun(w)?' class="we"':'')+'><td class="soz">'+(r.sozlesmeTarihi?fmtKisa(r.sozlesmeTarihi):'—')+'</td><td>'+fmtKisa(r.tarih)+' '+GUN_KISA[w]+'</td><td>'+esc(seansOf(r.seans).ad)+'</td>'+
        (tum?'<td><span class="sal s-'+r.salon+'"><span class="dot"></span>'+esc(salonOf(r.salon).ad)+'</span></td>':'')+
        '<td><button type="button" class="who" data-salon="'+r.salon+'" data-date="'+r.tarih+'" data-seans="'+r.seans+'">'+esc(r.musteri)+'</button></td>'+
        '<td>'+esc(r.tur||'—')+'</td><td class="num">'+(r.kisi!=null?fmtN(r.kisi):'—')+'</td>'+
        (st.para?'<td class="num">'+para(r.bedel)+'</td><td class="num">'+para(r.kapora)+'</td><td class="num">'+para(kalan)+'</td>':'')+(st.odeme?'<td>'+odemeHtml(r)+'</td>':'')+'</tr>';
   });
-  h+='</tbody><tfoot><tr><td colspan="'+(tum?5:4)+'">Toplam · '+T.n+' sözleşme</td><td class="num">'+fmtN(T.kisi)+'</td>'+(st.para?'<td class="num" id="lt-ciro">'+para(T.bedel)+'</td><td class="num">'+para(T.kapora)+'</td><td class="num">'+para(T.kalan)+'</td>':'')+(st.odeme?'<td></td>':'')+'</tr></tfoot>';
-  el.innerHTML=h+'</table></div>';
+  h+='</tbody><tfoot><tr><td colspan="'+(tum?6:5)+'">Toplam · '+T.n+' sözleşme</td><td class="num">'+fmtN(T.kisi)+'</td>'+(st.para?'<td class="num" id="lt-ciro">'+para(T.bedel)+'</td><td class="num">'+para(T.kapora)+'</td><td class="num">'+para(T.kalan)+'</td>':'')+(st.odeme?'<td></td>':'')+'</tr></tfoot>';
+  el.innerHTML=h+'</table></div><p class="fine">Sütun başlığına tıklayınca liste o sütuna göre sıralanır; yeniden tıklayınca yön değişir.</p>';
 }
 
 /* ---------- istatistik (yalnızca yönetici) ---------- */
@@ -2361,7 +2405,7 @@ function save(){
   if(!cur||cur.busy||!sb)return;
   var c=cur,val=function(i){return $(i).value.trim();};
   var e=$('f-err');e.hidden=true;
-  var musteri=val('f-musteri'),kisi=parseN(val('f-kisi')),kisiBasi=parseN(val('f-kisibasi')),bedel=parseN(val('f-bedel')),kapora=parseN(val('f-kapora'));
+  var musteri=adDuzelt(val('f-musteri')),kisi=parseN(val('f-kisi')),kisiBasi=parseN(val('f-kisibasi')),bedel=parseN(val('f-bedel')),kapora=parseN(val('f-kapora'));
   if(!musteri){fail('Müşteri adı soyadı boş bırakılamaz.');$('f-musteri').focus();return;}
   var tel=telDuzelt(val('f-telefon'));
   if(!tel){fail('Müşteri telefonu 10 haneli olmalı. Örnek: 535 123 45 67');$('f-telefon').focus();return;}
@@ -2370,7 +2414,7 @@ function save(){
   if(val('f-damat-tel')){dTel=telDuzelt(val('f-damat-tel'));if(!dTel){fail('Damat telefonu 10 haneli olmalı. Örnek: 535 123 45 67');$('f-damat-tel').focus();return;}}
   if(kisi!==null&&kisi<1){fail('Kişi sayısı en az 1 olmalı.');$('f-kisi').focus();return;}
   if(bedel!==null&&kapora!==null&&kapora>bedel){fail('Kapora, toplam bedelden büyük olamaz.');$('f-kapora').focus();return;}
-  var detay={gelinAd:val('f-gelin'),gelinTel:gTel,damatAd:val('f-damat'),damatTel:dTel,
+  var detay={gelinAd:adDuzelt(val('f-gelin')),gelinTel:gTel,damatAd:adDuzelt(val('f-damat')),damatTel:dTel,
     baslangic:val('f-baslangic'),araSicak:val('f-arasicak'),anaYemek:val('f-anayemek'),meyve:val('f-meyve'),tatli:val('f-tatli'),ikram:val('f-ikram'),
     akis:c.akis.map(function(a){return {saat:String(a.saat||'').trim(),ad:String(a.ad||'').trim()};}).filter(function(a){return a.saat||a.ad;})};
   if(c.ek.diger.some(function(d){return !String(d.ad||'').trim()&&String(d.detay||'').trim();})){fail('Ek hizmetin adını yazın.');return;}
@@ -2620,6 +2664,7 @@ $('cal').addEventListener('click',function(ev){
 });
 
 $('liste').addEventListener('click',function(ev){
+  var sb_=ev.target.closest('[data-sirala]');if(sb_){listeSiraSec(sb_.getAttribute('data-sirala'));return;}
   var w=ev.target.closest('.who');if(!w)return;
   openForm(w.getAttribute('data-salon'),w.getAttribute('data-date'),w.getAttribute('data-seans'));
 });
@@ -2690,6 +2735,7 @@ dlg.addEventListener('submit',function(ev){ev.preventDefault();if(ev.target.id==
 dlg.addEventListener('change',function(ev){
   var t=ev.target;if(!cur||!t)return;
   if(t.hasAttribute('data-tel'))t.value=telYerel(t.value);
+  if(t.id==='f-musteri'||t.id==='f-gelin'||t.id==='f-damat'||t.id==='o-musteri')t.value=adDuzelt(t.value);
   if(t.hasAttribute('data-ek')){cur.ek.sabit[t.getAttribute('data-ek')].varmi=t.checked;cur.degisti=true;var okC=$('f-ok');if(okC)okC.hidden=true;}
   if(t.id==='f-menu'){cur.degisti=true;menuDoldur(t.value);}
   if(t.id==='f-tur'||t.id==='f-sozlesme-tarihi')cur.degisti=true;
@@ -3333,7 +3379,7 @@ function opsKaydet(){
   if(!cur||cur.tip!=='ops'||cur.busy||!sb)return;
   var c=cur,val=function(i){return $(i).value.trim();};
   $('f-err').hidden=true;
-  var musteri=val('o-musteri'),tel=telDuzelt(val('o-telefon')),bitis=val('o-bitis'),kisi=parseN(val('o-kisi'));
+  var musteri=adDuzelt(val('o-musteri')),tel=telDuzelt(val('o-telefon')),bitis=val('o-bitis'),kisi=parseN(val('o-kisi'));
   if(!musteri){fail('Müşteri adı soyadı boş bırakılamaz.');$('o-musteri').focus();return;}
   if(!tel){fail('Müşteri telefonu 10 haneli olmalı. Örnek: 535 123 45 67');$('o-telefon').focus();return;}
   if(!/^\d{4}-\d{2}-\d{2}$/.test(bitis)){fail('Opsiyon bitiş tarihini seçin.');$('o-bitis').focus();return;}
@@ -3715,7 +3761,7 @@ function grFormHata(m){var er=$('gr-f-err');if(er){er.textContent=m;er.hidden=fa
 function grKaydet(){
   var f=gr.frm,btn=$('gr-f-kaydet');
   if(gr.mesgul)return;
-  var musteri=f.musteri.replace(/\s+/g,' ').trim();
+  var musteri=adDuzelt(f.musteri);
   if(!musteri)return grFormHata('Müşterinin adını yazın.');
   if(!/^\d{4}-\d{2}-\d{2}$/.test(f.tarih||''))return grFormHata('Görüşme tarihini seçin.');
   if(f.takip&&f.takip<f.tarih)return grFormHata('Takip tarihi görüşme tarihinden önce olamaz.');
@@ -3759,6 +3805,7 @@ $('gr').addEventListener('input',function(ev){
 $('gr').addEventListener('change',function(ev){
   var t=ev.target,a=t.getAttribute('data-gf');
   if(a==='kisi'||a==='teklif')t.value=gr.frm[a]!=null?fmtN(gr.frm[a]):'';
+  if(a==='musteri'){gr.frm.musteri=adDuzelt(t.value);t.value=gr.frm.musteri;}
   if(a&&t.tagName==='SELECT')gr.frm[a]=t.value;
 });
 $('gr').addEventListener('click',function(ev){
