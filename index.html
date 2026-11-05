@@ -1207,7 +1207,7 @@ function normalize(raw){
   var t=temizListe(raw.turler,c.turler);if(t.length)c.turler=t;
   if(Array.isArray(raw.menuler))c.menuler=temizMenuler(raw.menuler,c.menuler);
   if(typeof raw.sonOdemeGun==='number'&&raw.sonOdemeGun>=0&&raw.sonOdemeGun<=90)c.sonOdemeGun=Math.round(raw.sonOdemeGun);
-  if(typeof raw.sonYil==='number'&&raw.sonYil>=2026&&raw.sonYil<=2040)c.sonYil=Math.round(raw.sonYil);
+  if(typeof raw.sonYil==='number'&&raw.sonYil>=2027&&raw.sonYil<=2040)c.sonYil=Math.round(raw.sonYil);
   if(typeof raw.dipNot==='string')c.dipNot=raw.dipNot.trim().slice(0,400);
   ['baslangiclar','tatlilar','akisSablonu'].forEach(function(k){if(Array.isArray(raw[k]))c[k]=temizListe(raw[k],c[k]);});
   if(typeof raw.baslik==='string'&&!eskiBaslikMi(raw.baslik))c.baslik=raw.baslik.trim().slice(0,500);
@@ -1368,7 +1368,8 @@ function renderNav(){
   ay.value=m.m;yl.value=m.y;
   ay.hidden=ym;
   $('bugun').classList.toggle('sec',ym?m.y===new Date().getFullYear():st.ym===todayStr().slice(0,7));
-  /* Takvim Ekim 2026'dan başlar; yönetici dışındakiler içinde bulunulan aydan geriye de gidemez */
+  $('bugun').hidden=todayStr().slice(0,7)<BASLANGIC_AY;
+  /* Takvim 2027'den başlar; yönetici dışındakiler içinde bulunulan aydan geriye de gidemez */
   for(i=0;i<ay.options.length;i++)ay.options[i].disabled=m.y===ilkYil&&(i+1)<+enE.slice(5);
   $('prev').disabled=ym?m.y<=ilkYil:st.ym<=enE;
   $('next').disabled=ym?m.y>=cfg.sonYil:st.ym>=enGecAy();
@@ -1675,7 +1676,7 @@ function renderAyarlar(){
     h+='<button type="button" class="ekle" data-add="'+L[0]+'">+ '+L[3]+'</button></section>';
   });
 
-  h+='<section class="ablok"><h2>Takvim aralığı</h2><p class="fine">Program 1 Ekim 2026’dan başlar; öncesi gösterilmez. Takvim, ajanda ve istatistik aşağıdaki yılın sonuna kadar açıktır. Yeni sezonu açmak için yılı büyütüp kaydedin.</p>'+
+  h+='<section class="ablok"><h2>Takvim aralığı</h2><p class="fine">Takvim 1 Ocak 2027’den başlar; 2026 gösterilmez (ajanda ve kasa gün sayfaları bundan etkilenmez). Takvim ve istatistik aşağıdaki yılın sonuna kadar açıktır. Yeni sezonu açmak için yılı büyütüp kaydedin.</p>'+
      '<div class="akisa"><label class="albl" for="a-sonyil">Takvim şu yılın sonuna kadar açık</label><input type="text" class="ain num" id="a-sonyil" data-p="sonYil" data-num inputmode="numeric" maxlength="4" value="'+(d.sonYil==null?'':d.sonYil)+'"></div></section>';
 
   h+='<section class="ablok"><h2>Sözleşme kuralları</h2>'+
@@ -1753,7 +1754,7 @@ function ayarKaydet(){
   if(!d.turler.length)hata='En az bir organizasyon türü olmalı.';
   if(d.sonOdemeGun==null)d.sonOdemeGun=VARSAYILAN.sonOdemeGun;
   if(d.sonOdemeGun>90)hata='Son ödeme süresi en fazla 90 gün olabilir.';
-  if(!(d.sonYil>=2026&&d.sonYil<=2040))hata='Takvimin açık olduğu son yıl 2026 ile 2040 arasında olmalı.';
+  if(!(d.sonYil>=2027&&d.sonYil<=2040))hata='Takvimin açık olduğu son yıl 2027 ile 2040 arasında olmalı.';
   d.dipNot=String(d.dipNot||'').trim();
   d.yogunGunler.sort();
   if(hata){ayarDurum(hata,true);return;}
@@ -2935,7 +2936,7 @@ function ajGit(dep,tarih){
   var p=aj.kirli?ajKaydet():Promise.resolve();
   Promise.resolve(p).then(function(){
     if(aj.kirli)return;
-    if(tarih<BASLANGIC_GUN)tarih=BASLANGIC_GUN;
+    if(tarih<GUN_BASLANGIC)tarih=GUN_BASLANGIC;
     if(tarih>enGecGun())tarih=enGecGun();
     aj.dep=dep;aj.tarih=tarih;aj.rtKirli=false;ajYukle();
   });
@@ -2973,8 +2974,8 @@ function ajCiz(){
 }
 function ajGunHtml(){
   var g=aj.gun,bugun=aj.tarih===todayStr(),n=Math.max(aj.satir,g.isler.length,10),i,h='';
-  h+='<div class="ajnav"><button type="button" class="nbtn arrow" id="aj-once" aria-label="Önceki gün"'+(aj.tarih<=BASLANGIC_GUN?' disabled':'')+'>&#8249;</button>'+
-     '<input type="date" id="aj-tarih" value="'+aj.tarih+'" min="'+BASLANGIC_GUN+'" max="'+enGecGun()+'" aria-label="Tarih">'+
+  h+='<div class="ajnav"><button type="button" class="nbtn arrow" id="aj-once" aria-label="Önceki gün"'+(aj.tarih<=GUN_BASLANGIC?' disabled':'')+'>&#8249;</button>'+
+     '<input type="date" id="aj-tarih" value="'+aj.tarih+'" min="'+GUN_BASLANGIC+'" max="'+enGecGun()+'" aria-label="Tarih">'+
      '<button type="button" class="nbtn arrow" id="aj-sonra" aria-label="Sonraki gün"'+(aj.tarih>=enGecGun()?' disabled':'')+'>&#8250;</button>'+
      (bugun?'':'<button type="button" class="nbtn" id="aj-bugun">Bugün</button>')+
      '<span class="ajgun">'+fmtUzun(aj.tarih)+(bugun?'<i>Bugün</i>':'')+'</span></div>';
@@ -3143,9 +3144,11 @@ document.addEventListener('visibilitychange',function(){
 });
 
 /* ---------- geçmiş tarihler ----------
-   Takvim, programın kullanılmaya başlandığı aydan (Ekim 2026) başlar; öncesi kimseye gösterilmez.
+   Takvim 2027'den başlar; 2026 ve öncesi hiçbir yerde gösterilmez. Ajanda ve kasa gün sayfaları takvimden bağımsızdır:
+   programın kullanılmaya başlandığı aydan (Ekim 2026) beri açıktır.
    Geçmiş güne yeni sözleşme yazılmaz. Yönetici dışındaki kullanıcılar geçmiş günleri ve ayları da görmez. */
-var BASLANGIC_AY='2026-10';
+var BASLANGIC_AY='2027-01';
+var GUN_BASLANGIC_AY='2026-10',GUN_BASLANGIC=GUN_BASLANGIC_AY+'-01';
 function gecmis(t){return t<todayStr();}
 function enErkenAy(){var b=todayStr().slice(0,7);return st.admin||b<BASLANGIC_AY?BASLANGIC_AY:b;}
 
@@ -3446,11 +3449,11 @@ dlg.addEventListener('input',function(ev){if(ev.target&&ev.target.id==='o-bitis'
 dlg.addEventListener('change',function(ev){if(ev.target&&ev.target.id==='o-bitis')ogunIsaretle();});
 
 /* ---------- program aralığı ----------
-   Takvim 1 Ekim 2026'da başlar ve Ayarlar'da yazılı yılın (varsayılan 2027) sonunda biter; dışındaki tarihler gösterilmez. */
+   Takvim 1 Ocak 2027'de başlar ve Ayarlar'da yazılı yılın (varsayılan 2027) sonunda biter; dışındaki tarihler gösterilmez. */
 var BASLANGIC_GUN=BASLANGIC_AY+'-01';
 function enGecAy(){return cfg.sonYil+'-12';}
 function enGecGun(){return cfg.sonYil+'-12-31';}
-/* Yılın programa açık gün sayısı (2026 için 1 Ekim – 31 Aralık) ve ilk açık ayı (0 = Ocak) */
+/* Yılın programa açık gün sayısı ve ilk açık ayı (0 = Ocak) */
 function yilIlkAy(y){return String(y)===BASLANGIC_AY.slice(0,4)?+BASLANGIC_AY.slice(5,7)-1:0;}
 function yilAcikGun(y){return Math.round((new Date(y,11,31)-new Date(y,yilIlkAy(y),1))/86400000)+1;}
 
@@ -4007,7 +4010,7 @@ function ksGit(tarih){
   var p=ks.kirli?ksKaydet():Promise.resolve();
   Promise.resolve(p).then(function(){
     if(ks.kirli)return;
-    if(tarih<BASLANGIC_GUN)tarih=BASLANGIC_GUN;
+    if(tarih<GUN_BASLANGIC)tarih=GUN_BASLANGIC;
     if(tarih>enGecGun())tarih=enGecGun();
     ks.tarih=tarih;ks.ay=tarih.slice(0,7);ks.uyari='';ks.eskimis=false;ksYukle();
   });
@@ -4025,7 +4028,7 @@ function ksRender(){
   if(!ksErisim()){el.innerHTML='';return;}
   if(ks.bolum==='cari'){if(!cr.yuklu&&!cr.hata&&!cr.bekle)crYukle();else if(!el.firstChild)ksCiz();return;}
   if(ks.bolum==='ortak'){if(!or.yuklu&&!or.hata&&!or.bekle)orYukle();else if(!el.firstChild)ksCiz();return;}
-  if(!ks.tarih){ks.tarih=todayStr();if(ks.tarih<BASLANGIC_GUN)ks.tarih=BASLANGIC_GUN;if(ks.tarih>enGecGun())ks.tarih=enGecGun();ks.ay=ks.tarih.slice(0,7);ksYukle();return;}
+  if(!ks.tarih){ks.tarih=todayStr();if(ks.tarih<GUN_BASLANGIC)ks.tarih=GUN_BASLANGIC;if(ks.tarih>enGecGun())ks.tarih=enGecGun();ks.ay=ks.tarih.slice(0,7);ksYukle();return;}
   if(!el.firstChild)ksCiz();
 }
 function ksCiz(){
@@ -4062,8 +4065,8 @@ function ksSec(liste,val,bos){
 function ksGunHtml(){
   var v=ks.gun,bugun=ks.tarih===todayStr(),yaz=ksYazabilir(ks.tarih),dis=yaz?'':' disabled',h='',i;
   var salonSec=salonlar().map(function(s){return [s.id,s.ad];});
-  h+='<div class="ajnav"><button type="button" class="nbtn arrow" id="ks-once" aria-label="Önceki gün"'+(ks.tarih<=BASLANGIC_GUN?' disabled':'')+'>&#8249;</button>'+
-     '<input type="date" id="ks-tarih" value="'+ks.tarih+'" min="'+BASLANGIC_GUN+'" max="'+enGecGun()+'" aria-label="Tarih">'+
+  h+='<div class="ajnav"><button type="button" class="nbtn arrow" id="ks-once" aria-label="Önceki gün"'+(ks.tarih<=GUN_BASLANGIC?' disabled':'')+'>&#8249;</button>'+
+     '<input type="date" id="ks-tarih" value="'+ks.tarih+'" min="'+GUN_BASLANGIC+'" max="'+enGecGun()+'" aria-label="Tarih">'+
      '<button type="button" class="nbtn arrow" id="ks-sonra" aria-label="Sonraki gün"'+(ks.tarih>=enGecGun()?' disabled':'')+'>&#8250;</button>'+
      (bugun?'':'<button type="button" class="nbtn" id="ks-bugun">Bugün</button>')+
      '<span class="ajgun">'+fmtUzun(ks.tarih)+(bugun?'<i>Bugün</i>':'')+'</span></div>';
@@ -4201,7 +4204,7 @@ function ksAyHtml(){
       '<td class="num guclu">'+(once?'—':tlYaz(son/100))+'</td><td class="num">'+(once?'—':tlYaz(n/100))+'</td><td class="num">'+(once?'—':tlYaz(b/100))+'</td>'+
       '<td>'+(once||t>bugun?'':Math.abs(fark)>=50?'<span class="kbad">⚠ '+tlYaz(fark/100)+' ₺ fark</span>':(g?'<span class="kok">✓</span>':''))+'</td></tr>';
   }
-  h+='<div class="ajnav"><button type="button" class="nbtn arrow" id="ks-ay-once" aria-label="Önceki ay"'+(onceki<BASLANGIC_AY?' disabled':'')+'>&#8249;</button>'+
+  h+='<div class="ajnav"><button type="button" class="nbtn arrow" id="ks-ay-once" aria-label="Önceki ay"'+(onceki<GUN_BASLANGIC_AY?' disabled':'')+'>&#8249;</button>'+
      '<span class="ajgun">'+AYLAR[m-1]+' '+y+'</span>'+
      '<button type="button" class="nbtn arrow" id="ks-ay-sonra" aria-label="Sonraki ay"'+(sonraki>enGecAy()?' disabled':'')+'>&#8250;</button></div>';
   h+='<div class="tiles"><div class="tile"><span class="tl">Ay geliri</span><span class="tv">'+tlPara(G/100)+'</span></div>'+
@@ -4219,7 +4222,7 @@ function ksAyHtml(){
 function ksAyarHtml(){
   var t=ks.taslak||(ks.taslak=clone(ks.ayar)),h=ksAyarSekmeHtml();
   h+='<section class="ablok"><h2>Kasa açılışı</h2><p class="fine">Kasanın programda başladığı günün sabahındaki tutarlar. Bu tarihten önceki günler hesaba girmez; sonraki her gün kendiliğinden devreder.</p>'+
-     '<div class="ksuc"><div class="fld"><label for="ks-ac-tarih">Açılış tarihi</label><input type="date" class="ain" id="ks-ac-tarih" data-ka="tarih" value="'+esc(t.acilis.tarih||'')+'" min="'+BASLANGIC_GUN+'" max="'+enGecGun()+'"></div>'+
+     '<div class="ksuc"><div class="fld"><label for="ks-ac-tarih">Açılış tarihi</label><input type="date" class="ain" id="ks-ac-tarih" data-ka="tarih" value="'+esc(t.acilis.tarih||'')+'" min="'+GUN_BASLANGIC+'" max="'+enGecGun()+'"></div>'+
      '<div class="fld"><label for="ks-ac-nakit">Nakit açılış (kasa sayımı)</label>'+ksTl('ks-ac-nakit',t.acilis.nakit,' data-ka="nakit"')+'</div>'+
      '<div class="fld"><label for="ks-ac-banka">Banka açılış (hesap bakiyesi)</label>'+ksTl('ks-ac-banka',t.acilis.banka,' data-ka="banka"')+'</div></div>'+
      '<p class="fine">Toplam devir: <b id="ks-ac-top">'+tlPara((krs(t.acilis.nakit)+krs(t.acilis.banka))/100)+'</b></p></section>';
@@ -5434,7 +5437,7 @@ function pnYukle(sessiz){
     var ord={};salonlar().forEach(function(s,i){ord[s.id]=i;});
     var soz=[];
     (r[0]||[]).forEach(function(x){
-      if(x&&x.musteri&&KOD[x.salon]&&SEANS_SABIT[x.seans]&&typeof x.tarih==='string'&&x.durum!=='opsiyon')
+      if(x&&x.musteri&&KOD[x.salon]&&SEANS_SABIT[x.seans]&&typeof x.tarih==='string'&&x.durum!=='opsiyon'&&x.tarih>=BASLANGIC_GUN)
         soz.push({id:x.id,salon:x.salon,tarih:x.tarih,seans:x.seans,musteri:String(x.musteri),tur:String(x.tur||''),kisi:x.kisi==null?null:+x.kisi,bedel:x.bedel==null?null:+x.bedel,kapora:x.kapora==null?null:+x.kapora});
     });
     soz.sort(function(a,b){return a.tarih<b.tarih?-1:a.tarih>b.tarih?1:(SEANS_SABIT[a.seans].sira-SEANS_SABIT[b.seans].sira)||((ord[a.salon]||0)-(ord[b.salon]||0));});
@@ -5451,7 +5454,7 @@ function pnYukle(sessiz){
     if(r[4].data){ortak={};r[4].data.forEach(function(o){if(orOrtakMu(o.firma_id))ortak[o.firma_id]={borc:+o.borc||0,alacak:+o.alacak||0,adet:+o.adet||0,son:o.son||null};});}
     var imza=JSON.stringify([bugun,soz,grl,gunler,rutin,ortak]);
     pn.bugun=bugun;pn.soz=soz;pn.gorusmeler=grl;pn.gunler=gunler;pn.rutin=rutin;pn.ortak=ortak;pn.yuklu=true;pn.hata='';
-    if(!pn.yil)pn.yil=bugun.slice(0,4);
+    if(!pn.yil)pn.yil=pnIlkYil(bugun);
     if(sessiz&&imza===pn.imza)return;
     pn.imza=imza;pnCiz();
   }).catch(function(e){if(sira!==pn.sira)return;pn.bekle=false;if(sessiz&&pn.yuklu)return;pn.hata=hataMetni(e);pnCiz();});
@@ -5487,15 +5490,19 @@ function pnCiz(){
   el.innerHTML=h;
 }
 
+/* Bilanço yılı: takvimin açık olduğu ilk yıldan önceki yıllar (ör. 2026) hiç gösterilmez */
+function pnIlkYil(bugun){var b=bugun.slice(0,4),i=BASLANGIC_AY.slice(0,4);return b<i?i:b;}
 function pnBilancoHtml(){
-  var yillar={},bugunY=pn.bugun.slice(0,4);
+  var yillar={},bugunY=pnIlkYil(pn.bugun);
   pn.soz.forEach(function(r){yillar[r.tarih.slice(0,4)]=1;});yillar[bugunY]=1;
   var liste=Object.keys(yillar).sort();
   if(pn.yil!=='tum'&&liste.indexOf(pn.yil)<0)pn.yil=bugunY;
+  if(pn.yil==='tum'&&liste.length<2)pn.yil=liste[0];
   var rows=pn.soz.filter(function(r){return pn.yil==='tum'||r.tarih.slice(0,4)===pn.yil;}),T=pnToplam(rows),ad=pn.yil==='tum'?'Tüm yıllar':pn.yil;
   var h='<section class="ablok pnblok" id="pn-bilanco"><div class="pnbas"><h2>Bilanço</h2><div class="seg alt" role="group" aria-label="Yıl">';
   liste.forEach(function(y){h+='<button type="button" data-pnyil="'+y+'" aria-pressed="'+(pn.yil===y)+'">'+y+'</button>';});
-  h+='<button type="button" data-pnyil="tum" aria-pressed="'+(pn.yil==='tum')+'">Tümü</button></div></div>';
+  if(liste.length>1)h+='<button type="button" data-pnyil="tum" aria-pressed="'+(pn.yil==='tum')+'">Tümü</button>';
+  h+='</div></div>';
   h+='<div class="pnb"><div class="tile ana"><span class="tl">'+esc(ad)+' · toplam sözleşme</span><span class="tv" id="pn-b-adet">'+T.n+'</span>'+
      '<span class="ts"><b class="ciro" id="pn-b-ciro">'+para(T.bedel)+'</b> toplam ciro</span>'+
      '<span class="ts">'+fmtN(T.kisi)+' kişi · kapora '+para(T.kapora)+' · kalan '+para(T.kalan)+(T.bedelsiz?' · '+T.bedelsiz+' sözleşmede bedel yazılmamış':'')+'</span></div>'+
@@ -5589,7 +5596,7 @@ function pnTakvimHtml(){
   var y=+ym.slice(0,4),m=+ym.slice(5,7),gun=new Date(y,m,0).getDate(),ilk=(new Date(y,m-1,1).getDay()+6)%7,i,d;
   h+='<div class="pntnav"><button type="button" class="nbtn arrow" data-pntay="-1" aria-label="Önceki ay"'+(ym<=enE?' disabled':'')+'>&#8249;</button><b id="pn-t-ay">'+AYLAR[m-1]+' '+y+'</b>'+
      '<button type="button" class="nbtn arrow" data-pntay="1" aria-label="Sonraki ay"'+(ym>=enG?' disabled':'')+'>&#8250;</button>'+
-     (ym===pn.bugun.slice(0,7)?'':'<button type="button" class="nbtn" id="pn-t-bugun">Bugün</button>')+'<button type="button" class="lnk" data-pnview="takvim">Tam takvim</button></div>';
+     (ym===pn.bugun.slice(0,7)||pn.bugun.slice(0,7)<enE?'':'<button type="button" class="nbtn" id="pn-t-bugun">Bugün</button>')+'<button type="button" class="lnk" data-pnview="takvim">Tam takvim</button></div>';
   var gunler={},say=0;pn.soz.forEach(function(r){if(r.tarih.slice(0,7)===ym){(gunler[r.tarih]||(gunler[r.tarih]=[])).push(r);say++;}});
   h+='<div class="pntk" id="pn-t-grid">';
   GUN_KISA.forEach(function(g,k){h+='<div class="pntkh'+(isYogun(k)?' we':'')+'">'+g+'</div>';});
