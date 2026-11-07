@@ -599,6 +599,8 @@ button.pnd.orort:hover{border-color:var(--gold-bright);background:var(--gold-sof
 .pnbas{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 14px}
 .pnbas h2{flex:1 1 auto}
 .pnbas .lnk{align-self:center}
+.pnks .tile .tv.ok{color:var(--ok)}
+.pnks .tile.ana .tv{font-size:24px}
 .pnb{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden}
 .pnb .tile .tv{font-size:30px}
 .pnb .tile .ts{font-size:12.5px}
@@ -674,6 +676,8 @@ button.pnd.orort:hover{border-color:var(--gold-bright);background:var(--gold-sof
   .pndep{grid-template-columns:minmax(0,1fr)}
   .pnrow .pnt1{min-width:0;flex-basis:100%}
   .tiles.kucuk{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .pnks.tiles.kucuk{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .pnks .tile.ana{grid-column:1 / -1}
   .tiles.kucuk .tile{padding:9px 9px}
   .tiles.kucuk .tile .tv{font-size:16px}
   .tiles.kucuk .tile .tl,.tiles.kucuk .tile .ts{font-size:11px}
@@ -5208,6 +5212,7 @@ function ksTazele(){
 function ksCanli(){
   clearTimeout(ksCanliT);
   ksCanliT=setTimeout(function(){
+    if(st.view==='panel'&&pn.yuklu&&st.oturum==='ok'){pnYukle(true);return;}
     if((st.view!=='kasa'&&st.view!=='cari'&&st.view!=='ortak')||st.oturum!=='ok')return;
     if(ks.bolum==='cari'){if(cr.yuklu&&!crKirli()&&!cr.mesgul&&!crOdakta())crYukle(true);return;}
     if(ks.bolum==='ortak'){if(or.yuklu&&!orKirli()&&!or.mesgul&&!orOdakta())orYukle(true);return;}
@@ -5723,7 +5728,7 @@ function orClick(ev){
    bugünkü görüşmeler, bu hafta ve bu ayın organizasyonları. Veriyi takvimden bağımsız olarak kendisi okur;
    telefonda tek sütun akar. Yalnızca yönetici görür. */
 function pnYeni(){var tk=false;try{tk=localStorage.getItem('lusso.ozet.takvim')==='1';}catch(e){}
-  return {yuklu:false,bekle:false,hata:'',sira:0,bugun:'',yil:'',soz:[],gorusmeler:[],gunler:{},rutin:{},grAcik:false,ayAcik:false,takvimAcik:tk,ay:'',ortak:null,imza:''};}
+  return {yuklu:false,bekle:false,hata:'',sira:0,bugun:'',yil:'',soz:[],gorusmeler:[],gunler:{},rutin:{},grAcik:false,ayAcik:false,takvimAcik:tk,ay:'',ortak:null,kasa:null,imza:''};}
 var pn=pnYeni();
 function pnErisim(){return !!(st.me&&st.oturum==='ok'&&st.admin);}
 function pnGunEkle(t,n){var d=toDate(t);d.setDate(d.getDate()+n);return dateStr(d);}
@@ -5742,7 +5747,9 @@ function pnYukle(sessiz){
     sb.from('gorusmeler').select('*').gte('tarih',hf[0]).lte('tarih',hf[1]).order('tarih').order('olusturma'),
     sb.from('ajanda_gun').select('*').eq('tarih',bugun),
     sb.from('ajanda_rutin').select('*'),
-    sb.from('cari_ozet').select('*').in('firma_id',OR_IDLER).then(function(r){return r.error?{data:null,error:r.error}:r;},function(e){return {data:null,error:e};})
+    sb.from('cari_ozet').select('*').in('firma_id',OR_IDLER).then(function(r){return r.error?{data:null,error:r.error}:r;},function(e){return {data:null,error:e};}),
+    sb.from('kasa_ayar').select('veri').eq('id','genel').maybeSingle().then(function(r){return r.error?{data:null,error:r.error}:r;},function(e){return {data:null,error:e};}),
+    hepsiniOku(function(){return sb.from('kasa_gun').select('tarih,gelir,gider,nakit,banka').order('tarih');}).then(function(d){return {data:d,error:null};},function(e){return {data:null,error:e};})
   ]).then(function(r){
     if(sira!==pn.sira)return;
     pn.bekle=false;
@@ -5766,8 +5773,13 @@ function pnYukle(sessiz){
     var grl=(r[1].data||[]).map(grTemiz);
     var ortak=null;
     if(r[4].data){ortak={};r[4].data.forEach(function(o){if(orOrtakMu(o.firma_id))ortak[o.firma_id]={borc:+o.borc||0,alacak:+o.alacak||0,adet:+o.adet||0,son:o.son||null};});}
-    var imza=JSON.stringify([bugun,soz,grl,gunler,rutin,ortak]);
-    pn.bugun=bugun;pn.soz=soz;pn.gorusmeler=grl;pn.gunler=gunler;pn.rutin=rutin;pn.ortak=ortak;pn.yuklu=true;pn.hata='';
+    var kasa=null;
+    if(!r[6].error){
+      var ayar=ksAyarTemiz(r[5].data&&r[5].data.veri),ozet=(r[6].data||[]).map(function(g){return {tarih:String(g.tarih||''),gelir:+g.gelir||0,gider:+g.gider||0,nakit:+g.nakit||0,banka:+g.banka||0};}).filter(function(g){return /^\d{4}-\d{2}-\d{2}$/.test(g.tarih);}).sort(function(a,b){return a.tarih<b.tarih?-1:1;});
+      kasa={ayarVar:!!(r[5].data&&r[5].data.veri),acilis:ayar.acilis,ozet:ozet};
+    }
+    var imza=JSON.stringify([bugun,soz,grl,gunler,rutin,ortak,kasa]);
+    pn.bugun=bugun;pn.soz=soz;pn.gorusmeler=grl;pn.gunler=gunler;pn.rutin=rutin;pn.ortak=ortak;pn.kasa=kasa;pn.yuklu=true;pn.hata='';
     if(!pn.yil)pn.yil=pnIlkYil(bugun);
     if(sessiz&&imza===pn.imza)return;
     pn.imza=imza;pnCiz();
@@ -5799,11 +5811,30 @@ function pnCiz(){
   var bugun=todayStr(),h='<div class="phead"><h1>Yönetici özeti</h1><span class="durum" id="pn-gun">'+esc(fmtUzun(bugun))+'</span></div>';
   if(pn.hata)h+='<p class="banner bad" id="pn-hata">'+esc(pn.hata)+'</p><div class="crdugme"><button type="button" class="btn" id="pn-yenile">Yeniden dene</button></div>';
   else if(!pn.yuklu)h+='<p class="fine">Yükleniyor…</p>';
-  else h+=pnBilancoHtml()+pnTakvimHtml()+pnOdakHtml()+pnGorusmeHtml()+pnOrgHtml()+pnOrtakHtml()+
+  else h+=pnKasaHtml()+pnBilancoHtml()+pnTakvimHtml()+pnOdakHtml()+pnGorusmeHtml()+pnOrgHtml()+pnOrtakHtml()+
           '<p class="ajalt pnson">Veriler dakikada bir kendiliğinden yenilenir.<button type="button" class="lnk" id="pn-yenile">Şimdi yenile</button></p>';
   el.innerHTML=h;
 }
 
+/* Bugünün kasası: yalnızca günün geliri, gideri ve gün sonu kasa durumu (nakit + banka). Ayrıntı Günlük kasa'da. */
+function pnKasaHesap(){
+  var k=pn.kasa,bugun=pn.bugun;if(!k)return null;
+  var ac=k.acilis,bas=ac.tarih||(k.ozet.length?k.ozet[0].tarih:bugun),n=krs(ac.nakit),b=krs(ac.banka),t=n+b,g=null;
+  k.ozet.forEach(function(x){if(x.tarih===bugun)g=x;if(x.tarih>=bas&&x.tarih<bugun){n+=krs(x.nakit);b+=krs(x.banka);t+=krs(x.gelir)-krs(x.gider);}});
+  var gelir=g?krs(g.gelir):0,gider=g?krs(g.gider):0;
+  return {var_:k.ayarVar||k.ozet.length>0,yazildi:!!g,gelir:gelir/100,gider:gider/100,son:(t+gelir-gider)/100,nakit:(n+(g?krs(g.nakit):0))/100,banka:(b+(g?krs(g.banka):0))/100};
+}
+function pnKasaHtml(){
+  var h='<section class="ablok pnblok" id="pn-kasa"><div class="pnbas"><h2>Bugünün kasası</h2><button type="button" class="lnk" data-pnview="kasa">Günlük kasayı aç</button></div>';
+  var x=pnKasaHesap();
+  if(!x)return h+'<p class="fine" id="pn-ks-yok">Kasa okunamadı; Finans › Günlük kasa bölümünü açın.</p></section>';
+  if(!x.var_)return h+'<p class="fine" id="pn-ks-yok">Kasa açılışı henüz yapılmamış. Günlük kasa › Ayarlar › Açılış bölümünden başlangıç tutarlarını girin.</p></section>';
+  h+='<div class="tiles kucuk pnks"><div class="tile"><span class="tl">Bugünkü gelir</span><span class="tv ok" id="pn-ks-gelir">'+tlPara(x.gelir)+'</span></div>'+
+     '<div class="tile"><span class="tl">Bugünkü gider</span><span class="tv" id="pn-ks-gider">'+tlPara(x.gider)+'</span></div>'+
+     '<div class="tile ana"><span class="tl">Kasa durumu</span><span class="tv ciro" id="pn-ks-son">'+tlPara(x.son)+'</span><span class="ts" id="pn-ks-ayrim">nakit '+tlPara(x.nakit)+' · banka '+tlPara(x.banka)+'</span></div></div>';
+  if(!x.yazildi)h+='<p class="fine" id="pn-ks-bos">Bugün için henüz kasa kaydı girilmemiş; kasa durumu dünden devreden tutardır.</p>';
+  return h+'</section>';
+}
 /* Bilanço yılı: takvimin açık olduğu ilk yıldan önceki yıllar (ör. 2026) hiç gösterilmez */
 function pnIlkYil(bugun){var b=bugun.slice(0,4),i=BASLANGIC_AY.slice(0,4);return b<i?i:b;}
 function pnBilancoHtml(){
