@@ -561,6 +561,31 @@ textarea.ain.oto{field-sizing:content;min-height:84px;max-height:70vh;line-heigh
   .crform{grid-template-columns:repeat(2,minmax(0,1fr))}
   .crform .fld.iki,.crform .fld.wide{grid-column:1/-1}
 }
+/* ---------- Sayfa PDF ---------- */
+#pdf-bas{display:none}
+.nbtn.pdf[hidden]{display:none}
+@media print{
+  body.sayfa-pdf{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body.sayfa-pdf .shell{display:block!important;max-width:none}
+  body.sayfa-pdf .side,body.sayfa-pdf .bar,body.sayfa-pdf #geri,body.sayfa-pdf .toast,body.sayfa-pdf #yazdir,body.sayfa-pdf #nav,body.sayfa-pdf #zil{display:none!important}
+  body.sayfa-pdf .main{padding:0;gap:12px}
+  body.sayfa-pdf #pdf-bas{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 16px;padding-bottom:6px;border-bottom:1px solid #999;font-size:10px;color:#333}
+  body.sayfa-pdf #pdf-bas b{font-family:var(--f-display);font-weight:600;letter-spacing:.2em;font-size:12px;color:#000}
+  body.sayfa-pdf .btn,body.sayfa-pdf .nbtn,body.sayfa-pdf .lnk,body.sayfa-pdf .ekle,body.sayfa-pdf .crdugme,body.sayfa-pdf input[type="search"],body.sayfa-pdf .banner,body.sayfa-pdf .fine.yardim{display:none!important}
+  body.sayfa-pdf .scroll{overflow:visible!important}
+  body.sayfa-pdf table.liste{min-width:0!important;width:100%;font-size:10px}
+  body.sayfa-pdf table.liste th,body.sayfa-pdf table.liste td{padding:4px 6px}
+  body.sayfa-pdf .view[hidden]{display:none!important}
+  body.sayfa-pdf .tile,body.sayfa-pdf tr,body.sayfa-pdf .pnd,body.sayfa-pdf .pngk{break-inside:avoid}
+  body.sayfa-pdf .pnd .lnk{display:none!important}
+  /* boş giriş formları çıktıya girmez; düzeltme formu açıksa (kayıt seçiliyse) kalır */
+  body.sayfa-pdf #cr-form:not(.dolu),body.sayfa-pdf #cr-eform,body.sayfa-pdf #or-form:not(.dolu),body.sayfa-pdf #gr-form:not(.dolu),body.sayfa-pdf #aj-gorev-yeni{display:none!important}
+  body.sayfa-pdf a{text-decoration:none;color:inherit}
+  /* ay ızgarası bölünmez; sayfaya sığması için hücreler alçaltılır */
+  body.sayfa-pdf .yil.tek .yd{min-height:46px;padding:3px 0 3px}
+  body.sayfa-pdf .yil .ay{break-inside:avoid}
+  body.sayfa-pdf .grid7 .day{min-height:70px}
+}
 /* ---------- Geri düğmesi ---------- */
 .nbtn.geri{gap:4px;font-weight:600}
 .nbtn.geri[hidden]{display:none}
@@ -975,6 +1000,9 @@ button.pnd.orort:hover{border-color:var(--gold-bright);background:var(--gold-sof
   <symbol id="i-moon" viewBox="0 0 16 16">
     <path d="M13.4 9.7A5.7 5.7 0 0 1 6.3 2.6a5.7 5.7 0 1 0 7.1 7.1z" fill="currentColor"/>
   </symbol>
+  <symbol id="i-pdf" viewBox="0 0 16 16">
+    <path d="M8 2v8M5 7l3 3 3-3M3 12.5v1h10v-1" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
   <symbol id="i-panel" viewBox="0 0 16 16">
     <path d="M2.5 2.5h5v5h-5zM9.5 2.5h4v3h-4zM9.5 7.5h4v6h-4zM2.5 9.5h5v4h-5z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
   </symbol>
@@ -1029,6 +1057,7 @@ button.pnd.orort:hover{border-color:var(--gold-bright);background:var(--gold-sof
   <main class="main">
     <div class="bar">
       <button type="button" class="nbtn geri" id="geri" hidden aria-label="Bir önceki ekrana dön">&#8249; Geri</button>
+      <button type="button" class="nbtn pdf" id="pdf" hidden title="Bu sayfayı PDF olarak indir"><svg class="ic" aria-hidden="true"><use href="#i-pdf"/></svg><span>PDF indir</span></button>
       <p class="vt" id="vt">Takvim</p>
       <button type="button" class="nbtn zil" id="zil" hidden aria-label="Opsiyonlar"><svg class="ic" aria-hidden="true"><use href="#i-zil"/></svg><span>Opsiyonlar</span><span class="zs" id="zil-say">0</span></button>
       <div class="nav" id="nav">
@@ -2042,7 +2071,7 @@ function render(){
   if(BOLUMLER.some(function(b){return b.id===st.view&&b.yonetici;})&&!st.admin)st.view='takvim';
   var enR=enErkenAy();if(enR&&st.ym<enR){st.ym=enR;subscribe();}
   if(st.ym>enGecAy()&&enGecAy()>=enR){st.ym=enGecAy();subscribe();}
-  renderMenu();renderNav();renderBanner();renderZil();geriDugme();
+  renderMenu();renderNav();renderBanner();renderZil();geriDugme();pdfDugme();
   BOLUMLER.forEach(function(b){if(b.id===st.view)$('vt').textContent=b.ad;if(!b.kap)$('v-'+b.id).hidden=b.id!==st.view&&!BOLUMLER.some(function(x){return x.id===st.view&&x.kap===b.id;});});
   if(st.view==='takvim'){renderTabs();renderAylar();renderHead();renderCal();renderList();}
   else if(st.view==='istatistik')renderStats();
@@ -5363,6 +5392,42 @@ $('rt').addEventListener('click',function(ev){
   if(b.hasAttribute('data-rtdel')){rt.taslak[dep].splice(+b.getAttribute('data-rtdel'),1);rt.kirli[dep]=true;rtCiz();return;}
   if(b.hasAttribute('data-rtkaydet')){rtKaydet(dep);}
 });
+
+/* ---------- Sayfayı PDF olarak indir ---------- */
+/* Açık bölüm göründüğü gibi yazdırılır; tarayıcının yazdırma penceresinde "PDF olarak kaydet" seçilince bilgisayara iner.
+   Sol panel, menü ve düğmeler çıktıya girmez; üstte Lusso Wedding, bölüm adı, tarih-saat ve kullanıcı yazar. */
+var PDF_SAYFALAR={panel:1,takvim:1,ajanda:1,gorevler:1,gorusmeler:1,kasa:1,cari:1,ortak:1,istatistik:1};
+var PDF_YATAY={takvim:1,gorusmeler:1,kasa:1,cari:1,ortak:1,istatistik:1};
+function pdfAlt(){
+  var v=st.view,m=mi();
+  if(v==='takvim')return $('baslik')?$('baslik').textContent:'';
+  if(v==='istatistik')return String(yil());
+  if(v==='ajanda'||v==='gorevler')return (aj.dep&&DEPARTMAN[aj.dep]?DEPARTMAN[aj.dep].ad:'')+(v==='ajanda'&&aj.tarih?' · '+fmtUzun(aj.tarih):'');
+  if(v==='gorusmeler'){for(var i=0;i<GR_SUZ.length;i++)if(GR_SUZ[i][0]===gr.suz)return GR_SUZ[i][1];return '';}
+  if(v==='kasa')return ks.sekme==='ay'?'Ay özeti · '+AYLAR[m.m-1]+' '+m.y:(ks.tarih?fmtUzun(ks.tarih):'');
+  if(v==='cari'){var f=cr.firma&&crFirma(cr.firma);return f?(f.unvan||f.ad):(cr.sekme==='vade'?'Vade listesi':cr.sekme==='tadilat'?'Tadilat listesi':'Firmalar');}
+  if(v==='ortak'){var o=or.ortak&&orOrtak(or.ortak);return o?o.ad:'Ortaklar';}
+  if(v==='panel')return 'Yönetici özeti';
+  return '';
+}
+function pdfDugme(){var b=$('pdf');if(b)b.hidden=!(st.oturum==='ok'&&PDF_SAYFALAR[st.view]);}
+function sayfaPdf(){
+  if(!PDF_SAYFALAR[st.view]||document.body.classList.contains('sayfa-pdf'))return;
+  var b=null;BOLUMLER.forEach(function(x){if(x.id===st.view)b=x;});
+  var alt=pdfAlt(),d=new Date(),zaman=fmtKisa(dateStr(d))+' '+pad(d.getHours())+':'+pad(d.getMinutes()),kim=st.me?st.me.ad:'';
+  var bas=document.createElement('div');bas.id='pdf-bas';
+  bas.innerHTML='<b>LUSSO WEDDING</b><span>'+esc((b?b.ad:'')+(alt?' · '+alt:''))+'</span><span>'+esc(zaman+(kim?' · '+kim:''))+'</span>';
+  var ana=document.querySelector('.main');ana.insertBefore(bas,ana.firstChild);
+  var sty=document.createElement('style');sty.id='pdf-sayfa';sty.textContent='@page{size:A4 '+(PDF_YATAY[st.view]?'landscape':'portrait')+';margin:11mm}';document.head.appendChild(sty);
+  document.body.classList.add('sayfa-pdf');
+  eskiBaslik=document.title;document.title='Lusso '+(b?b.ad:'')+(alt?' '+alt:'')+' '+fmtKisa(dateStr(d));
+  var temiz=function(){document.body.classList.remove('sayfa-pdf');var e=$('pdf-bas');if(e)e.remove();var s=$('pdf-sayfa');if(s)s.remove();window.removeEventListener('afterprint',temiz);};
+  window.addEventListener('afterprint',temiz);
+  yazdirFontlar().then(function(){setTimeout(function(){try{window.print();}catch(e){temiz();}},60);});
+  /* yazdırma penceresi açılmazsa (ör. eski tarayıcı) görünüm 20 sn sonra kendiliğinden eski haline döner */
+  setTimeout(function(){if(document.body.classList.contains('sayfa-pdf'))temiz();},20000);
+}
+$('pdf').addEventListener('click',sayfaPdf);
 
 /* ---------- Geri ---------- */
 /* Her sayfada "Geri": bölümler ve alt sayfalar (firma ekstresi, ortak ekstresi, sekmeler) arasında bir önceki ekrana döner.
