@@ -656,6 +656,13 @@ button.pnd.orort:hover{border-color:var(--gold-bright);background:var(--gold-sof
 .pnis .daha{list-style:none;margin-left:-18px;color:var(--muted);font-size:12px}
 .pnd .lnk{margin-top:auto}
 .pndep.pn3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.pnsl{display:flex;flex-direction:column;gap:4px}
+.pnsr{display:grid;grid-template-columns:130px 90px 150px minmax(0,1fr);align-items:center;gap:6px 12px;padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);font-size:13px}
+.pnsr b{font-weight:600;font-variant-numeric:tabular-nums}
+.pnsr i{font-style:normal;color:var(--muted);font-size:11px;margin-left:6px}
+.pnsbar{position:relative;height:14px;border-radius:7px;background:var(--line);overflow:hidden}
+.pnsbar i{display:block;height:100%;margin:0;background:var(--sc,var(--gold-bright))}
+.pnsbar em{position:absolute;right:6px;top:0;font-style:normal;font-size:10px;line-height:14px;font-weight:600;color:var(--ink)}
 button.pnd.pnodk{font:inherit;color:inherit;text-align:left;cursor:pointer;gap:4px}
 button.pnd.pnodk:hover,button.pnd.pnodk.sec{border-color:var(--gold-bright);background:var(--gold-soft)}
 .pnodk h3{display:flex;justify-content:space-between;gap:6px}
@@ -735,6 +742,11 @@ button.pnd.pnodk:hover,button.pnd.pnodk.sec{border-color:var(--gold-bright);back
   .pnb .tile.ana .ts+.ts{display:none}
   .pndep{grid-template-columns:minmax(0,1fr)}
   .pndep.pn3{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  .pnsr{grid-template-columns:minmax(0,1.1fr) minmax(0,.7fr) minmax(0,1.2fr);padding:6px 8px;font-size:12px;gap:4px 8px}
+  .pnsr .pnsbar{grid-column:1 / -1;height:8px}
+  .pnsr .pnsbar em{display:none}
+  .pnsr i{display:block;margin-left:0;font-size:10px}
+  .pnsr .sal{font-size:12px}
   .pn3 .pnd{padding:8px 7px;gap:3px}
   .pn3 .pnd h3{font-size:11px;letter-spacing:0}
   .pnodk .pnodak{font-size:12px;line-height:1.3}
@@ -5917,7 +5929,9 @@ function pnYukle(sessiz){
     sb.from('cari_ozet').select('*').in('firma_id',OR_IDLER).then(function(r){return r.error?{data:null,error:r.error}:r;},function(e){return {data:null,error:e};}),
     sb.from('kasa_ayar').select('veri').eq('id','genel').maybeSingle().then(function(r){return r.error?{data:null,error:r.error}:r;},function(e){return {data:null,error:e};}),
     hepsiniOku(function(){return sb.from('kasa_gun').select('tarih,gelir,gider,nakit,banka').order('tarih');}).then(function(d){return {data:d,error:null};},function(e){return {data:null,error:e};}),
-    sb.from('kasa_gun').select('veri').eq('tarih',bugun).maybeSingle().then(function(r){return r.error?{data:null,error:r.error}:r;},function(e){return {data:null,error:e};})
+    sb.from('kasa_gun').select('veri').eq('tarih',bugun).maybeSingle().then(function(r){return r.error?{data:null,error:r.error}:r;},function(e){return {data:null,error:e};}),
+    hepsiniOku(function(){return sb.from('cari_firma').select('id,ad,unvan,tur,devreden,aktif').order('id');}).then(function(d){return {data:d,error:null};},function(e){return {data:null,error:e};}),
+    hepsiniOku(function(){return sb.from('cari_ozet').select('*').order('firma_id');}).then(function(d){return {data:d,error:null};},function(e){return {data:null,error:e};})
   ]).then(function(r){
     if(sira!==pn.sira)return;
     pn.bekle=false;
@@ -5946,8 +5960,20 @@ function pnYukle(sessiz){
       var ayar=ksAyarTemiz(r[5].data&&r[5].data.veri),ozet=(r[6].data||[]).map(function(g){return {tarih:String(g.tarih||''),gelir:+g.gelir||0,gider:+g.gider||0,nakit:+g.nakit||0,banka:+g.banka||0};}).filter(function(g){return /^\d{4}-\d{2}-\d{2}$/.test(g.tarih);}).sort(function(a,b){return a.tarih<b.tarih?-1:1;});
       kasa={ayarVar:!!(r[5].data&&r[5].data.veri),acilis:ayar.acilis,ozet:ozet,gun:(r[7].data&&r[7].data.veri)?ksGunTemiz(r[7].data.veri):null};
     }
-    var imza=JSON.stringify([bugun,soz,grl,gunler,rutin,ortak,kasa]);
-    pn.bugun=bugun;pn.soz=soz;pn.gorusmeler=grl;pn.gunler=gunler;pn.rutin=rutin;pn.ortak=ortak;pn.kasa=kasa;pn.yuklu=true;pn.hata='';
+    /* cari borçlar: firma kalanı = devreden + alım − ödeme; belediye ayrı; ortak hesapları hariç */
+    var cari=null;
+    if(!r[8].error&&!r[9].error){
+      var oz={};(r[9].data||[]).forEach(function(o){oz[o.firma_id]=o;});
+      cari={firma:0,belediye:0,n:0,bn:0,acik:0};
+      (r[8].data||[]).forEach(function(f){
+        if(orOrtakMu(f.id)||f.aktif===false)return;
+        var o=oz[f.id]||{},dv=krs(f.devreden),k=Math.max(dv,0)+krs(o.borc)-Math.max(-dv,0)-krs(o.alacak);
+        var bel=(String(f.ad||'')+' '+String(f.unvan||'')+' '+String(f.tur||'')).toLocaleLowerCase('tr').indexOf('belediye')>=0;
+        if(bel){cari.belediye+=k;cari.bn++;}else{cari.firma+=k;cari.n++;if(k>0)cari.acik++;}
+      });
+    }
+    var imza=JSON.stringify([bugun,soz,grl,gunler,rutin,ortak,kasa,cari]);
+    pn.bugun=bugun;pn.soz=soz;pn.gorusmeler=grl;pn.gunler=gunler;pn.rutin=rutin;pn.ortak=ortak;pn.kasa=kasa;pn.cari=cari;pn.yuklu=true;pn.hata='';
     if(!pn.yil)pn.yil=pnIlkYil(bugun);
     if(sessiz&&imza===pn.imza)return;
     pn.imza=imza;pnCiz();
@@ -5979,7 +6005,7 @@ function pnCiz(){
   var bugun=todayStr(),h='<div class="phead"><h1>Yönetici özeti</h1><span class="durum" id="pn-gun">'+esc(fmtUzun(bugun))+'</span></div>';
   if(pn.hata)h+='<p class="banner bad" id="pn-hata">'+esc(pn.hata)+'</p><div class="crdugme"><button type="button" class="btn" id="pn-yenile">Yeniden dene</button></div>';
   else if(!pn.yuklu)h+='<p class="fine">Yükleniyor…</p>';
-  else h+=pnKasaHtml()+pnBilancoHtml()+pnGorusmeHtml()+pnTakvimHtml()+pnOdakHtml()+pnOrgHtml()+pnOrtakHtml()+
+  else h+=pnKasaHtml()+pnBilancoHtml()+pnSalonHtml()+pnGorusmeHtml()+pnTakvimHtml()+pnOdakHtml()+pnOrgHtml()+pnCariHtml()+pnOrtakHtml()+
           '<p class="ajalt pnson">Veriler dakikada bir kendiliğinden yenilenir.<button type="button" class="lnk" id="pn-yenile">Şimdi yenile</button></p>';
   el.innerHTML=h;
 }
@@ -6169,6 +6195,32 @@ function pnGunAc(t){
 }
 
 /* Ortaklar carisi özeti: üç ortağın bakiyesi; karta dokununca ekstresi açılır */
+/* Salon performansı: bilançoda seçili yıla göre her salonun organizasyon sayısı, cirosu ve ortalaması */
+function pnSalonHtml(){
+  var rows=pn.soz.filter(function(r){return pn.yil==='tum'||r.tarih.slice(0,4)===pn.yil;}),S={},topC=0,topN=0,enC=0;
+  salonlar().forEach(function(s){S[s.id]={n:0,c:0,b:0,dugun:0};});
+  rows.forEach(function(r){var x=S[r.salon];if(!x)return;x.n++;topN++;if(pnDugunMu(r.tur))x.dugun++;if(r.bedel!=null){x.c+=krs(r.bedel);x.b++;topC+=krs(r.bedel);}});
+  salonlar().forEach(function(s){if(S[s.id].c>enC)enC=S[s.id].c;});
+  var h='<section class="ablok pnblok" id="pn-salon"><div class="pnbas"><h2>Salon performansı</h2><span class="ajsay">'+esc(pn.yil==='tum'?'Tüm yıllar':pn.yil)+'</span></div><div class="pnsl">';
+  salonlar().forEach(function(s){
+    var x=S[s.id],pay=topC?Math.round(x.c/topC*100):0;
+    h+='<div class="pnsr" data-pnsalon="'+s.id+'"><span class="sal s-'+s.id+'"><span class="dot"></span>'+esc(s.ad)+'</span>'+
+       '<span class="pnsn"><b>'+x.n+'</b> org.<i>'+(x.n?x.dugun+' düğün':'')+'</i></span>'+
+       '<span class="pnsc"><b>'+tlPara(x.c/100)+'</b><i>'+(x.b?'ort. '+tlPara(Math.round(x.c/x.b)/100):'—')+'</i></span>'+
+       '<span class="pnsbar s-'+s.id+'" title="Ciro payı %'+pay+'"><i style="width:'+(enC?Math.round(x.c/enC*100):0)+'%"></i><em>%'+pay+'</em></span></div>';
+  });
+  h+='</div><p class="fine">Toplam '+topN+' organizasyon · '+tlPara(topC/100)+'. Yıl, Bilanço\'daki seçime göre değişir; opsiyonlar sayılmaz.</p></section>';
+  return h;
+}
+/* Cari borçlar özeti: firmalar ve belediye ayrı */
+function pnCariHtml(){
+  var c=pn.cari,h='<section class="ablok pnblok" id="pn-cari"><div class="pnbas"><h2>Cari borçlar</h2><button type="button" class="lnk" data-pnview="cari">Cari borçları aç</button></div>';
+  if(!c)return h+'<p class="fine" id="pn-cr-yok">Cari borçlar okunamadı; Finans › Cari borçlar bölümünü açın.</p></section>';
+  h+='<div class="tiles kucuk pnks"><div class="tile"><span class="tl">Firmalara borç</span><span class="tv" id="pn-cr-firma">'+tlPara(c.firma/100)+'</span><span class="ts">'+c.acik+' / '+c.n+' firmada açık</span></div>'+
+     '<div class="tile"><span class="tl">Belediye borcu</span><span class="tv kbad" id="pn-cr-bel">'+tlPara(c.belediye/100)+'</span><span class="ts">'+(c.bn?'kira ve beyanlar':'belediye carisi yok')+'</span></div>'+
+     '<div class="tile ana"><span class="tl">Toplam cari borç</span><span class="tv ciro" id="pn-cr-top">'+tlPara((c.firma+c.belediye)/100)+'</span></div></div></section>';
+  return h;
+}
 function pnOrtakHtml(){
   var h='<section class="ablok pnblok" id="pn-ortak"><div class="pnbas"><h2>Ortaklar carisi</h2><button type="button" class="lnk" data-pnview="ortak">Ortaklar carisini aç</button></div>';
   if(!pn.ortak)return h+'<p class="fine" id="pn-or-yok">Ortaklar carisi okunamadı; Finans › Ortaklar carisi bölümünü açın.</p></section>';
