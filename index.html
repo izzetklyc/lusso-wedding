@@ -783,6 +783,13 @@ button.pnd.pnodk.eksik{border-color:#e57373}
   .tiles.kucuk .tile .tv{font-size:16px}
   .tiles.kucuk .tile .tl,.tiles.kucuk .tile .ts{font-size:11px}
 }
+
+.pnbugun{display:flex;flex-direction:column;gap:12px;padding:12px;border:1px solid var(--gold-bright);border-radius:10px;background:var(--gold-soft)}
+.pnbbas{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.pnbbas h2{margin:0;font-family:var(--f-display);font-weight:500;font-size:18px;letter-spacing:.08em}
+.pnslt{min-width:0;width:100%}
+.pnslt td,.pnslt th{padding:6px 10px}
+@media (max-width:640px){.pnbugun{padding:8px;gap:8px}.pnbbas h2{font-size:15px}}
 /* ---------- Kasa ---------- */
 .ksozet{background:var(--surface);border:1px solid var(--line-strong);border-radius:8px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;min-width:0}
 .ksdenk{display:flex;flex-wrap:wrap;align-items:stretch;gap:8px 12px}
@@ -6055,7 +6062,7 @@ function pnCiz(){
   var bugun=todayStr(),h='<div class="phead"><h1>Yönetici özeti</h1><span class="durum" id="pn-gun">'+esc(fmtUzun(bugun))+'</span></div>';
   if(pn.hata)h+='<p class="banner bad" id="pn-hata">'+esc(pn.hata)+'</p><div class="crdugme"><button type="button" class="btn" id="pn-yenile">Yeniden dene</button></div>';
   else if(!pn.yuklu)h+='<p class="fine">Yükleniyor…</p>';
-  else h+=pnKasaHtml()+pnBilancoHtml()+pnSalonHtml()+pnGorusmeHtml()+pnTakvimHtml()+pnOdakHtml()+pnOrgHtml()+pnCariHtml()+pnOrtakHtml()+
+  else h+='<div class="pnbugun" id="pn-bugun"><div class="pnbbas"><h2>İşletmede bugün</h2><span class="ajsay">'+esc(fmtUzun(pn.bugun))+'</span></div>'+pnKasaHtml()+pnGorusmeHtml()+pnOdakHtml()+'</div>'+pnBilancoHtml()+pnSalonHtml()+pnTakvimHtml()+pnOrgHtml()+pnCariHtml()+pnOrtakHtml()+
           '<p class="ajalt pnson">Veriler dakikada bir kendiliğinden yenilenir.<button type="button" class="lnk" id="pn-yenile">Şimdi yenile</button></p>';
   el.innerHTML=h;
 }
@@ -6069,7 +6076,7 @@ function pnKasaHesap(){
   return {var_:k.ayarVar||k.ozet.length>0,yazildi:!!g,gelir:gelir/100,gider:gider/100,son:(t+gelir-gider)/100,nakit:(n+(g?krs(g.nakit):0))/100,banka:(b+(g?krs(g.banka):0))/100};
 }
 function pnKasaHtml(){
-  var h='<section class="ablok pnblok" id="pn-kasa"><div class="pnbas"><h2>Bugünün kasası</h2><button type="button" class="lnk" data-pnview="kasa">Günlük kasayı aç</button></div>';
+  var h='<section class="ablok pnblok" id="pn-kasa"><div class="pnbas"><h2>Bugünkü kasa</h2><button type="button" class="lnk" data-pnview="kasa">Günlük kasayı aç</button></div>';
   var x=pnKasaHesap();
   if(!x)return h+'<p class="fine" id="pn-ks-yok">Kasa okunamadı; Finans › Günlük kasa bölümünü açın.</p></section>';
   if(!x.var_)return h+'<p class="fine" id="pn-ks-yok">Kasa açılışı henüz yapılmamış. Günlük kasa › Ayarlar › Açılış bölümünden başlangıç tutarlarını girin.</p></section>';
@@ -6133,7 +6140,7 @@ function pnBilancoHtml(){
 }
 
 function pnOdakHtml(){
-  var h='<section class="ablok pnblok" id="pn-odak"><div class="pnbas"><h2>İşletmede bugün yapılanlar</h2><span class="ajsay">'+esc(fmtUzun(pn.bugun))+'</span></div>@@UYARI@@<div class="pndep pn3">',det='',eksikDep=0;
+  var h='<section class="ablok pnblok" id="pn-odak"><div class="pnbas"><h2>Müdürlerin bugün yaptıkları</h2></div>@@UYARI@@<div class="pndep pn3">',det='',eksikDep=0;
   DEP_SIRA.forEach(function(dep){
     var g=pn.gunler[dep],liste=pn.rutin[dep]||[],yap=g?liste.filter(function(r){return g.rutin[r.id];}).length:0,n=liste.length,isler=g?g.isler:[];
     var sec=pn.odakSec===dep,G=(pn.gorev&&pn.gorev[dep])||{acik:[],bugun:[]},rEks=n&&yap<n,eks=rEks||G.acik.length;
@@ -6159,7 +6166,7 @@ function pnOdakHtml(){
 function pnGorusmeHtml(){
   var bugun=pn.bugun,hf=pnHafta(bugun),bg=pn.gorusmeler.filter(function(k){return k.tarih===bugun;}),soz=bg.filter(function(k){return k.durum==='sozlesme';}).length;
   bg.sort(function(a,b){return String(b.olusturma||'').localeCompare(String(a.olusturma||''));});
-  var h='<section class="ablok pnblok" id="pn-gr"><div class="pnbas"><h2>Görüşmeler</h2><button type="button" class="lnk" data-pnview="gorusmeler">Tüm görüşmeler</button></div>';
+  var h='<section class="ablok pnblok" id="pn-gr"><div class="pnbas"><h2>Bugünkü görüşmeler</h2><button type="button" class="lnk" data-pnview="gorusmeler">Tüm görüşmeler</button></div>';
   h+='<div class="tiles"><button type="button" class="tile pnt" id="pn-gr-ac" aria-expanded="'+pn.grAcik+'"'+(bg.length?'':' disabled')+'><span class="tl">Bugün yapılan görüşme</span><span class="tv" id="pn-gr-say">'+bg.length+'</span>'+
      '<span class="ts">'+(bg.length?(pn.grAcik?'Ayrıntıyı gizle':'Ayrıntı için dokunun')+(soz?' · '+soz+' sözleşmeye döndü':''):'Satış ekibi bugün görüşme yazmamış')+'</span></button>'+
      '<div class="tile"><span class="tl">Bu hafta</span><span class="tv" id="pn-gr-hafta">'+pn.gorusmeler.length+'</span><span class="ts">'+esc(pnAralik(hf[0],hf[1]))+'</span></div></div>';
@@ -6252,19 +6259,13 @@ function pnGunAc(t){
 /* Ortaklar carisi özeti: üç ortağın bakiyesi; karta dokununca ekstresi açılır */
 /* Salon performansı: bilançoda seçili yıla göre her salonun organizasyon sayısı, cirosu ve ortalaması */
 function pnSalonHtml(){
-  var rows=pn.soz.filter(function(r){return pn.yil==='tum'||r.tarih.slice(0,4)===pn.yil;}),S={},topC=0,topN=0,enC=0;
-  salonlar().forEach(function(s){S[s.id]={n:0,c:0,b:0,dugun:0};});
-  rows.forEach(function(r){var x=S[r.salon];if(!x)return;x.n++;topN++;if(pnDugunMu(r.tur))x.dugun++;if(r.bedel!=null){x.c+=krs(r.bedel);x.b++;topC+=krs(r.bedel);}});
-  salonlar().forEach(function(s){if(S[s.id].c>enC)enC=S[s.id].c;});
-  var h='<section class="ablok pnblok" id="pn-salon"><div class="pnbas"><h2>Salon performansı</h2><span class="ajsay">'+esc(pn.yil==='tum'?'Tüm yıllar':pn.yil)+'</span></div><div class="pnsl">';
-  salonlar().forEach(function(s){
-    var x=S[s.id],pay=topC?Math.round(x.c/topC*100):0;
-    h+='<div class="pnsr" data-pnsalon="'+s.id+'"><span class="sal s-'+s.id+'"><span class="dot"></span>'+esc(s.ad)+'</span>'+
-       '<span class="pnsn"><b>'+x.n+'</b> org.<i>'+(x.n?x.dugun+' düğün':'')+'</i></span>'+
-       '<span class="pnsc"><b>'+tlPara(x.c/100)+'</b><i>'+(x.b?'ort. '+tlPara(Math.round(x.c/x.b)/100):'—')+'</i></span>'+
-       '<span class="pnsbar s-'+s.id+'" title="Ciro payı %'+pay+'"><i style="width:'+(enC?Math.round(x.c/enC*100):0)+'%"></i><em>%'+pay+'</em></span></div>';
-  });
-  h+='</div><p class="fine">Toplam '+topN+' organizasyon · '+tlPara(topC/100)+'. Yıl, Bilanço\'daki seçime göre değişir; opsiyonlar sayılmaz.</p></section>';
+  var rows=pn.soz.filter(function(r){return pn.yil==='tum'||r.tarih.slice(0,4)===pn.yil;}),S={},tn=0,tc=0;
+  salonlar().forEach(function(s){S[s.id]={n:0,c:0};});
+  rows.forEach(function(r){var x=S[r.salon];if(!x)return;x.n++;tn++;if(r.bedel!=null){x.c+=krs(r.bedel);tc+=krs(r.bedel);}});
+  var h='<section class="ablok pnblok" id="pn-salon"><div class="pnbas"><h2>Salonlar</h2><span class="ajsay">'+esc(pn.yil==='tum'?'Tüm yıllar':pn.yil)+'</span></div>'+
+    '<table class="liste pnslt"><thead><tr><th>Salon</th><th class="num">Sözleşme</th><th class="num">Ciro</th></tr></thead><tbody>';
+  salonlar().forEach(function(s){var x=S[s.id];h+='<tr data-pnsalon="'+s.id+'"><td><span class="sal s-'+s.id+'"><span class="dot"></span>'+esc(s.ad)+'</span></td><td class="num pnsn">'+x.n+'</td><td class="num pnsc">'+tlPara(x.c/100)+'</td></tr>';});
+  h+='</tbody><tfoot><tr><td>Toplam</td><td class="num">'+tn+'</td><td class="num">'+tlPara(tc/100)+'</td></tr></tfoot></table></section>';
   return h;
 }
 /* Cari borçlar özeti: firmalar ve belediye ayrı */
