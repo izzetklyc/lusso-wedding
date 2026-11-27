@@ -70,6 +70,11 @@ button{cursor:pointer}
 .mi:hover{border-color:var(--line-strong)}
 .mi[aria-current="page"]{background:var(--gold-soft);border-color:var(--gold-soft);color:var(--gold)}
 .mi .mic{width:16px;height:16px;flex:none}
+.ajbg{display:flex;flex-direction:column;gap:6px}
+.ajbgs{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);cursor:pointer;font-size:14px}
+.ajbgs input{width:20px;height:20px;flex:none;margin:0;accent-color:var(--gold)}
+.ajbgs:has(input:checked){border-color:var(--gold-bright);background:var(--gold-soft);font-weight:600}
+.pnodak{white-space:pre-line}
 .msdug{display:flex;gap:10px}
 .msbtn{height:52px;padding:0 28px;font-size:16px}
 .mst{min-width:0;width:100%}
@@ -3306,8 +3311,12 @@ function ajGunHtml(){
      '<button type="button" class="nbtn arrow" id="aj-sonra" aria-label="Sonraki gün"'+(aj.tarih>=enGecGun()?' disabled':'')+'>&#8250;</button>'+
      (bugun?'':'<button type="button" class="nbtn" id="aj-bugun">Bugün</button>')+
      '<span class="ajgun">'+fmtUzun(aj.tarih)+(bugun?'<i>Bugün</i>':'')+'</span></div>';
-  h+='<section class="ablok"><h2>Günün odağı</h2><p class="fine">Bugün üzerinde çalışılacak tek ana konu.</p>'+
-     '<textarea class="ain oto" id="aj-odak" maxlength="500" aria-label="Günün odağı">'+esc(g.odak)+'</textarea></section>';
+  var secili=String(g.odak||'').split('\n').map(function(x){return x.trim();}).filter(Boolean),acikG=(aj.gorevler||[]).filter(function(x){return !x.yapildi;}).map(function(x){return x.metin;}),hepsiG=acikG.slice();
+  secili.forEach(function(x){if(hepsiG.indexOf(x)<0)hepsiG.push(x);});
+  h+='<section class="ablok" id="aj-bgorev"><h2>Bugünün görevi</h2><p class="fine">Size verilen görevlerden bugün üzerinde çalıştığınızı işaretleyin. Yönetici özet ekranında bunu görür.</p>';
+  if(!hepsiG.length)h+='<p class="fine" id="aj-bg-yok">Size verilmiş açık görev yok.</p>';
+  else{h+='<div class="ajbg">';hepsiG.forEach(function(m,i){h+='<label class="ajbgs"><input type="checkbox" data-bgorev="'+i+'" value="'+esc(m)+'"'+(secili.indexOf(m)>=0?' checked':'')+'><span>'+esc(m)+'</span></label>';});h+='</div>';}
+  h+='</section>';
   h+='<section class="ablok"><h2>Yapılan işler</h2>';
   for(i=0;i<n;i++)h+='<div class="ajis"><span>•</span><input type="text" class="ain" id="aj-is-'+i+'" data-is="'+i+'" maxlength="300" autocomplete="off" value="'+esc(g.isler[i]||'')+'" aria-label="Yapılan iş '+(i+1)+'"></div>';
   h+='<button type="button" class="ekle" id="aj-is-ekle">+ Satır ekle</button></section>';
@@ -3396,6 +3405,7 @@ function ajRutinKaydet(){
 $('aj').addEventListener('input',function(ev){
   var t=ev.target;if(!aj.gun)return;
   if(t.id==='aj-odak'){aj.gun.odak=t.value;ajDegisti();}
+  if(t.hasAttribute&&t.hasAttribute('data-bgorev'))return;
   else if(t.id==='aj-not'){aj.gun.notlar=t.value;ajDegisti();}
   else if(t.hasAttribute('data-is')){
     var i=+t.getAttribute('data-is');
@@ -3407,6 +3417,7 @@ $('aj').addEventListener('input',function(ev){
   }
 });
 $('aj').addEventListener('change',function(ev){
+  if(ev.target.hasAttribute&&ev.target.hasAttribute('data-bgorev')){aj.gun.odak=[].slice.call(document.querySelectorAll('#aj-bgorev input:checked')).map(function(x){return x.value;}).join('\n').slice(0,500);ajDegisti();ajKaydet();return;}
   var t=ev.target;
   if(t.id==='aj-tarih'){
     if(/^\d{4}-\d{2}-\d{2}$/.test(t.value))ajGit(aj.dep,t.value);else t.value=aj.tarih;
@@ -6337,11 +6348,11 @@ function pnOdakHtml(){
     var sec=pn.odakSec===dep,G=(pn.gorev&&pn.gorev[dep])||{acik:[],bugun:[]},rEks=n&&yap<n,eks=rEks||G.acik.length;
     if(eks)eksikDep++;
     h+='<button type="button" class="pnd pnodk'+(sec?' sec':'')+(eks?' eksik':'')+'" data-pnodak="'+dep+'" aria-expanded="'+sec+'"><h3>'+esc(DEPARTMAN[dep].ad)+'<i>'+(sec?'▴':'▾')+'</i></h3>';
-    h+=g&&g.odak?'<span class="pnodak">'+esc(g.odak)+'</span>':'<span class="pnodak yok">Odak yazılmamış.</span>';
+    h+=g&&g.odak?'<span class="pnodak">'+esc(g.odak)+'</span>':'<span class="pnodak yok">Bugünün görevi seçilmemiş.</span>';
     h+='<span class="pntak"><b class="'+(rEks?'kot':'iyi')+'" data-pnrut="'+dep+'">Rutin '+(n?yap+'/'+n:'—')+'</b><b class="'+(G.acik.length?'kot':'iyi')+'" data-pngor="'+dep+'">'+(G.acik.length?G.acik.length+' açık görev':'Görev yok')+'</b></span>';
     h+='</button>';
     if(!sec)return;
-    det='<div class="pndet" id="pn-odak-det" data-pndep="'+dep+'"><h3>'+esc(DEPARTMAN[dep].ad)+' · ayrıntı</h3>'+(g&&g.odak?'<p class="pnodak">'+esc(g.odak)+'</p>':'<p class="pnodak yok">Bugün için odak yazılmamış.</p>');
+    det='<div class="pndet" id="pn-odak-det" data-pndep="'+dep+'"><h3>'+esc(DEPARTMAN[dep].ad)+' · ayrıntı</h3><h4>Bugünün görevi</h4>'+(g&&g.odak?'<p class="pnodak">'+esc(g.odak)+'</p>':'<p class="pnodak yok">Bugünün görevi seçilmemiş.</p>');
     det+='<div class="pnrut '+(n&&yap===n?'tam':yap?'yari':'hic')+'"><span class="pnbar"><i style="width:'+(n?Math.round(yap/n*100):0)+'%"></i></span><span class="pnrsay">'+(n?yap+' / '+n+' rutin iş yapıldı':'Rutin iş tanımlı değil')+'</span></div>';
     if(isler.length){det+='<ul class="pnis">';isler.forEach(function(s){det+='<li>'+esc(s)+'</li>';});det+='</ul>';}
     else det+='<p class="fine pnisyok">Yapılan iş yazılmamış.</p>';
@@ -6467,7 +6478,7 @@ function pnMesaiHtml(){
   var kisi=st.kullanicilar.filter(function(k){return k.aktif!==false&&k.rol!=='yonetici'&&DEPARTMAN[k.departman];}).sort(function(a,b){return DEP_SIRA.indexOf(a.departman)-DEP_SIRA.indexOf(b.departman);});
   if(!kisi.length)return h+'<p class="fine">Departmanı olan kullanıcı yok.</p></section>';
   h+='<div class="pnmsl">';
-  kisi.forEach(function(k){var r=bul[k.id];h+='<div class="pnms'+(r&&r.giris?'':' yok')+'" data-pnms="'+k.id+'"><b>'+esc(k.ad||k.eposta)+'</b><i>'+esc(DEPARTMAN[k.departman].ad)+'</i><span>'+(r&&r.giris?lgSaat(r.giris)+' → '+(r.cikis?lgSaat(r.cikis):'içeride'):'gelmedi')+'</span>'+(r&&r.kontrol?'<em class="'+(r.kontrol.durum==='uygun'?'iyi':'kot')+'" title="'+esc(r.kontrol.notlar||'')+'">İdari: '+(r.kontrol.durum==='uygun'?'✓ uygun':'✗ sorunlu')+'</em>':'')+'</div>';});
+  kisi.forEach(function(k){var r=bul[k.id];h+='<div class="pnms'+(r&&r.giris?'':' yok')+'" data-pnms="'+k.id+'"><b>'+esc(k.ad||k.eposta)+'</b><i>'+esc(DEPARTMAN[k.departman].ad)+'</i><span>'+(r&&r.giris?'Giriş '+lgSaat(r.giris)+' · Çıkış '+(r.cikis?lgSaat(r.cikis):'—'):'gelmedi')+'</span>'+(r&&r.kontrol?'<em class="'+(r.kontrol.durum==='uygun'?'iyi':'kot')+'" title="'+esc(r.kontrol.notlar||'')+'">İdari: '+(r.kontrol.durum==='uygun'?'✓ uygun':'✗ sorunlu')+'</em>':'')+'</div>';});
   return h+'</div></section>';
 }
 /* Cari borçlar özeti: firmalar ve belediye ayrı */
